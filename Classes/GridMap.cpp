@@ -62,6 +62,8 @@ bool GridMap::isGridInMap(const Grid& g)
 	return g._x >= 0 && g._x < _mapWidth&&g._y >= 0 && g._y < _mapHeight;
 }
 
+
+
 bool GridMap::isGridOccupied(const Grid& g)
 {
 	assert(isGridInMap(g)

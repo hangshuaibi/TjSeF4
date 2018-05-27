@@ -38,8 +38,52 @@ bool MainScene::init()
 	_tiledMap->setPosition(Vec2::ZERO);
 
 	_gridMap = GridMap::create(_tiledMap);
+	//?
+	this->addChild(_gridMap);
 
-	this->addChild(_tiledMap);
+	this->addChild(_tiledMap, 0);
+
+	_unitManager = UnitManager::create();
+	_unitManager->_gridMap = _gridMap;
+	this->addChild(_unitManager);
+
+	_mouseRect = MouseRect::create();
+	_mouseRect->setVisible(false);
+	this->addChild(_mouseRect, 10);
+
+	auto mouseListener = EventListenerTouchOneByOne::create();
+	mouseListener->setSwallowTouches(true);//
+	mouseListener->onTouchBegan = [=](Touch* touch, Event* /*event*/) {
+		_mouseRect->_touchStart = touch->getLocation();
+
+		return true;
+	};
+	mouseListener->onTouchMoved = [=](Touch* touch, Event* /*event*/) {
+		_mouseRect->_touchEnd = touch->getLocation();
+
+		_mouseRect->start = _tiledMap->convertToNodeSpace(_mouseRect->_touchStart);
+		_mouseRect->end = _tiledMap->convertToNodeSpace(_mouseRect->_touchEnd);
+
+		_mouseRect->clear();
+
+		_mouseRect->setVisible(true);
+		_mouseRect->drawRect(_mouseRect->start, _mouseRect->end, Color4F(0, 1, 0, 1));
+
+	};
+	mouseListener->onTouchEnded = [=](Touch* touch, Event* /*event*/) {
+		_mouseRect->clear();
+
+		//select id in the rect
+		_unitManager->selectUnitByRect(Rect{ MIN(_mouseRect->start.x, _mouseRect->end.x),
+			MIN(_mouseRect->start.y, _mouseRect->end.y),
+			abs(_mouseRect->start.x - _mouseRect->end.x),
+			abs(_mouseRect->start.y - _mouseRect->end.y)
+		});
+
+		_mouseRect->setVisible(false);
+	};
+
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(mouseListener, this);
 
 	return true;
 }

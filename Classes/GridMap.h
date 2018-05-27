@@ -21,7 +21,7 @@ Grid operator+(const Grid& lhs, const Grid&rhs);
 Grid operator-(const Grid& lhs, const Grid&rhs);
 
 //GridMap的坐标系与TiledMap不同
-class GridMap:public cocos2d::Ref {
+class GridMap:public cocos2d::Node {
 private:
 	int _mapWidth, _mapHeight;//格点地图的长宽
 	int _gridWidth, _gridHeight;//每个格点的像素
@@ -36,7 +36,7 @@ private:
 public:
 	static GridMap* create(TMXTiledMap* tileMap);
 	bool isGridInMap(const Grid& g);//判断是否在地图内
-	bool isPointOccupied(const Point& p);
+	//bool isPointOccupied(const Point& p);
 	bool isGridOccupied(const Grid& g);//若被占领返回1
 
 	bool tryToOccupyGrid(int id, const Grid& g);//id单位尝试占领某位置，占领成功返回true
