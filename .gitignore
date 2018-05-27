@@ -2,7 +2,29 @@
 
 *.d
 
+#cocos2d-x
 
+*.json
+
+*.txt
+
+*cocos2d/
+
+*.android/
+
+*.linux/
+
+*.ios_mac
+
+*.tizen/
+
+*.win10/
+
+*.win32/
+
+*.tizen/
+
+*.android-studio/
 
 # Compiled Object files
 
