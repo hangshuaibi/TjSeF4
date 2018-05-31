@@ -3,6 +3,7 @@
 #include "GridMap.h"
 #include "cocos2d.h"
 #include "UnitManager.h"
+#include "GameManager.h"
 
 USING_NS_CC;
 
@@ -15,7 +16,10 @@ struct MouseRect:public DrawNode {
 	//derive from DrawNode for memfun DrawRect
 };
 
+class GameManager;
 class MainScene :public Scene {
+	friend class GameManager;
+
 public:
 	static MainScene* create();
 
@@ -26,6 +30,10 @@ public:
 	//virtual void update(float delta);
 
 private:
+	cocos2d::Point _cursorPosition{ 0, 0 };
+
+	int _screenWidth, _screenHeight;
+
 	int _playerId;
 
 	MouseRect* _mouseRect;
@@ -33,7 +41,12 @@ private:
 	//单位管理器
 	UnitManager* _unitManager;
 
+	//游戏地图管理器
+	GameManager* _gameManager;
+
 	GridMap* _gridMap = nullptr;
 	TMXTiledMap* _tiledMap = nullptr;
+
+	void update(float delta);
 };
 

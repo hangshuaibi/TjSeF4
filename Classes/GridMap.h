@@ -11,7 +11,7 @@ struct Grid {
 	int _x;//横坐标，左上角为原点
 	int _y;
 
-	Grid(int x, int y):_x(x),_y(y){}
+	Grid(int x = -1, int y = -1):_x(x),_y(y){}
 };
 
 bool operator==(const Grid& lhs, const Grid& rhs);
@@ -28,12 +28,15 @@ private:
 
 	bool initWithTiledMap(TMXTiledMap* tileMap);//用该类型的map初始化
 
-	vector<vector<int> > _isOccupied;//是否被占据，遵从effective stl中不用vector<bool>
-	vector<vector<int> > _occupiedId;//占据对应位置的id
+	
 	Vec2 _pointOffset;//点中心到所取点的偏移，这是由于int类型造成的
 
 	void occupyGrid(int id, const Grid& g);//占领格点的实际工作者
 public:
+
+	vector<vector<int> > _isOccupied;//是否被占据，遵从effective stl中不用vector<bool>
+	vector<vector<int> > _occupiedId;//占据对应位置的id
+
 	static GridMap* create(TMXTiledMap* tileMap);
 	bool isGridInMap(const Grid& g);//判断是否在地图内
 	//bool isPointOccupied(const Point& p);
@@ -46,9 +49,12 @@ public:
 
 	//搜寻P点附近空闲的点，返回一个大小为size的数组
 	GridVector findValidGridNear(const Grid& p, int size);
-	Grid findValidGridNear(const Grid& p);//搜寻P点附近空闲的点
 
-	Point getPoint(const Grid& g);//坐标变换，注意两坐标轴的方向，已调整偏移量
+	//搜寻P点附近空闲的点
+	Grid findValidGridNear(const Grid& p);
+
+	//坐标变换，注意两坐标轴的方向，已调整偏移量
+	Point getPoint(const Grid& g);
 	Grid getGrid(const Point& p);
 
 };

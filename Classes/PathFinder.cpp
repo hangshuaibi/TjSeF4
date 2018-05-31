@@ -1,7 +1,6 @@
 #include "PathFinder.h"
-#include <list>
-//#include <algorithm>
-using std::list;
+#include "NotGay.h"
+
 
 PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 	const Grid& start, const Grid& end) :
@@ -20,7 +19,7 @@ PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 
 	for (int i = 0; i < _mapWidth;++i)
 	{
-		for (int j = 0;i < _mapHeight;++i)
+		for (int j = 0;j < _mapHeight;++j)
 		{
 			grid& rg = _gridTable[i][j];
 			rg.x = i, rg.y = j;		
@@ -41,7 +40,9 @@ PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 	setState(_end, grid::State::END);
 
 	_start->gValue = 0;
-	//_end->hValue = 0;//already calculated in the for loop
+
+	_end->hValue = 0;//already calculated in the for loop
+
 	//Initialize openlist
 	_openList.push_back(_start);
 }
@@ -66,19 +67,23 @@ void PathFinder::checkSurroundGrid(const grid* pg)
 	{
 		int x =pg->x + DIRECTIONS[i][0], y = pg->y + DIRECTIONS[i][1];
 
+		if (x < 0 || x >= _mapWidth || y < 0 || y >= _mapHeight)
+		{
+			continue;//出界
+		}
 		//pointer to candidate grid
-		grid* pcg = nullptr;
-		pcg = &_gridTable[x][y];
-		if (!isGridValid(pcg) || !checkCorner(pg, pcg))
+		grid* pcg = &_gridTable[x][y];
+		if (!isGridValid(pcg))//
+			//|| !checkCorner(pg, pcg))
 		{
 			continue;
 		}
 		//remember hValue of every grid has been calculated in PathFindther constructor
 		int gValueByPg = calculateGValue(pg, pcg);
-		if (gValueByPg < pcg->gValue)
+		if (gValueByPg + pg->gValue< pcg->gValue)
 		{
 			pcg->parent = const_cast<grid*>(pg);
-			pcg->gValue = gValueByPg;
+			pcg->gValue = gValueByPg + pg->gValue;
 			pcg->fValue = pcg->gValue + pcg->hValue;
 		}
 	
@@ -95,13 +100,15 @@ void PathFinder::checkSurroundGrid(const grid* pg)
 
 bool PathFinder::checkCorner(const grid* lhs, const grid* rhs)
 {
+	assert(isGridValid(lhs) && isGridValid(rhs));
+
 	if (lhs->x == rhs->x || lhs->y == rhs->y)
 	{
 		return true;
 	}
 
-	if (_gridTable[lhs->x][rhs->y] == grid::OCCUPIED ||
-		_gridTable[rhs->x][lhs->y] == grid::OCCUPIED)
+	if (_gridTable[lhs->x][rhs->y].state == grid::OCCUPIED ||
+		_gridTable[rhs->x][lhs->y].state == grid::OCCUPIED)
 	{
 		return false;
 	}
@@ -164,7 +171,7 @@ PathFinder::grid* PathFinder::nextToSearch()
 
 	for (auto pg : _openList)
 	{
-		if (pg->fValue > ret->fValue)
+		if (pg->fValue < ret->fValue)
 		{
 			ret = pg;
 		}
@@ -174,7 +181,7 @@ PathFinder::grid* PathFinder::nextToSearch()
 
 vector<Grid> PathFinder::getPath()
 {
-	generatePath();
+	//generatePath();
 
 	return _resultPath;
 }
@@ -182,17 +189,28 @@ vector<Grid> PathFinder::getPath()
 void PathFinder::generatePath()
 {
 	grid* cur = _end;
-
-	//call list for hlep through member cuncction reverse
-	list<Grid> resultPathList;
+	
+	/*这里传出去的路径起点（的前一个grid）在尾部，终点在头部*/
+#if Debug
+	std::ofstream mylog("log.txt");
+	assert(mylog);
+#endif//Debug
+	//在此起点并不会被push_back
 	while (cur->parent != nullptr)//cur is not the FATHER
 	{
-		resultPathList.push_front(Grid(cur->x, cur->y));
+		_resultPath.push_back(Grid(cur->x, cur->y));
+#if Debug
+		mylog << cur->x << " " << cur->y << std::endl;
+#endif
+		log("%d %d \n", cur->x, cur->y);
 
 		cur = cur->parent;
 	}
-	resultPathList.reverse();
-	_resultPath.assign(resultPathList.begin(), resultPathList.end());
+#if Debug
+	mylog << std::endl;
+#endif
+	log("\n");
+	
 }
 
 void PathFinder::searchPath()

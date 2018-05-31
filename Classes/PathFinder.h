@@ -46,17 +46,9 @@ private:
 		int gValue;//起点到该点的估计权值
 		int hValue;//该点到终点的估计权值，曼哈顿距离作为启发函数
 
-		grid* parent;// this value calculate by parent.x * 1000 + parent.y
+		grid* parent;
 
-		bool operator==(const grid& rhs)
-		{
-			return x == rhs.x&&y == rhs.y;
-		}
-
-		bool operator<(const grid& rhs)
-		{
-			return fValue < rhs.fValue;
-		}
+	
 	};
 
 	int _mapWidth, _mapHeight;

@@ -24,12 +24,13 @@ Grid GridMap::findValidGridNear(const Grid& g)
 
 Point GridMap::getPoint(const Grid& g)
 {
-	return Point(g._x * _gridWidth, g._y * _gridHeight);
+	return Point(g._x * _gridWidth, g._y * _gridHeight) 
+		+ _pointOffset;//Æ«ÒÆÁ¿
 }
 
 Grid GridMap::getGrid(const Point& p)
 {
-	return Grid(p.x / _gridWidth, p.y / _gridHeight);
+	return Grid((int)p.x / _gridWidth, (int)p.y / _gridHeight);
 }
 
 void GridMap::leaveGrid(int id, const Grid& g)
@@ -61,8 +62,6 @@ bool GridMap::isGridInMap(const Grid& g)
 {
 	return g._x >= 0 && g._x < _mapWidth&&g._y >= 0 && g._y < _mapHeight;
 }
-
-
 
 bool GridMap::isGridOccupied(const Grid& g)
 {
@@ -97,7 +96,7 @@ bool GridMap::initWithTiledMap(TMXTiledMap* tiledMap)
 	_gridWidth = tiledMap->getTileSize().width;
 	_gridHeight = tiledMap->getTileSize().height;
 
-	_pointOffset = Vec2(_gridWidth / 2, _gridHeight / 2);
+	_pointOffset = Vec2(_gridWidth / 2.0f, _gridHeight / 2.0f);
 	_isOccupied.assign(_mapWidth, vector<int>(_mapHeight, 0));
 	_occupiedId.assign(_mapWidth, vector<int>(_mapHeight, 0));
 
@@ -112,7 +111,8 @@ bool GridMap::initWithTiledMap(TMXTiledMap* tiledMap)
 
 			if (gid > 0)
 			{
-				_isOccupied[gridX][gridY] = 0;
+				//
+				_isOccupied[gridX][gridY] = 1;
 			}
 		}
 	}

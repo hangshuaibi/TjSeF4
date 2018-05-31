@@ -10,7 +10,8 @@ USING_NS_CC;
 class Unit;
 class UnitManager:public Node {
 public:
-	//Sprite* sp;
+	int _playerId = 0;
+
 	bool init();
 	CREATE_FUNC(UnitManager);
 	void selectUnitByRect(const Rect& rect);
