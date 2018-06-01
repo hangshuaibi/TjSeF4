@@ -67,7 +67,7 @@ public:
 	vector<Grid> getPath();
 	PathFinder(const vector<vector<int> > &gridTable,
 		const Grid& start, const Grid& end);
-	void searchPath();
+	bool searchPath();
 	void generatePath();
 
 private:

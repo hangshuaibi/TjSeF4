@@ -19,7 +19,31 @@ Grid operator-(const Grid& lhs, const Grid&rhs)
 Grid GridMap::findValidGridNear(const Grid& g)
 {
 	//先粗鄙一波，以后改
-	return g;
+	if (isGridValid(g))
+	{
+		return g;
+	}
+
+	//菱形查找
+	GridVector dirVec = { Grid(1,1),Grid(1,-1),Grid(-1,-1),Grid(-1,1) };
+
+	for (int i = 0;i < _mapWidth + _mapHeight;++i)
+	{
+		Grid nearg = g + Grid(-i, 0);
+		for (int dir = 0;dir < 4;++dir)
+		{
+			for (int j = 0;j < i;++j)
+			{
+				nearg = nearg + dirVec[dir];
+				if (isGridValid(nearg))
+				{
+					return nearg;
+				}
+			}
+		}
+	}
+
+	return Grid(-1, -1);
 }
 
 Point GridMap::getPoint(const Grid& g)
@@ -93,8 +117,9 @@ bool GridMap::initWithTiledMap(TMXTiledMap* tiledMap)
 	_mapWidth = tiledMap->getMapSize().width;
 	_mapHeight = tiledMap->getMapSize().height;
 
-	_gridWidth = tiledMap->getTileSize().width;
-	_gridHeight = tiledMap->getTileSize().height;
+	//修正格点宽度和长度
+	_gridWidth = tiledMap->getTileSize().width / CC_CONTENT_SCALE_FACTOR();
+	_gridHeight = tiledMap->getTileSize().height / CC_CONTENT_SCALE_FACTOR();
 
 	_pointOffset = Vec2(_gridWidth / 2.0f, _gridHeight / 2.0f);
 	_isOccupied.assign(_mapWidth, vector<int>(_mapHeight, 0));
@@ -112,10 +137,18 @@ bool GridMap::initWithTiledMap(TMXTiledMap* tiledMap)
 			if (gid > 0)
 			{
 				//
+				//CC_ASSERT(0);
 				_isOccupied[gridX][gridY] = 1;
+
+				//log("(%d, %d)   ", gridX, _mapHeight - 1 - gridY);
 			}
 		}
 	}
 
 	return true;
+}
+
+bool GridMap::isGridValid(const Grid& g)
+{
+	return isGridInMap(g) && (_isOccupied[g._x][g._y] == 0);
 }

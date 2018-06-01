@@ -69,7 +69,7 @@ bool MainScene::init()
 
 	Unit* sprite = Unit::create("HelloWorld.png");
 
-	sprite->setScale(0.05);
+	sprite->setScale(0.1);
 	sprite->addToMap(_gridMap, _tiledMap);
 	sprite->_unitManager = _unitManager;
 
@@ -79,10 +79,10 @@ bool MainScene::init()
 
 	sprite->setProperties();
 
-	sprite->setPosition(Point(_screenWidth/2,_screenHeight/2));
+	sprite->setPosition(_gridMap->getPoint(Grid(8, 6)));
 
-	sprite->setDestination(Grid(1, 32));
-	sprite->findPath();
+	//sprite->setDestination(Grid(18, 120));
+	//sprite->findPath();
 	//sprite->setState(Unit::State::MOVING);
 	sprite->schedule(schedule_selector(Unit::update));
 
@@ -98,8 +98,11 @@ bool MainScene::init()
 		Point touchL = touch->getLocation();
 
 		auto dest = touchL - _tiledMap->getPosition();
+		auto gridDest = _gridMap->getGrid(dest);
+		auto validDest = _gridMap->findValidGridNear(gridDest);
 
-		sprite->setDestination(_gridMap->getGrid(dest));
+		sprite->setDestination(validDest);
+
 		sprite->findPath();
 		sprite->setState(Unit::MOVING);
 	};

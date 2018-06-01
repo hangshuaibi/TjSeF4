@@ -28,6 +28,8 @@ PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 
 			if (gridTable[i][j] == 1)//default state is UNOCCUPIED
 			{
+				log("(%d, %d)   ", i, j);////////////////////////////
+
 				setState(&rg, grid::OCCUPIED);
 			}
 		}
@@ -43,6 +45,9 @@ PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 
 	_end->hValue = 0;//already calculated in the for loop
 
+	log("start(%d, %d)\nend(%d, %d)", start._x, start._y, end._x, end._y);
+
+	log("per grid width %f", CC_CONTENT_SCALE_FACTOR());
 	//Initialize openlist
 	_openList.push_back(_start);
 }
@@ -76,6 +81,7 @@ void PathFinder::checkSurroundGrid(const grid* pg)
 		if (!isGridValid(pcg))//
 			//|| !checkCorner(pg, pcg))
 		{
+			//log("(%d %d)", x, y);/////////////////////////
 			continue;
 		}
 		//remember hValue of every grid has been calculated in PathFindther constructor
@@ -199,27 +205,24 @@ void PathFinder::generatePath()
 	while (cur->parent != nullptr)//cur is not the FATHER
 	{
 		_resultPath.push_back(Grid(cur->x, cur->y));
-#if Debug
-		mylog << cur->x << " " << cur->y << std::endl;
-#endif
-		log("%d %d \n", cur->x, cur->y);
+
+		log("my path: %d %d \n", cur->x, cur->y);
 
 		cur = cur->parent;
 	}
-#if Debug
-	mylog << std::endl;
-#endif
-	log("\n");
+
 	
 }
 
-void PathFinder::searchPath()
+bool PathFinder::searchPath()
 {
 	while (!_openList.empty())
 	{
 		grid* next = nextToSearch();
-		if (next == _end)return;
+		if (next == _end)return true;
 		removeFromOpenList(next);
 		checkSurroundGrid(next);
 	}
+
+	return false;
 }

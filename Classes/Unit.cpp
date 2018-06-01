@@ -55,10 +55,16 @@ void Unit::findPath()
 	assert(_gridMap->isGridInMap(_finalDest));
 
 	PathFinder pathFinder(_gridMap->_isOccupied, _gridMap->getGrid(getPosition()), _finalDest);
-	pathFinder.searchPath();
+	if (!pathFinder.searchPath())
+	{
+		assert("no path");
+		_gridPath.clear();
+		_curDest = Grid(-1, -1);
+	}
 	pathFinder.generatePath();
 
 	_gridPath = pathFinder.getPath();
+	_curDest = _gridPath.back();
 }
 
 void Unit::move()
@@ -133,8 +139,8 @@ void Unit::update(float delta)
 	
 	switch (_state) {
 	case MOVING:
-		moveTest();
-		//move();
+		//moveTest();
+		move();
 		break;
 	default:
 		break;

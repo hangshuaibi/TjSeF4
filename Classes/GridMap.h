@@ -24,7 +24,7 @@ Grid operator-(const Grid& lhs, const Grid&rhs);
 class GridMap:public cocos2d::Node {
 private:
 	int _mapWidth, _mapHeight;//格点地图的长宽
-	int _gridWidth, _gridHeight;//每个格点的像素
+	float _gridWidth, _gridHeight;//每个格点的像素
 
 	bool initWithTiledMap(TMXTiledMap* tileMap);//用该类型的map初始化
 
@@ -57,5 +57,6 @@ public:
 	Point getPoint(const Grid& g);
 	Grid getGrid(const Point& p);
 
+	bool isGridValid(const Grid& g);
 };
 
