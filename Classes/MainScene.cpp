@@ -4,8 +4,8 @@
 
 USING_NS_CC;
 
-#define PATHFINDER_TEST 1
-//0
+#define PATHFINDER_TEST 0
+
 
 MainScene* MainScene::create()
 {
@@ -34,6 +34,10 @@ bool MainScene::init()
 	{
 		return false;
 	}
+	//控制面板
+	_controlPanel = ControlPanel::create();
+	this->addChild(_controlPanel, 10);
+	_controlPanel->setPosition(_screenWidth, _screenHeight);
 
 	//启用定时器回调更新函数
 	scheduleUpdate();
@@ -53,13 +57,14 @@ bool MainScene::init()
 	_tiledMap->setPosition(Vec2::ZERO);
 
 	_gridMap = GridMap::create(_tiledMap);
-	//?
+
 	this->addChild(_gridMap);
 
 	this->addChild(_tiledMap, 0);
 
 	_unitManager = UnitManager::create();
 	_unitManager->_gridMap = _gridMap;
+	_unitManager->_tiledMap = _tiledMap;
 	this->addChild(_unitManager);
 
 	_mouseRect = MouseRect::create();
@@ -67,13 +72,14 @@ bool MainScene::init()
 	_tiledMap->addChild(_mouseRect, 10);
 
 
-	Unit* sprite = Unit::create("HelloWorld.png");
+	Unit* sprite = Unit::create("airplane_0.png");
 
-	sprite->setScale(0.1);
+	//sprite->setScale(0.1);
 	sprite->addToMap(_gridMap, _tiledMap);
 	sprite->_unitManager = _unitManager;
+	_unitManager->_getUnitById.insert(std::make_pair(-1, sprite));
+	//_unitManager->_selectId.push_back(-1);
 
-		
 	log("screenWidth: %d, screenHeight: %d\n", _screenWidth, _screenHeight);
 	log("map: %d, %d", _tiledMap->getPosition().x, _tiledMap->getPosition().y);
 
@@ -83,7 +89,7 @@ bool MainScene::init()
 
 	//sprite->setDestination(Grid(18, 120));
 	//sprite->findPath();
-	//sprite->setState(Unit::State::MOVING);
+	sprite->setState(Unit::State::MOVING);
 	sprite->schedule(schedule_selector(Unit::update));
 
 	auto testMouseListener = EventListenerTouchOneByOne::create();
@@ -108,11 +114,15 @@ bool MainScene::init()
 	};
 
 
+	//test rectSelect
+	_unitManager->createUnit(0);
+
 	auto mouseListener = EventListenerTouchOneByOne::create();
 	mouseListener->setSwallowTouches(true);//
 	mouseListener->onTouchBegan = [=](Touch* touch, Event* /*event*/) {
 		//记录鼠标选框的第一个点
 		_mouseRect->_touchStart = touch->getLocation();
+		_mouseRect->start = _tiledMap->convertToNodeSpace(_mouseRect->_touchStart);
 
 		return true;
 	};
@@ -120,7 +130,8 @@ bool MainScene::init()
 		//鼠标移动时更新选框终点
 		_mouseRect->_touchEnd = touch->getLocation();
 
-		_mouseRect->start = _tiledMap->convertToNodeSpace(_mouseRect->_touchStart);
+		//把Began的语句移到这里，start就变成（0，0）？？？？？
+		//_mouseRect->start = _tiledMap->convertToNodeSpace(_mouseRect->_touchStart);
 		_mouseRect->end = _tiledMap->convertToNodeSpace(_mouseRect->_touchEnd);
 
 		_mouseRect->clear();
@@ -131,6 +142,9 @@ bool MainScene::init()
 	};
 	mouseListener->onTouchEnded = [=](Touch* touch, Event* /*event*/) {
 		_mouseRect->clear();
+	
+		_mouseRect->_touchEnd = touch->getLocation();
+		_mouseRect->end = _tiledMap->convertToNodeSpace(_mouseRect->_touchEnd);
 
 		//select id in the rect
 		_unitManager->selectUnitByRect(Rect{ MIN(_mouseRect->start.x, _mouseRect->end.x),
@@ -222,4 +236,30 @@ bool MainScene::init()
 void MainScene::update(float delta)
 {
 	_gameManager->scrollMap();
+}
+
+bool ControlPanel::init()
+{
+	if (!Menu::init())
+	{
+		return false;
+	}
+
+	_fighter = MenuItemImage::create("fighter.png",
+		"fighter.png", CC_CALLBACK_1(ControlPanel::createFighterCallBack, this));
+	assert(_fighter != nullptr);
+
+	_fighter->setAnchorPoint(Vec2(1, 1));
+	_fighter->setPosition(getContentSize().width, getContentSize().height);
+	//把坦克的图片挂在控制面板上
+	this->addChild(_fighter, 10);
+
+
+
+	return true;
+}
+
+void ControlPanel::createFighterCallBack(Ref* psender)
+{
+	_fighter->setOpacity(100);
 }

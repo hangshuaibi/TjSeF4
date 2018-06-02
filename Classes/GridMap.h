@@ -48,7 +48,7 @@ public:
 	typedef vector<Grid> GridVector;
 
 	//搜寻P点附近空闲的点，返回一个大小为size的数组
-	GridVector findValidGridNear(const Grid& p, int size);
+	GridVector findValidGridsNear(const Grid& p, int size);
 
 	//搜寻P点附近空闲的点
 	Grid findValidGridNear(const Grid& p);

@@ -4,6 +4,9 @@
 
 #cocos2d-x
 
+#temporary ignore png
+*.png
+
 *.json
 
 *.txt

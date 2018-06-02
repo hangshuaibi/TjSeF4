@@ -15,10 +15,52 @@ Grid operator-(const Grid& lhs, const Grid&rhs)
 	return Grid(lhs._x - rhs._x, lhs._y - rhs._y);
 }
 
+GridMap::GridVector GridMap::findValidGridsNear(const Grid& g, int size)
+{
+	//若只找一个点，逻辑交给findValidGridNear去做
+	if (size == 1)
+	{
+		return GridVector{ findValidGridNear(g) };
+	}
+
+	GridVector gridVector;
+	if (isGridValid(g))
+	{
+		gridVector.push_back(g);
+		--size;
+	}
+
+	//菱形查找
+	GridVector dirVec = { Grid(1,1),Grid(1,-1),Grid(-1,-1),Grid(-1,1) };
+
+	for (int i = 0;i < _mapWidth + _mapHeight;++i)
+	{
+		Grid nearg = g + Grid(-i, 0);
+		for (int dir = 0;dir < 4;++dir)
+		{
+			for (int j = 0;j < i;++j)
+			{
+				nearg = nearg + dirVec[dir];
+				if (isGridValid(nearg))
+				{
+					gridVector.push_back(nearg);
+					if (--size == 0)
+					{
+						return gridVector;
+					}
+				}
+				//one grid one time 
+			}
+		}
+		//main loop
+	}
+	//control won't arrive here in normal state, return a empty vector
+	return GridVector();
+}
+
 
 Grid GridMap::findValidGridNear(const Grid& g)
 {
-	//先粗鄙一波，以后改
 	if (isGridValid(g))
 	{
 		return g;

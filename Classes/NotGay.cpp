@@ -21,3 +21,9 @@ bool willBeyondDest(Point now, Point dest, Point offset)
 
 	return false;
 }
+
+bool rectTooSmall(const Rect& rect)
+{
+	return abs(rect.getMaxX() - rect.getMinX())<RECT_OR_POINT
+		&& abs(rect.getMaxY() - rect.getMinY())<RECT_OR_POINT;
+}

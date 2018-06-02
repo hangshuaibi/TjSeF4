@@ -11,6 +11,9 @@ USING_NS_CC;
 
 class UnitManager;
 class Unit :public Sprite {
+	
+	friend class UnitManager;
+
 public:
 	//CREATE_FUNC(Unit);
 
@@ -19,9 +22,6 @@ public:
 
 	static Unit* create(const std::string& filename);
 	
-	
-	friend class UnitManager;
-
 	enum State {
 		WONDERING = 0,//发呆中，可能会触发自动攻击
 		MOVING,//移动

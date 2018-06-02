@@ -16,9 +16,11 @@ struct MouseRect:public DrawNode {
 	//derive from DrawNode for memfun DrawRect
 };
 
+class ControlPanel;
 class GameManager;
 class MainScene :public Scene {
 	friend class GameManager;
+	friend class ControlPanel;//for create callback function
 
 public:
 	static MainScene* create();
@@ -30,6 +32,8 @@ public:
 	//virtual void update(float delta);
 
 private:
+	ControlPanel* _controlPanel = nullptr;
+
 	cocos2d::Point _cursorPosition{ 0, 0 };
 
 	int _screenWidth, _screenHeight;
@@ -48,5 +52,22 @@ private:
 	TMXTiledMap* _tiledMap = nullptr;
 
 	void update(float delta);
+
+private:
+	//void createFighterCallBack(Ref* pSender);
 };
 
+class ControlPanel :public Menu {
+public:
+	CREATE_FUNC(ControlPanel);
+	bool init();
+
+	void createFighterCallBack(Ref* pSender);
+private:
+	//children
+	MenuItemImage* _fighter = nullptr;
+
+	/*用mainScene初始化panel，用于代替init*/
+	bool initWithScene(MainScene* scene);
+
+};
