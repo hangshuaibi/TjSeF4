@@ -4,6 +4,7 @@
 #include "cocos2d.h"
 #include "UnitManager.h"
 #include "GameManager.h"
+#include "Network/Client.h"
 
 USING_NS_CC;
 
@@ -54,6 +55,8 @@ private:
 	void update(float delta);
 
 private:
+
+	Client * _client = nullptr;
 	//void createFighterCallBack(Ref* pSender);
 };
 

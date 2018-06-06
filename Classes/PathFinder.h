@@ -5,6 +5,7 @@
 #include <algorithm>//for heap
 #include "GridMap.h"
 
+
 using std::vector;
 USING_NS_CC;
 
@@ -70,7 +71,10 @@ public:
 	bool searchPath();
 	void generatePath();
 
-private:
+private: 
+	//优化路径（缩短路径的长度，减少传输信息压力
+	void optimizePath();
+
 	bool isGridValid(const grid* g);
 
 	void setState(grid* g, grid::State state);

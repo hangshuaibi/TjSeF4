@@ -28,7 +28,7 @@ PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 
 			if (gridTable[i][j] == 1)//default state is UNOCCUPIED
 			{
-				log("(%d, %d)   ", i, j);////////////////////////////
+				//log("(%d, %d)   ", i, j);
 
 				setState(&rg, grid::OCCUPIED);
 			}
@@ -197,16 +197,13 @@ void PathFinder::generatePath()
 	grid* cur = _end;
 	
 	/*这里传出去的路径起点（的前一个grid）在尾部，终点在头部*/
-#if Debug
-	std::ofstream mylog("log.txt");
-	assert(mylog);
-#endif//Debug
+
 	//在此起点并不会被push_back
 	while (cur->parent != nullptr)//cur is not the FATHER
 	{
 		_resultPath.push_back(Grid(cur->x, cur->y));
 
-		log("my path: %d %d \n", cur->x, cur->y);
+		//log("my path: %d %d \n", cur->x, cur->y);
 
 		cur = cur->parent;
 	}
@@ -225,4 +222,35 @@ bool PathFinder::searchPath()
 	}
 
 	return false;
+}
+
+void PathFinder::optimizePath()
+{
+	if (_resultPath.size() < 3)
+	{
+		return;
+	}
+
+	Grid prevDiretion(0, 0);
+	Grid prevGrid = _resultPath.back();
+	for (auto it = _resultPath.end() - 2;it != _resultPath.begin();--it)
+	{
+		auto curGrid = *it;
+		auto curDirection = curGrid - prevGrid;
+
+		if (prevDiretion == curDirection)
+		{
+			_resultPath.erase(it + 1);
+			continue;
+		}
+		prevDiretion = curDirection;
+	}
+
+	if (_resultPath.size() > 2 &&
+		_resultPath[0] - _resultPath[1] == prevDiretion
+		)
+	{
+		_resultPath.erase(_resultPath.begin() + 1);
+	}
+
 }

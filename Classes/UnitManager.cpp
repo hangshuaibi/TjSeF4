@@ -86,7 +86,7 @@ void UnitManager::selectId(const Rect& rect)
 	}
 }
 
-void UnitManager::createUnit(int/* type*/)
+void UnitManager::localCreateUnit(int/* type*/)
 {
 
 	assert(_gridMap != nullptr);
@@ -100,10 +100,12 @@ void UnitManager::createUnit(int/* type*/)
 
 	//unit has been tiledMap's child
 	unit->setPosition(_gridMap->getPoint(nearValidBaseGrid));
-
-	unit->setProperties();
+	unit->setManager(this);
+	
 	int id = getNextId();
 	_getUnitById.insert(std::make_pair(id, unit));
+
+	unit->setProperties();
 }
 
 int UnitManager::getNextId()
@@ -119,6 +121,7 @@ void UnitManager::abandonSelectedId()
 {
 	for (int id : _selectId)
 	{
+		//原始透明度是255
 		_getUnitById[id]->setOpacity(255);
 	}
 

@@ -4,16 +4,19 @@
 #include "GridMap.h"
 #include "UnitManager.h"
 #include <map>
+#include "ui/CocosGUI.h"
+
 
 using std::map;
 USING_NS_CC;
-
+using namespace ui;
 
 class UnitManager;
 class Unit :public Sprite {
 	
 	friend class UnitManager;
-
+	//persudo friend class, for mainScene test
+	friend class MainScene;
 public:
 	//CREATE_FUNC(Unit);
 
@@ -32,14 +35,9 @@ public:
 //protected:
 	void addToMap(GridMap* gridMap, TMXTiledMap* _tiledMap);
 
-	UnitManager* _unitManager = nullptr;
 
 	int _id = 0;//每个Unit的id都是不一样的
 
-	//暂时只考虑移动
-	int _state = 0;//上面的State
-	
-	float _moveSpeed;
 	
 	GridMap* _gridMap = nullptr;
 
@@ -57,18 +55,52 @@ public:
 	//maybe send message to network through manager in this function
 	void findPath();
 
+	void moveTest();
+
+protected:
+	void setManager(UnitManager* unitManager)
+	{
+		_unitManager = unitManager;
+	}
+
+	void setState(Unit::State state)
+	{
+		_state = state;
+	}
+
+	void autoAttack();
+
 	//运动的实际逻辑
 	void move();
 
-	void moveTest();
+	void shoot(/*string attackObject,*/Point end);
+
+	//初始化血条
+	void initHp();
+	//更新血条
+	void updateHp();
+
+protected:
+	UnitManager * _unitManager = nullptr;
+
+	float _hpInterval;//血条更新量
+	LoadingBar* _hp = nullptr;
+
+	
+	int _state = 0;//当前的状态
+
+	float _moveSpeed;//移动速度
+	int _attackCd;//距离上一次攻击的帧数
+	int _attackCdMax;//每次攻击冷却需要的时间
+	float _attackRange;//攻击范围
+
+	/*-------------------未实现-----------------*/
+	int _attackEffect;//攻击伤害
+	int _lifeValue;//当前生命值
+	int _lifeValueMax;//最大生命值
 
 
 public:
-
-	void setState(Unit::State state);
-
-	//根据state知道自己要干嘛
 	void update(float delta);
 };
-
 
