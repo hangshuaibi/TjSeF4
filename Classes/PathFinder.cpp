@@ -28,7 +28,7 @@ PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 
 			if (gridTable[i][j] == 1)//default state is UNOCCUPIED
 			{
-				log("(%d, %d)   ", i, j);////////////////////////////
+				//log("(%d, %d)   ", i, j);
 
 				setState(&rg, grid::OCCUPIED);
 			}
@@ -197,16 +197,13 @@ void PathFinder::generatePath()
 	grid* cur = _end;
 	
 	/*这里传出去的路径起点（的前一个grid）在尾部，终点在头部*/
-#if Debug
-	std::ofstream mylog("log.txt");
-	assert(mylog);
-#endif//Debug
+
 	//在此起点并不会被push_back
 	while (cur->parent != nullptr)//cur is not the FATHER
 	{
 		_resultPath.push_back(Grid(cur->x, cur->y));
 
-		log("my path: %d %d \n", cur->x, cur->y);
+		//log("my path: %d %d \n", cur->x, cur->y);
 
 		cur = cur->parent;
 	}

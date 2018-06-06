@@ -14,9 +14,12 @@ using boost::asio::ip::tcp;
 
 typedef std::deque<chat_message> chat_message_queue;
 
+class Client;
+
 class chat_client
 {
-public:
+	friend class Client;
+//public:
 	chat_client(boost::asio::io_service& io_service,
 		tcp::resolver::iterator endpoint_iterator)
 		: io_service_(io_service),
@@ -83,6 +86,11 @@ private:
 		{
 			if (!ec)
 			{
+				/*-----------------------------------------------------------*/
+				//将消息压入队列，供UnitManager读取
+				_orderList.push_back(std::string(read_msg_.body()));
+				/*-----------------------------------------------------------*/
+
 				std::cout.write(read_msg_.body(), read_msg_.body_length());
 				std::cout << "\n";//打印消息到屏幕
 				do_read_header();
@@ -115,6 +123,34 @@ private:
 			}
 		});
 	}
+	/*-----------------------------------------------------------*/
+private:
+	//从服务端收到的消息列表
+	std::deque<std::string> _orderList;
+
+	//读取消息的接口，一次读取一条，从头部开始读取
+	std::string getOrder()
+	{
+		if (_orderList.empty())
+			return std::string("null");
+
+		std::string msg = std::move(_orderList.front());
+		_orderList.pop_front();
+
+		return msg;
+	}
+	//发送消息的接口
+	void sendMessage(std::string sendMsg)
+	{
+		chat_message msg;
+		//std::string sendMsg = "hello server!";
+		msg.body_length(sendMsg.size());
+		memcpy(msg.body(), sendMsg.c_str(), msg.body_length());
+		msg.encode_header();
+
+		this->write(msg);
+	}
+	/*-----------------------------------------------------------*/
 
 private:
 	boost::asio::io_service& io_service_;
@@ -153,17 +189,17 @@ public:
 		c.close();
 		t.join();
 	}
-
-	void sendMessage(std::string s)
+	/*-----------------------------------------------------------*/
+	void sendMessage(std::string sendMsg)
 	{
-		chat_message msg;
-		std::string sendMsg = "hello server!";
-		msg.body_length(sendMsg.size());
-		memcpy(msg.body(), sendMsg.c_str(), msg.body_length());
-		msg.encode_header();
-
-		_client->write(msg);
+		_client->sendMessage(sendMsg);
 	}
+
+	std::string getMessage()
+	{
+		return _client->getOrder();
+	}
+	/*-----------------------------------------------------------*/
 
 	static Client* create()
 	{

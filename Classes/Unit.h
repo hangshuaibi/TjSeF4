@@ -4,10 +4,12 @@
 #include "GridMap.h"
 #include "UnitManager.h"
 #include <map>
+#include "ui/CocosGUI.h"
+
 
 using std::map;
 USING_NS_CC;
-
+using namespace ui;
 
 class UnitManager;
 class Unit :public Sprite {
@@ -73,12 +75,20 @@ protected:
 
 	void shoot(/*string attackObject,*/Point end);
 
+	//初始化血条
+	void initHp();
+	//更新血条
+	void updateHp();
+
 protected:
 	UnitManager * _unitManager = nullptr;
 
+	float _hpInterval;//血条更新量
+	LoadingBar* _hp = nullptr;
 
 	
 	int _state = 0;//当前的状态
+
 	float _moveSpeed;//移动速度
 	int _attackCd;//距离上一次攻击的帧数
 	int _attackCdMax;//每次攻击冷却需要的时间

@@ -215,3 +215,8 @@ void Unit::autoAttack()
 	if (++_attackCd > _attackCdMax)
 		_attackCd = 0;
 }
+
+void Unit::initHp()
+{
+
+}
