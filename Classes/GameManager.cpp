@@ -28,7 +28,7 @@ bool GameManager::initWithScene(MainScene* mainScene)
 
 void GameManager::focusOnBase()
 {
-	float duration = 0.1;
+	float duration = 0.1f;
 
 	Vec2 position = Vec2(100, 100);      //暂定的基地的位置
 

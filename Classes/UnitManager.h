@@ -21,6 +21,8 @@ private:
 
 	//add a MAX_PLAYER_NUM every time, initialize with playerId
 	int _nextId = -1;
+	vector<int> _selectId;
+
 public:
 	bool init();
 	CREATE_FUNC(UnitManager);
@@ -28,7 +30,6 @@ public:
 
 	map<int, Unit* > _getUnitById;
 	//天选之子
-	vector<int> _selectId;
 	bool hasSelectIdNow();
 
 	GridMap* _gridMap = nullptr;
@@ -36,7 +37,10 @@ public:
 
 	//出生点默认在基地
 	//这个是本地版本的create，产生unit的id并将信息传递给client
-	void createUnit(int type /*const Grid& g*/);
+	void localCreateUnit(int type /*const Grid& g*/);
+
+	//敌方和我方产生unit的逻辑都在这个函数完成
+	void createUnit(int id, int type, Point postion);
 
 	int getNextId();
 
@@ -49,8 +53,5 @@ public:
 	//检测id对应的Unit是不是自己人
 	bool isOurBro(int id);
 
-	/*~UnitManager()
-	{
-		_gridMap = nullptr;
-	}*/
+	
 };

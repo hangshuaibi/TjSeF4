@@ -33,8 +33,11 @@ Unit* Unit::create(const std::string& filename)
 void Unit::setProperties()
 {
 	_state = Unit::State::WONDERING;
-
+	_attackRange = 200;
 	_moveSpeed = 2;
+
+	_attackCd = 3;
+	_attackCdMax = 60;
 }
 
 void Unit::setGridPath(const GridMap::GridVector& path)
@@ -142,12 +145,73 @@ void Unit::update(float delta)
 		//moveTest();
 		move();
 		break;
+	case WONDERING:
+		autoAttack();
 	default:
 		break;
 	}
 }
 
-void Unit::setState(Unit::State state)
+
+//射击
+void Unit::shoot(/*string attackObject,*/Point end)
 {
-	_state = state;
+	Point start = getPosition();
+	auto tiledMap = dynamic_cast<TMXTiledMap*>(getParent());
+
+	auto bullet = Sprite::create("picture/ui/money.jpg");
+
+	assert(bullet != nullptr);
+
+	assert(tiledMap != nullptr);
+
+	bullet->setScale(0.01f);
+
+	auto length = (end - start).length();
+	auto duration = length / 32.0f;//子弹移动速度
+
+	tiledMap->addChild(bullet, 10);
+	bullet->setPosition(start);
+	auto moveTo = MoveTo::create(duration, end);
+
+	auto sequence = Sequence::create(moveTo, 
+		CallFunc::create([=]() {
+		bullet->setVisible(false);
+		tiledMap->removeChild(bullet, true);}), 
+		NULL
+	);
+	
+	bullet->runAction(sequence);
+	
+}
+
+void Unit::autoAttack()
+{
+	//确认是否为友军
+	if (!_unitManager->isOurBro(_id))
+	{
+		return;
+	}
+
+	if (_attackCd == _attackCdMax)
+	{
+		for (auto item : _unitManager->_getUnitById)
+		{
+			float distance = 
+				//mygetDistance(item.second, this);
+				(this->getPosition() - item.second->getPosition()).length();
+
+			if (_unitManager->isOurBro(item.first)||//友军
+				distance > _attackRange)//敌军
+			{
+				continue;
+			}
+			//敌军
+			shoot(item.second->getPosition());
+			break;
+		}
+	}
+
+	if (++_attackCd > _attackCdMax)
+		_attackCd = 0;
 }

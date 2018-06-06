@@ -5,6 +5,7 @@
 #include <algorithm>//for heap
 #include "GridMap.h"
 
+
 using std::vector;
 USING_NS_CC;
 

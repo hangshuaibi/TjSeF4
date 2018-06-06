@@ -2,6 +2,7 @@
 
 #include "GridMap.h"
 #include "Data.h"
+#include "Unit.h"
 #define Debug 1
 #include <fstream>
 
@@ -9,6 +10,7 @@
 
 
 //判断是否执行move后会不会由直接越过了目标点
-bool willBeyondDest(Point now, Point dest, Point offset);
+bool willBeyondDest(Point now, Point dest, Point offset);//Unit::move
 
-bool rectTooSmall(const Rect& rect);
+bool rectTooSmall(const Rect& rect);//UnitManager::selectIdByRect
+

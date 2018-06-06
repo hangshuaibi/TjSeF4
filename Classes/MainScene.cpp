@@ -2,9 +2,9 @@
 #include "cocos2d.h"
 #include "GameManager.h"
 
-USING_NS_CC;
+#include <string>
 
-#define PATHFINDER_TEST 0
+USING_NS_CC;
 
 
 MainScene* MainScene::create()
@@ -34,6 +34,10 @@ bool MainScene::init()
 	{
 		return false;
 	}
+	//客户端
+	_client = Client::create();
+	this->addChild(_client);
+
 	//控制面板
 	_controlPanel = ControlPanel::create();
 	this->addChild(_controlPanel, 10);
@@ -87,35 +91,13 @@ bool MainScene::init()
 
 	sprite->setPosition(_gridMap->getPoint(Grid(8, 6)));
 
-	//sprite->setDestination(Grid(18, 120));
-	//sprite->findPath();
+	
 	sprite->setState(Unit::State::MOVING);
 	sprite->schedule(schedule_selector(Unit::update));
 
-	auto testMouseListener = EventListenerTouchOneByOne::create();
-
-	testMouseListener->onTouchBegan = [=](Touch* touch, Event* /**/) {
-		sprite->setState(Unit::WONDERING);
-
-		return true;
-	};
-
-	testMouseListener->onTouchEnded = [=](Touch* touch, Event* /**/) {
-		Point touchL = touch->getLocation();
-
-		auto dest = touchL - _tiledMap->getPosition();
-		auto gridDest = _gridMap->getGrid(dest);
-		auto validDest = _gridMap->findValidGridNear(gridDest);
-
-		sprite->setDestination(validDest);
-
-		sprite->findPath();
-		sprite->setState(Unit::MOVING);
-	};
-
-
+	
 	//test rectSelect
-	_unitManager->createUnit(0);
+	_unitManager->localCreateUnit(0);
 
 	auto mouseListener = EventListenerTouchOneByOne::create();
 	mouseListener->setSwallowTouches(true);//
@@ -141,6 +123,10 @@ bool MainScene::init()
 
 	};
 	mouseListener->onTouchEnded = [=](Touch* touch, Event* /*event*/) {
+		//test client
+		_client->sendMessage(std::string());
+
+
 		_mouseRect->clear();
 	
 		_mouseRect->_touchEnd = touch->getLocation();
@@ -156,14 +142,8 @@ bool MainScene::init()
 		_mouseRect->setVisible(false);
 	};
 
-	if (!PATHFINDER_TEST)
-	{
-		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(mouseListener, this);
-	}
-	else {
-		Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(testMouseListener, this);
-	}
-
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(mouseListener, this);
+	
 
 	auto keyboardListener = EventListenerKeyboard::create();
 
@@ -216,7 +196,6 @@ bool MainScene::init()
 		}
 
 	};
-
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(keyboardListener, this);
 
 	//设置鼠标监听器
@@ -253,7 +232,6 @@ bool ControlPanel::init()
 	_fighter->setPosition(getContentSize().width, getContentSize().height);
 	//把坦克的图片挂在控制面板上
 	this->addChild(_fighter, 10);
-
 
 
 	return true;
