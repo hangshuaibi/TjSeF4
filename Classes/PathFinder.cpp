@@ -223,3 +223,34 @@ bool PathFinder::searchPath()
 
 	return false;
 }
+
+void PathFinder::optimizePath()
+{
+	if (_resultPath.size() < 3)
+	{
+		return;
+	}
+
+	Grid prevDiretion(0, 0);
+	Grid prevGrid = _resultPath.back();
+	for (auto it = _resultPath.end() - 2;it != _resultPath.begin();--it)
+	{
+		auto curGrid = *it;
+		auto curDirection = curGrid - prevGrid;
+
+		if (prevDiretion == curDirection)
+		{
+			_resultPath.erase(it + 1);
+			continue;
+		}
+		prevDiretion = curDirection;
+	}
+
+	if (_resultPath.size() > 2 &&
+		_resultPath[0] - _resultPath[1] == prevDiretion
+		)
+	{
+		_resultPath.erase(_resultPath.begin() + 1);
+	}
+
+}

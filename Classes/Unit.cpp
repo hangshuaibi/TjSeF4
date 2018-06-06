@@ -57,6 +57,13 @@ void Unit::findPath()
 {
 	assert(_gridMap->isGridInMap(_finalDest));
 
+	if (_finalDest == _gridMap->getGrid(getPosition()))
+	{
+		_gridPath = GridMap::GridVector();
+		_curDest = Grid(-1, -1);
+
+		return;
+	}
 	PathFinder pathFinder(_gridMap->_isOccupied, _gridMap->getGrid(getPosition()), _finalDest);
 	if (!pathFinder.searchPath())
 	{
