@@ -13,21 +13,25 @@
 /*-----------------------------------------------------------*/
 #include <cstdio>
 #include <string>
+//#include "Classes/Data.h"
 /*-----------------------------------------------------------*/
-
+#define MAX_PLAYER_NUM 4
 using boost::asio::ip::tcp;
 
 typedef std::deque<chat_message> chat_message_queue;
 
 /*-----------------------------------------------------------*/
 int clientNum = 0;//客户端数量，借此识别玩家id
-				  /*-----------------------------------------------------------*/
+
+bool	 isIdUsed[MAX_PLAYER_NUM] = { 0,0,0,0 };//
+												/*-----------------------------------------------------------*/
 
 class chat_participant
 {
 public:
 	virtual ~chat_participant() {}
 	virtual void deliver(const chat_message& msg) = 0; //participant should deliver message
+	int _id = -1;
 };
 
 typedef std::shared_ptr<chat_participant> chat_participant_ptr;//shared ptr
@@ -44,13 +48,42 @@ public:
 										  //将之前的消息写一遍给最新的连接者
 		for (auto msg : recent_msgs_)
 			participant->deliver(msg);
+
+		/*-----------------------------------------------------------*/
+		//发送玩家id给client
+		++clientNum;
+		assert(clientNum <= 4);
+		int validId = -1;
+		for (int i = 0;i < MAX_PLAYER_NUM;++i)
+		{
+			if (!isIdUsed[i])
+			{
+				validId = i;
+				break;
+			}
+		}
+		assert(validId >= 0);
+		isIdUsed[validId] = 1;
+		participant->_id = validId;
+		chat_message msg;
+		char s[20];
+		sprintf(s, "your id is %d", validId + 1);
+		msg.body_length(strlen(s));
+		memcpy(msg.body(), s, msg.body_length());
+		msg.encode_header();
+
+		participant->deliver(msg);
+		/*-----------------------------------------------------------*/
 	}
 
 	void leave(chat_participant_ptr participant)
 	{
 		participants_.erase(participant);//remove a client
-		//--clientNum;
-		//assert(clientNum >= 0);
+
+		isIdUsed[participant->_id] = 0;//清空flag
+		std::cout << "id  " << participant->_id + 1 << "  is valid" << std::endl;
+		--clientNum;
+		assert(clientNum >= 0);
 	}
 
 	void deliver(const chat_message& msg)
@@ -198,19 +231,7 @@ private:
 
 				auto newClient = std::make_shared<chat_session>(std::move(socket_), room_);
 				newClient->start();//session
-								   /*-----------------------------------------------------------*/
-								   //发送玩家id给client
-				++clientNum;
-				assert(clientNum <= 4);
-				chat_message msg;
-				char s[20];
-				sprintf(s, "your id is %d", clientNum);
-				msg.body_length(strlen(s));
-				memcpy(msg.body(), s, msg.body_length());
-				msg.encode_header();
 
-				newClient->deliver(msg);
-				/*-----------------------------------------------------------*/
 			}
 
 			do_accept();
