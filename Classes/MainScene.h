@@ -19,9 +19,11 @@ struct MouseRect:public DrawNode {
 
 class ControlPanel;
 class GameManager;
+class UnitManager;
 class MainScene :public Scene {
 	friend class GameManager;
 	friend class ControlPanel;//for create callback function
+	friend class UnitManager;
 
 public:
 	static MainScene* create();

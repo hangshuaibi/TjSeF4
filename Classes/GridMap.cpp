@@ -163,6 +163,8 @@ bool GridMap::initWithTiledMap(TMXTiledMap* tiledMap)
 	_gridWidth = tiledMap->getTileSize().width / CC_CONTENT_SCALE_FACTOR();
 	_gridHeight = tiledMap->getTileSize().height / CC_CONTENT_SCALE_FACTOR();
 
+	log("gridwidth %f, gridheight %f, offset %f", _gridWidth, _gridHeight, CC_CONTENT_SCALE_FACTOR());
+
 	_pointOffset = Vec2(_gridWidth / 2.0f, _gridHeight / 2.0f);
 	_isOccupied.assign(_mapWidth, vector<int>(_mapHeight, 0));
 	_occupiedId.assign(_mapWidth, vector<int>(_mapHeight, 0));

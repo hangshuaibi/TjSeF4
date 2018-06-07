@@ -40,7 +40,7 @@ bool MainScene::init()
 
 	//挂起当前线程，等待客户端初始化
 	Sleep(2000);
-	//_client->sendMessage("");
+	_client->sendMessage("client is ready");
 	
 	//控制面板
 	_controlPanel = ControlPanel::create();
@@ -70,9 +70,8 @@ bool MainScene::init()
 
 	this->addChild(_tiledMap, 0);
 
-	_unitManager = UnitManager::create();
-	_unitManager->_gridMap = _gridMap;
-	_unitManager->_tiledMap = _tiledMap;
+	_unitManager = UnitManager::createWithScene(this);
+	
 	this->addChild(_unitManager);
 
 	_mouseRect = MouseRect::create();
@@ -101,7 +100,7 @@ bool MainScene::init()
 
 	
 	//test rectSelect
-	_unitManager->localCreateUnit(0);
+	_unitManager->createUnit(4, 1);
 
 	auto mouseListener = EventListenerTouchOneByOne::create();
 	mouseListener->setSwallowTouches(true);//

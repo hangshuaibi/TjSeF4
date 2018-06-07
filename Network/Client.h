@@ -173,8 +173,8 @@ public:
 	{
 		boost::asio::io_service io_service;
 
-		tcp::resolver resolver(io_service);
-		auto endpoint_iterator = resolver.resolve({ "192.168.1.103", "1024" });
+		tcp::resolver resolver(io_service);//192.168.1.103
+		auto endpoint_iterator = resolver.resolve({ "10.22.5.232", "1024" });
 		chat_client c(io_service, endpoint_iterator);//¿Í»§¶Ë
 
 		_client = &c;
