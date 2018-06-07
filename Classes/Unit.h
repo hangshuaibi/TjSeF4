@@ -35,7 +35,6 @@ public:
 //protected:
 	void addToMap(GridMap* gridMap, TMXTiledMap* _tiledMap);
 
-
 	int _id = 0;//每个Unit的id都是不一样的
 
 	
@@ -46,7 +45,7 @@ public:
 
 	GridMap::GridVector _gridPath;//本单位当前路径
 
-	void setProperties();
+	virtual void setProperties();//后期改为纯虚函数，具体兵需要重载该方法
 
 	void setGridPath(const GridMap::GridVector& gPath);//call by manager
 
@@ -87,7 +86,7 @@ protected:
 	LoadingBar* _hp = nullptr;
 
 	
-	int _state = 0;//当前的状态
+	int _state = 4;//当前的状态
 
 	float _moveSpeed;//移动速度
 	int _attackCd;//距离上一次攻击的帧数
@@ -98,7 +97,7 @@ protected:
 	int _attackEffect;//攻击伤害
 	int _lifeValue;//当前生命值
 	int _lifeValueMax;//最大生命值
-
+	std::string _attackObject = "";//攻击时释放
 
 public:
 	void update(float delta);

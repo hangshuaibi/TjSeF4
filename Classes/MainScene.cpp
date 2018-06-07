@@ -38,6 +38,10 @@ bool MainScene::init()
 	_client = Client::create();
 	this->addChild(_client);
 
+	//挂起当前线程，等待客户端初始化
+	Sleep(2000);
+	//_client->sendMessage("");
+	
 	//控制面板
 	_controlPanel = ControlPanel::create();
 	this->addChild(_controlPanel, 10);
@@ -76,7 +80,7 @@ bool MainScene::init()
 	_tiledMap->addChild(_mouseRect, 10);
 
 
-	Unit* sprite = Unit::create("airplane_0.png");
+	Unit* sprite = Unit::create("fighter0.png");
 
 	//sprite->setScale(0.1);
 	sprite->addToMap(_gridMap, _tiledMap);
@@ -90,7 +94,7 @@ bool MainScene::init()
 	sprite->setProperties();
 
 	sprite->setPosition(_gridMap->getPoint(Grid(8, 6)));
-
+	sprite->_id = -1;
 	
 	sprite->setState(Unit::State::MOVING);
 	sprite->schedule(schedule_selector(Unit::update));

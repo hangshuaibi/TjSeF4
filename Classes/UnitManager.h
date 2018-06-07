@@ -6,6 +6,7 @@
 #include "Data.h"//for MAX_PLAYER_NUM
 #include "NotGay.h"
 
+
 using std::map;
 USING_NS_CC;
 
@@ -53,5 +54,4 @@ public:
 	//检测id对应的Unit是不是自己人
 	bool isOurBro(int id);
 
-	
 };

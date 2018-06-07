@@ -79,8 +79,9 @@ void Unit::findPath()
 
 void Unit::move()
 {
-	//assume that the path and finalDest is already sure
 	//起点在数组的尾部
+
+	//路径为空时认为已经到达目的地
 	if (_gridPath.empty())
 	{
 		setState(WONDERING);
@@ -112,20 +113,16 @@ void Unit::move()
 		return;
 	}
 	
-
-
 	auto nextGrid = _gridMap->getGrid(nextPos);
 	auto curGrid = _gridMap->getGrid(getPosition());
 	
-
+/*---此处未实现占据格点的逻辑，因为当前寻路为静态寻路---*/
 	if (nextGrid == curGrid)
 	{
 		setPosition(nextPos);
 		return;
 	}
-
 	
-
 	setPosition(nextPos);
 }
 
@@ -159,14 +156,14 @@ void Unit::update(float delta)
 	}
 }
 
-
 //射击
 void Unit::shoot(/*string attackObject,*/Point end)
 {
 	Point start = getPosition();
 	auto tiledMap = dynamic_cast<TMXTiledMap*>(getParent());
 
-	auto bullet = Sprite::create("picture/ui/money.jpg");
+	assert(!_attackObject.empty());
+	auto bullet = Sprite::create(_attackObject);
 
 	assert(bullet != nullptr);
 
@@ -223,7 +220,3 @@ void Unit::autoAttack()
 		_attackCd = 0;
 }
 
-void Unit::initHp()
-{
-
-}

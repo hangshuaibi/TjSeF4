@@ -1,6 +1,7 @@
 #include "UnitManager.h"
 #include <utility>//for make_pair
 //#include "GridMap.h"
+#include "RealUnit.h"
 
 bool UnitManager::init()
 {
@@ -92,7 +93,7 @@ void UnitManager::localCreateUnit(int/* type*/)
 	assert(_gridMap != nullptr);
 	assert(_tiledMap != nullptr);
 
-	auto unit = Unit::create("fighter.png");
+	auto unit = Tank::create("fighter.png");
 	unit->addToMap(_gridMap, _tiledMap);
 
 	auto baseGrid = _gridMap->getGrid(_basePos);
