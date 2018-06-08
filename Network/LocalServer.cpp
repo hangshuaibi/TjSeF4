@@ -10,6 +10,8 @@
 #include <boost/asio.hpp>
 #include "chat_message.h"
 
+#define TEST_CODE
+
 /*-----------------------------------------------------------*/
 #include <cstdio>
 #include <string>
@@ -88,6 +90,19 @@ public:
 
 	void deliver(const chat_message& msg)
 	{
+
+#ifdef TEST_CODE
+		{
+			if (msg.body()[msg.body_length() - 1] == 'T')//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<测试
+			{
+				std::string msg(msg.body(), msg.body_length());
+				std::cout << msg << std::endl;
+
+				return;
+			}
+		}
+#endif
+
 		//先将发送的消息放入待发送列表。
 		recent_msgs_.push_back(msg);
 		while (recent_msgs_.size() > max_recent_msgs)
