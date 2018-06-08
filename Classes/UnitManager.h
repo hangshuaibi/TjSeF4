@@ -7,7 +7,6 @@
 #include "NotGay.h"
 #include "Network/Client.h"
 
-
 using std::map;
 USING_NS_CC;
 
@@ -58,4 +57,9 @@ private:
 
 	void selectOneUnit(int id);
 
+	void updateUnitHp();
+
+	void updateUnitState();
+
+	void update(float delta);
 };

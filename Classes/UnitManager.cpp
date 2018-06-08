@@ -3,7 +3,8 @@
 //#include "GridMap.h"
 #include "RealUnit.h"
 #include "MainScene.h"
-
+#include "Messagetransfer/Encoder.h"
+#include "Messagetransfer/Decoder.h"
 class MainScene;
 
 UnitManager* UnitManager::createWithScene(MainScene* mainScene)
@@ -127,9 +128,27 @@ void UnitManager::selectUnitByPoint(const Point& point)
 			continue;//单位可能已经被删除
 		}
 
-		auto path = pUnit->getPath(gridVector[size - 1]);
-		_client->sendMessage("find path");//id,path
-		//还没加网络哦
+		auto path = pUnit->getPath(gridVector[size - 1]);//->>>>>>>>>测试完改回来
+		Encoder encoder("m", id);
+		string message = encoder.encodePath(path);
+		_client->sendMessage(message);//id,path
+
+		if(0)
+		{
+			string order = _client->getMessage();
+			while(order[0] == 'y' || order[0] == 'c'||order[0]=='n') {
+				order = _client->getMessage();
+			}
+			Decoder decoder(order);
+			Encoder test("m", decoder.getId());
+			auto dpath = decoder.decodePath();
+			string testmsg = test.encodePath(dpath);
+			testmsg.push_back('T');
+
+			_client->sendMessage(testmsg);
+		}
+
+		if(0)//还没加网络哦
 		{
 			pUnit->setState(Unit::WONDERING);
 			pUnit->setDestination(gridVector[--size]);
@@ -219,4 +238,44 @@ void UnitManager::setPath(int id, GridMap::GridVector path)
 	assert(unit != nullptr);
 
 	unit->_gridPath = path;
+}
+
+void UnitManager::updateUnitState()
+{
+	string order = _client->getMessage();
+	while (order[0] == 'y' || order[0] == 'c') {
+		order = _client->getMessage();
+	}
+	if (order[0] == 'n')
+	{
+		return;
+	}
+	
+	Decoder decoder(order);	
+	
+	switch (decoder.getType()) {
+	case 'm': {
+		int id = decoder.getId();
+		auto path = decoder.decodePath();
+		auto pUnit = _getUnitById[id];
+
+		assert(pUnit != nullptr);	
+
+		pUnit->setState(Unit::WONDERING);
+		pUnit->setGridPath(path);
+		
+		pUnit->schedule(schedule_selector(Unit::update));
+		pUnit->setState(Unit::MOVING);
+
+		break;
+	}
+			 
+	default:
+		break;
+	}
+}
+
+void UnitManager::update(float delta)
+{
+	updateUnitState();
 }

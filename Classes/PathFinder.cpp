@@ -189,7 +189,8 @@ vector<Grid> PathFinder::getPath()
 {
 	if (!searchPath())
 	{
-		assert("no path");	
+		const int NO_PATH = 0;
+		assert(NO_PATH);
 	}
 	generatePath();
 

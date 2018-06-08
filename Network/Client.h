@@ -88,7 +88,7 @@ private:
 			{
 				/*-----------------------------------------------------------*/
 				//将消息压入队列，供UnitManager读取
-				_orderList.push_back(std::string(read_msg_.body()));
+				_orderList.push_back(std::string(read_msg_.body(),read_msg_.body_length()));
 				/*-----------------------------------------------------------*/
 
 				std::cout.write(read_msg_.body(), read_msg_.body_length());
@@ -134,7 +134,7 @@ private:
 		if (_orderList.empty())
 			return std::string("null");
 
-		std::string msg = std::move(_orderList.front());
+		std::string msg = _orderList.front();
 		_orderList.pop_front();
 
 		return msg;
@@ -173,8 +173,8 @@ public:
 	{
 		boost::asio::io_service io_service;
 
-		tcp::resolver resolver(io_service);//192.168.1.103
-		auto endpoint_iterator = resolver.resolve({ "10.22.5.232", "1024" });
+		tcp::resolver resolver(io_service);//10.22.5.232
+		auto endpoint_iterator = resolver.resolve({ "192.168.1.103", "1024" });
 		chat_client c(io_service, endpoint_iterator);//客户端
 
 		_client = &c;

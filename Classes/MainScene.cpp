@@ -78,13 +78,14 @@ bool MainScene::init()
 	this->addChild(_tiledMap, 0);
 
 	_unitManager = UnitManager::createWithScene(this);
+	_unitManager->schedule(schedule_selector(UnitManager::update));
 	
 	this->addChild(_unitManager);
 
 	_mouseRect = MouseRect::create();
 	_mouseRect->setVisible(false);
 	_tiledMap->addChild(_mouseRect, 10);
-
+	//-----------------------//
 	auto base_0_button = Sprite::create("base_0.png");
 	base_0_button->setPosition(Vec2(visibleSize.width- base_0_button->getContentSize().width * 2, visibleSize.height - base_0_button->getContentSize().height * 2));
 	this->addChild(base_0_button);
@@ -135,13 +136,14 @@ bool MainScene::init()
 		base_0->setPosition(_tiledMap->convertToNodeSpace(touch->getLocation()));
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, base_0_button);
+	//-----------------------//
+
 
 	_unitManager->createUnit(3, 1, Grid(8, 6));
 
-	
 	//test rectSelect
 	_unitManager->createUnit(4, 1);
-	//_unitManager->selectOneUnit(4);
+	_unitManager->selectOneUnit(4);
 
 	auto mouseListener = EventListenerTouchOneByOne::create();
 	mouseListener->setSwallowTouches(true);//
@@ -167,9 +169,6 @@ bool MainScene::init()
 
 	};
 	mouseListener->onTouchEnded = [=](Touch* touch, Event* /*event*/) {
-		//test client
-		_client->sendMessage(std::string());
-
 
 		_mouseRect->clear();
 	

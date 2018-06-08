@@ -6,10 +6,9 @@
 #include <string>
 #include <vector>
 #include "Data.h"
-using namespace std;
+using std::string;
 
-//格点数组
-typedef vector<Grid> GridVector;
+//typedef GridMap::GridVector GridVector;
 
 class Encoder {
 private:
@@ -28,6 +27,6 @@ public:
 	Encoder(const string& type, int id);
 
 	//Encoder将格点数组类转换成要发送的字符串
-	string& encodePath(GridVector& path);
+	string& encodePath(GridMap::GridVector& path);
 
 };
