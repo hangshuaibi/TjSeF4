@@ -1,6 +1,10 @@
 #include "MainScene.h"
 #include "cocos2d.h"
 #include "GameManager.h"
+#include"SimpleAudioEngine.h"
+#include"ui/CocosGUI.h"
+using namespace ui;
+using namespace CocosDenshion;
 
 #include <string>
 
@@ -47,6 +51,9 @@ bool MainScene::init()
 	this->addChild(_controlPanel, 10);
 	_controlPanel->setPosition(_screenWidth, _screenHeight);
 
+
+
+
 	//启用定时器回调更新函数
 	scheduleUpdate();
 
@@ -78,6 +85,56 @@ bool MainScene::init()
 	_mouseRect->setVisible(false);
 	_tiledMap->addChild(_mouseRect, 10);
 
+	auto base_0_button = Sprite::create("base_0.png");
+	base_0_button->setPosition(Vec2(visibleSize.width- base_0_button->getContentSize().width * 2, visibleSize.height - base_0_button->getContentSize().height * 2));
+	this->addChild(base_0_button);
+	Vec2 base_0_position = base_0_button->getPosition();
+	auto base_0_button1 = Sprite::create("base_0.png");
+	base_0_button1->setPosition(base_0_position);
+	this->addChild(base_0_button1);
+	//创建单点触摸监听器
+	auto listener1 = EventListenerTouchOneByOne::create();
+	listener1->setSwallowTouches(true);
+	listener1->onTouchBegan = [=](Touch* touch, Event* event)
+	{
+		//获得当前触摸事件的目标对象
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		//获得当前的触摸点
+		Point locationPoint = target->convertToNodeSpace(touch->getLocation());
+		//获得触摸坐标
+		Vec2 touchLocation = touch->getLocation();
+		
+
+		//获得触摸对象的contentSize
+		Size s = target->getContentSize();
+		//获得位置矩形
+		Rect rect = Rect(0, 0, s.width, s.height);
+		if (rect.containsPoint(locationPoint))
+		{
+			target->setOpacity(180);
+			return true;
+		}
+		return false;
+	};
+	listener1->onTouchMoved=[](Touch* touch, Event* event)
+	{
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		//移动触摸的精灵
+		target->setPosition(target->getPosition() + touch->getDelta());
+
+	};
+	listener1->onTouchEnded = [=](Touch* touch, Event* event)
+	{
+		
+		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		target->setOpacity(255);
+		target->setPosition(base_0_position);
+		Unit* base_0 = Unit::create("base_0.png");
+		base_0->addToMap(_gridMap, _tiledMap);
+		base_0->_unitManager = _unitManager;
+		base_0->setPosition(_tiledMap->convertToNodeSpace(touch->getLocation()));
+	};
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, base_0_button);
 
 	_unitManager->createUnit(3, 1, Grid(8, 6));
 
