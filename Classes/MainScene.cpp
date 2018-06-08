@@ -79,28 +79,12 @@ bool MainScene::init()
 	_tiledMap->addChild(_mouseRect, 10);
 
 
-	Unit* sprite = Unit::create("fighter0.png");
-
-	//sprite->setScale(0.1);
-	sprite->addToMap(_gridMap, _tiledMap);
-	sprite->_unitManager = _unitManager;
-	_unitManager->_getUnitById.insert(std::make_pair(-1, sprite));
-	//_unitManager->_selectId.push_back(-1);
-
-	log("screenWidth: %d, screenHeight: %d\n", _screenWidth, _screenHeight);
-	log("map: %d, %d", _tiledMap->getPosition().x, _tiledMap->getPosition().y);
-
-	sprite->setProperties();
-
-	sprite->setPosition(_gridMap->getPoint(Grid(8, 6)));
-	sprite->_id = -1;
-	
-	sprite->setState(Unit::State::MOVING);
-	sprite->schedule(schedule_selector(Unit::update));
+	_unitManager->createUnit(3, 1, Grid(8, 6));
 
 	
 	//test rectSelect
 	_unitManager->createUnit(4, 1);
+	//_unitManager->selectOneUnit(4);
 
 	auto mouseListener = EventListenerTouchOneByOne::create();
 	mouseListener->setSwallowTouches(true);//

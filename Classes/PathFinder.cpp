@@ -187,7 +187,11 @@ PathFinder::grid* PathFinder::nextToSearch()
 
 vector<Grid> PathFinder::getPath()
 {
-	//generatePath();
+	if (!searchPath())
+	{
+		assert("no path");	
+	}
+	generatePath();
 
 	return _resultPath;
 }

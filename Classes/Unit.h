@@ -56,6 +56,8 @@ public:
 
 	void moveTest();
 
+	GridMap::GridVector getPath(const Grid& dest);
+
 protected:
 	void setManager(UnitManager* unitManager)
 	{

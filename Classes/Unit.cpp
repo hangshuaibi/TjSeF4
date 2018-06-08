@@ -43,7 +43,7 @@ void Unit::setProperties()
 void Unit::setGridPath(const GridMap::GridVector& path)
 {
 	_gridPath = path;
-
+	assert(!path.empty());
 	//先定一波终点
 	_curDest = _gridPath.back();
 }
@@ -65,16 +65,21 @@ void Unit::findPath()
 		return;
 	}
 	PathFinder pathFinder(_gridMap->_isOccupied, _gridMap->getGrid(getPosition()), _finalDest);
-	if (!pathFinder.searchPath())
-	{
-		assert("no path");
-		_gridPath.clear();
-		_curDest = Grid(-1, -1);
-	}
-	pathFinder.generatePath();
+	
 
 	_gridPath = pathFinder.getPath();
 	_curDest = _gridPath.back();
+}
+
+GridMap::GridVector Unit::getPath(const Grid& dest)
+{
+	assert(_gridMap->isGridInMap(dest));
+	if (dest == _gridMap->getGrid(getPosition()))
+	{
+		return GridMap::GridVector();
+	}
+	return PathFinder(_gridMap->_isOccupied,
+		_gridMap->getGrid(getPosition()), dest).getPath();
 }
 
 void Unit::move()
@@ -196,7 +201,7 @@ void Unit::autoAttack()
 	{
 		return;
 	}
-
+	assert(_id != 3);//>>>>>>>><<<<<<<<
 	if (_attackCd == _attackCdMax)
 	{
 		for (auto item : _unitManager->_getUnitById)
@@ -206,7 +211,7 @@ void Unit::autoAttack()
 				(this->getPosition() - item.second->getPosition()).length();
 
 			if (_unitManager->isOurBro(item.first)||//友军
-				distance > _attackRange)//敌军
+				distance > _attackRange)
 			{
 				continue;
 			}

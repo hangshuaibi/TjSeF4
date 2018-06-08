@@ -38,7 +38,7 @@ bool UnitManager::initWithScene(MainScene* mainScene)
 //弃用
 bool UnitManager::init()
 {
-	_playerId = 0;//联网后此处得改
+	_playerId = 0;
 	_nextId = _playerId;
 
 	return true;
@@ -127,16 +127,18 @@ void UnitManager::selectUnitByPoint(const Point& point)
 			continue;//单位可能已经被删除
 		}
 
-		pUnit->setState(Unit::WONDERING);
-		pUnit->setDestination(gridVector[--size]);
+		auto path = pUnit->getPath(gridVector[size - 1]);
+		_client->sendMessage("find path");//id,path
+		//还没加网络哦
+		{
+			pUnit->setState(Unit::WONDERING);
+			pUnit->setDestination(gridVector[--size]);
 
-		pUnit->findPath();
-		pUnit->schedule(schedule_selector(Unit::update));
+			pUnit->findPath();
+			pUnit->schedule(schedule_selector(Unit::update));
 
-		//send message to client
-
-		//remove it when network is supported
-		pUnit->setState(Unit::MOVING);
+			pUnit->setState(Unit::MOVING);
+		}
 	}
 
 	
