@@ -42,6 +42,10 @@ bool MainScene::init()
 	_client = Client::create();
 	this->addChild(_client);
 
+	//挂起当前线程，等待客户端初始化
+	Sleep(2000);
+	_client->sendMessage("client is ready");
+	
 	//控制面板
 	_controlPanel = ControlPanel::create();
 	this->addChild(_controlPanel, 10);
@@ -73,15 +77,15 @@ bool MainScene::init()
 
 	this->addChild(_tiledMap, 0);
 
-	_unitManager = UnitManager::create();
-	_unitManager->_gridMap = _gridMap;
-	_unitManager->_tiledMap = _tiledMap;
+	_unitManager = UnitManager::createWithScene(this);
+	_unitManager->schedule(schedule_selector(UnitManager::update));
+	
 	this->addChild(_unitManager);
 
 	_mouseRect = MouseRect::create();
 	_mouseRect->setVisible(false);
 	_tiledMap->addChild(_mouseRect, 10);
-
+	//-----------------------//
 	auto base_0_button = Sprite::create("base_0.png");
 	base_0_button->setPosition(Vec2(visibleSize.width- base_0_button->getContentSize().width * 2, visibleSize.height - base_0_button->getContentSize().height * 2));
 	this->addChild(base_0_button);
@@ -132,29 +136,14 @@ bool MainScene::init()
 		base_0->setPosition(_tiledMap->convertToNodeSpace(touch->getLocation()));
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, base_0_button);
+	//-----------------------//
 
-	Unit* sprite = Unit::create("airplane_0.png");
 
-	//sprite->setScale(0.1);
-	sprite->addToMap(_gridMap, _tiledMap);
-	sprite->_unitManager = _unitManager;
-	_unitManager->_getUnitById.insert(std::make_pair(-1, sprite));
-	//_unitManager->_selectId.push_back(-1);
+	_unitManager->createUnit(3, 1, Grid(8, 6));
 
-	log("screenWidth: %d, screenHeight: %d\n", _screenWidth, _screenHeight);
-	log("map: %d, %d", _tiledMap->getPosition().x, _tiledMap->getPosition().y);
-
-	sprite->setProperties();
-
-	sprite->setPosition(_gridMap->getPoint(Grid(8, 6)));
-
-	
-	sprite->setState(Unit::State::MOVING);
-	sprite->schedule(schedule_selector(Unit::update));
-
-	
 	//test rectSelect
-	_unitManager->localCreateUnit(0);
+	_unitManager->createUnit(4, 1);
+	_unitManager->selectOneUnit(4);
 
 	auto mouseListener = EventListenerTouchOneByOne::create();
 	mouseListener->setSwallowTouches(true);//
@@ -180,9 +169,6 @@ bool MainScene::init()
 
 	};
 	mouseListener->onTouchEnded = [=](Touch* touch, Event* /*event*/) {
-		//test client
-		_client->sendMessage(std::string());
-
 
 		_mouseRect->clear();
 	

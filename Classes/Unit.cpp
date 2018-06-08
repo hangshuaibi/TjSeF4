@@ -43,7 +43,7 @@ void Unit::setProperties()
 void Unit::setGridPath(const GridMap::GridVector& path)
 {
 	_gridPath = path;
-
+	assert(!path.empty());
 	//先定一波终点
 	_curDest = _gridPath.back();
 }
@@ -65,22 +65,28 @@ void Unit::findPath()
 		return;
 	}
 	PathFinder pathFinder(_gridMap->_isOccupied, _gridMap->getGrid(getPosition()), _finalDest);
-	if (!pathFinder.searchPath())
-	{
-		assert("no path");
-		_gridPath.clear();
-		_curDest = Grid(-1, -1);
-	}
-	pathFinder.generatePath();
+	
 
 	_gridPath = pathFinder.getPath();
 	_curDest = _gridPath.back();
 }
 
+GridMap::GridVector Unit::getPath(const Grid& dest)
+{
+	assert(_gridMap->isGridInMap(dest));
+	if (dest == _gridMap->getGrid(getPosition()))
+	{
+		return GridMap::GridVector();
+	}
+	return PathFinder(_gridMap->_isOccupied,
+		_gridMap->getGrid(getPosition()), dest).getPath();
+}
+
 void Unit::move()
 {
-	//assume that the path and finalDest is already sure
 	//起点在数组的尾部
+
+	//路径为空时认为已经到达目的地
 	if (_gridPath.empty())
 	{
 		setState(WONDERING);
@@ -112,20 +118,16 @@ void Unit::move()
 		return;
 	}
 	
-
-
 	auto nextGrid = _gridMap->getGrid(nextPos);
 	auto curGrid = _gridMap->getGrid(getPosition());
 	
-
+/*---此处未实现占据格点的逻辑，因为当前寻路为静态寻路---*/
 	if (nextGrid == curGrid)
 	{
 		setPosition(nextPos);
 		return;
 	}
-
 	
-
 	setPosition(nextPos);
 }
 
@@ -159,14 +161,14 @@ void Unit::update(float delta)
 	}
 }
 
-
 //射击
 void Unit::shoot(/*string attackObject,*/Point end)
 {
 	Point start = getPosition();
 	auto tiledMap = dynamic_cast<TMXTiledMap*>(getParent());
 
-	auto bullet = Sprite::create("picture/ui/money.jpg");
+	assert(!_attackObject.empty());
+	auto bullet = Sprite::create(_attackObject);
 
 	assert(bullet != nullptr);
 
@@ -199,7 +201,7 @@ void Unit::autoAttack()
 	{
 		return;
 	}
-
+	assert(_id != 3);//>>>>>>>><<<<<<<<
 	if (_attackCd == _attackCdMax)
 	{
 		for (auto item : _unitManager->_getUnitById)
@@ -209,7 +211,7 @@ void Unit::autoAttack()
 				(this->getPosition() - item.second->getPosition()).length();
 
 			if (_unitManager->isOurBro(item.first)||//友军
-				distance > _attackRange)//敌军
+				distance > _attackRange)
 			{
 				continue;
 			}
@@ -223,7 +225,3 @@ void Unit::autoAttack()
 		_attackCd = 0;
 }
 
-void Unit::initHp()
-{
-
-}
