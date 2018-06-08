@@ -14,7 +14,7 @@ typedef vector<Grid> GridVector;
 class Encoder {
 private:
 
-	//操作类型
+	//操作类型    
 	string _type;
 
 	//兵的id
@@ -30,4 +30,7 @@ public:
 	//Encoder将格点数组类转换成要发送的字符串
 	string& encodePath(GridVector& path);
 
+	string& encodeAttach(int id);
+
+	string& encodeProduce(string& produceType);
 };

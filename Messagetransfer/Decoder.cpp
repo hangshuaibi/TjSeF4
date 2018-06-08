@@ -5,9 +5,10 @@
 
 Decoder::Decoder(const string& message) :_message(message)
 {
-	string _type = _message.substr(0, 1);
+	_type = _message.substr(0, 1);
 	string id = _message.substr(1, 2);
 	sscanf(id.c_str(), "%x", &_id);
+	_path = GridVector();
 }
 int Decoder::getId()
 {
@@ -26,13 +27,28 @@ GridVector& Decoder::decodePath()
 		beginPos += 2;
 		temp = _message.substr(beginPos, 2);
 		sscanf(temp.c_str(), "%x", &point._y);
-		path.emplace_back(point);
+		_path.emplace_back(point);
 		beginPos += 2;
 	}
-	return path;
+	return _path;
 }
 
-char Decoder::getType()
+int Decoder::decodeAttachId()
 {
-	return _message[0];
+	assert(_type[0] == ATTACK);
+	int id;
+	string temp = _message.substr(3, 2);
+	sscanf(temp.c_str(), "%x", &id);
+	return id;
+}
+
+string Decoder::decoderProduce()
+{
+	assert(_type[0] == PRODUCE);
+	string produceType = _message.substr(3, 2);
+	return produceType;
+}
+string Decoder::getType()
+{
+	return _type;
 }

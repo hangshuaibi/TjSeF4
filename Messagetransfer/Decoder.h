@@ -10,10 +10,12 @@ using namespace std;
 typedef vector<Grid> GridVector;
 
 //全局变量，存储解码后的格点数组
-GridVector path;
+
 
 class Decoder {
 private:
+
+	GridVector _path;
 
 	//从服务器端取到的信息
 	string _message;
@@ -31,11 +33,17 @@ public:
 	//从信息中解码出路径
 	GridVector& decodePath();
 
+	//从信息中解码出要攻击对象的Id
+	int decodeAttachId();
+
+	//从信息中解码出要生产的建筑或士兵
+	string decoderProduce();
+
 	//返回信息中士兵的id
 	int getId();
 
 
 	//返回操作类型
-	char getType();
+	string getType();
 
 };
