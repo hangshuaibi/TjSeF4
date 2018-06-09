@@ -23,7 +23,7 @@ private:
 	//信息表示的操作类型
 	string _type;
 
-	//信息中士兵的的id（生产类型中没有）
+	//信息中士兵的的id
 	int _id;
 
 

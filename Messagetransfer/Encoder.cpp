@@ -38,7 +38,6 @@ string& Encoder::encodeAttack(int id)
 
 string& Encoder::encodeProduce(const string& produceType)
 {
-	_message = _message.substr(0, 1);   //生产类型的消息不需要士兵的id；
 	_message.append(produceType);
 	return _message;
 }

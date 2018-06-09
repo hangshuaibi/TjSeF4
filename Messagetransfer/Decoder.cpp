@@ -32,22 +32,12 @@ const string TANK = "ta";            //定义坦克
 
 Decoder::Decoder(const string& message) :_message(message)
 {
-	_type = _message.substr(0, 1);
-
-	if (_message[0] != PRODUCE)          //判断是不是生产类型操作，因为生产类型操作没有士兵的Id
-	{
-		
+		_type = _message.substr(0, 1);
 		string id = _message.substr(1, 2);
 		sscanf(id.c_str(), "%x", &_id);
-	}
-	else
-	{
-		_produceType = _message.substr(1, 2);
-	}
 }
 int Decoder::getId()
 {
-	assert(_type[0] != PRODUCE);
 	return _id;
 }
 
@@ -84,6 +74,9 @@ int Decoder::decodeAttackId()
 
 string& Decoder::decodeProduceType()
 {
+	assert(_type[0] == PRODUCE);
+
+	_produceType = _message.substr(3, 2);
 	return _produceType;
 }
 char Decoder::getType()

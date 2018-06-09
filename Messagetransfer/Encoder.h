@@ -48,7 +48,7 @@ private:
 public:
 
 	//首先用操作类型和士兵id构造Encoder
-	Encoder(const string& type, int id = 0);        //为生产类型提供默认id
+	Encoder(const string& type, int id);        
 
 	//Encoder将格点数组类转换成要发送的字符串
 	string& encodePath(GridMap::GridVector& path);
@@ -58,6 +58,6 @@ public:
 	string& encodeAttack(int id);
 
 
-	//将要生产的士兵或建筑物等的类型转换成字符串，并返回。（produceType为每种生产的东西的const 字符串的代号，如电厂为"el"）
+	//将要生产的士兵或建筑物等的类型, 转换成字符串，并返回。（produceType为每种生产的东西的const 字符串的代号，如电厂为"el"）
 	string& encodeProduce(const string& produceType);
 };
