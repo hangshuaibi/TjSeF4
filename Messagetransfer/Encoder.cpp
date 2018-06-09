@@ -3,19 +3,20 @@
 #include <string>
 #include "GridMap.h"
 
+
+
+
 Encoder::Encoder(const string& type, int id) :_type(type), _id(id)
 {
-	char* buff = new char[3];
-	sprintf(buff, "%2x", id);
+	char buff[20];
+	sprintf(buff, "%02x", id);
 	_message.append(_type);
 	_message.append(buff);
-	delete[] buff;
 
 }
-string& Encoder::encodePath(GridVector& path)
+string& Encoder::encodePath(GridMap::GridVector& path)
 {
-	int len = path.size();
-	char* buff = new char[4 * len + 1];
+	char buff[1024];
 	int pointer = 0;
 	for (auto point : path)
 	{
@@ -23,21 +24,21 @@ string& Encoder::encodePath(GridVector& path)
 		pointer += 4;
 	}
 	_message.append(buff);
-	delete[] buff;
+	assert(_message.size() < 512);
 	return _message;
 }
 
-string& Encoder::encodeAttach(int id)
+string& Encoder::encodeAttack(int id)
 {
-	char* buff = new char[3];
+	char buff[20];
 	sprintf(buff, "%02x", id);
 	_message.append(buff);
-	delete[] buff;
 	return _message;
 }
 
-string& Encoder::encodeProduce(string& produceType)
+string& Encoder::encodeProduce(const string& produceType)
 {
+	_message = _message.substr(0, 1);   //生产类型的消息不需要士兵的id；
 	_message.append(produceType);
 	return _message;
 }
