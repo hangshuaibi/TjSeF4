@@ -7,7 +7,7 @@
 #include <vector>
 
 using namespace std;
-typedef vector<Grid> GridVector;
+typedef GridMap::GridVector GridVector;
 
 
 class Decoder {
@@ -27,14 +27,18 @@ public:
 	//用取到的信息构造Decoder
 	Decoder(const string& message);
 
-	//从信息中解码出路径
-	GridVector decodePath();
-
 	//返回信息中士兵的id
 	int getId();
-
 
 	//返回操作类型
 	char getType();
 
+	int decodeTargetId();
+
+	int decodeCreateType();
+
+	Grid decodeCreateGrid();
+
+	//从信息中解码出路径
+	GridVector decodePath();
 };

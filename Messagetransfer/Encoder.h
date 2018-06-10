@@ -27,6 +27,9 @@ public:
 	Encoder(const string& type, int id);
 
 	//Encoder将格点数组类转换成要发送的字符串
-	string& encodePath(GridMap::GridVector& path);
+	string& encodePath(const GridMap::GridVector& path);
 
+	string& encodeAttack(int targetId);
+
+	string& encodeCreate(int unitType, const Grid& createGrid);
 };

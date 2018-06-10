@@ -2,9 +2,11 @@
 
 #include "GridMap.h"
 #include "Data.h"
-const char MOVE = 'm';
 
-//全局变量，存储解码后的格点数组
+
+const char MOVE = 'm';
+const char ATTACK = 'a';
+const char CREATE = 'c';
 
 
 Decoder::Decoder(const string& message) :_message(message)
@@ -42,4 +44,43 @@ GridVector Decoder::decodePath()
 char Decoder::getType()
 {
 	return _message[0];
+}
+
+int Decoder::decodeTargetId()
+{
+	assert(_message[0] == ATTACK);
+
+	int targetId = -1;
+	string temp = _message.substr(3, 2);
+	sscanf(temp.c_str, "%x", &targetId);
+	assert(targetId != -1);//读取成功
+	
+	return targetId;
+}
+
+int Decoder::decodeCreateType()
+{
+	assert(_message[0] == CREATE);
+
+	int unitType = -1;
+	string temp = _message.substr(3, 2);
+	sscanf(temp.c_str, "%x", &unitType);
+	assert(unitType != -1);
+
+	return unitType;
+}
+
+Grid Decoder::decodeCreateGrid()
+{
+	assert(_message[0] == CREATE);
+
+	Grid ret;
+	string temp = _message.substr(5, 2);
+	sscanf(temp.c_str, "%x", &ret._x);
+	temp = _message.substr(7, 2);
+	sscanf(temp.c_str, "%x", &ret._y);
+
+	assert(ret._x != -1 && ret._y != -1);
+	
+	return ret;
 }
