@@ -173,8 +173,8 @@ public:
 	{
 		boost::asio::io_service io_service;
 
-		tcp::resolver resolver(io_service);//10.22.5.232
-		auto endpoint_iterator = resolver.resolve({ "192.168.1.103", "1024" });
+		tcp::resolver resolver(io_service);
+		auto endpoint_iterator = resolver.resolve({ "127.0.0.1", "1024" });
 		chat_client c(io_service, endpoint_iterator);//¿Í»§¶Ë
 
 		_client = &c;
@@ -214,4 +214,7 @@ public:
 		CC_SAFE_DELETE(sprite);
 		return nullptr;
 	}
+
+private:
+	std::string getServerIp();
 };

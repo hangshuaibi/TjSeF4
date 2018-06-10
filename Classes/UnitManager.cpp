@@ -102,6 +102,16 @@ void UnitManager::selectUnitByPoint(const Point& point)
 			}
 			else {//敌方单位，物伊
 				//!!!-----暂未实现选中敌方的逻辑-----!!!//
+				for (auto id : _selectId)
+				{
+					assert(_getUnitById.count(id) == 1);
+					auto unit = _getUnitById.at(id);
+					
+					assert(unit != nullptr);
+					unit->setTraceId(item.first);
+					unit->setGridPath(GridMap::GridVector());//置空格点路径数组
+					unit->setState(Unit::TRACING);
+				}
 
 				return;
 			}
@@ -128,7 +138,7 @@ void UnitManager::selectUnitByPoint(const Point& point)
 			continue;//单位可能已经被删除
 		}
 
-		auto path = pUnit->getPath(gridVector[size - 1]);//->>>>>>>>>测试完改回来
+		auto path = pUnit->getPath(gridVector[--size]);//->>>>>>>>>测试完改回来
 		Encoder encoder("m", id);
 		string message = encoder.encodePath(path);
 		_client->sendMessage(message);//id,path
@@ -151,7 +161,7 @@ void UnitManager::selectUnitByPoint(const Point& point)
 		if(0)//还没加网络哦
 		{
 			pUnit->setState(Unit::WONDERING);
-			pUnit->setDestination(gridVector[--size]);
+			pUnit->setDestination(gridVector[size]);
 
 			pUnit->findPath();
 			pUnit->schedule(schedule_selector(Unit::update));
@@ -201,10 +211,31 @@ void UnitManager::createUnit(int id, int type, const Grid& createGrid)
 	unit->addToMap(_gridMap, _tiledMap);
 	unit->setPosition(_gridMap->getPoint(createGrid));
 	unit->setManager(this);
+	unit->setId(id);
 
 	_getUnitById.insert(std::make_pair(id, unit));
 
 	unit->setProperties();
+}
+
+void UnitManager::deleteUnit(int id)
+{
+	auto unit = _getUnitById.at(id);
+	assert(unit != nullptr);
+
+	_tiledMap->removeChild(unit, true);
+	_getUnitById.erase(id);
+}
+void UnitManager::deleteUnit(Unit* unit)
+{
+	assert(unit != nullptr);
+
+	int id = getIdByUnit(unit);
+	if (id == -1)//不存在该Unit
+	{
+		return;
+	}
+	deleteUnit(id);
 }
 
 int UnitManager::getNextId()
@@ -243,7 +274,7 @@ void UnitManager::setPath(int id, GridMap::GridVector path)
 void UnitManager::updateUnitState()
 {
 	string order = _client->getMessage();
-	while (order[0] == 'y' || order[0] == 'c') {
+	while (order[0] == 'y' || order[0] == 'C') {
 		order = _client->getMessage();
 	}
 	if (order[0] == 'n')
@@ -269,7 +300,25 @@ void UnitManager::updateUnitState()
 
 		break;
 	}
-			 
+	case 'a': {
+		int id = decoder.getId();
+		int targetId = decoder.decodeTargetId();
+		/*Encoder encoder("a", id);
+		auto msg = encoder.encodeAttack(targetId);
+		msg.append("T");
+		_client->sendMessage(msg);*/
+		if (_getUnitById.count(id) != 1)break;
+		auto atker = _getUnitById[id];
+		auto atkee = _getUnitById[targetId];
+		atker->shoot(atkee);
+		unitMayDead(atkee);
+
+		break;
+	}
+	case 'c': {
+		
+		break;
+	}
 	default:
 		break;
 	}
@@ -278,4 +327,25 @@ void UnitManager::updateUnitState()
 void UnitManager::update(float delta)
 {
 	updateUnitState();
+}
+
+void UnitManager::unitMayDead(Unit* attackee)
+{
+	if (attackee->_lifeValue < 0)
+	{
+		deleteUnit(attackee);
+	}
+}
+
+int UnitManager::getIdByUnit(Unit* unit)
+{
+	for (auto& item : _getUnitById)
+	{
+		if (item.second == unit)
+		{
+			return item.first;
+		}
+	}
+
+	return -1;//该单位已拜拜
 }

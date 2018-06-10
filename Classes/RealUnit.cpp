@@ -26,6 +26,8 @@ void Tank::setProperties()
 	_lifeValueMax = 200;
 	_lifeValue = _lifeValueMax;
 
+	initHp();
+
 	_attackObject = "picture/ui/money.jpg";
 	_state = Unit::WONDERING;
 	schedule(schedule_selector(Unit::update));

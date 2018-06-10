@@ -52,7 +52,7 @@ int Decoder::decodeTargetId()
 
 	int targetId = -1;
 	string temp = _message.substr(3, 2);
-	sscanf(temp.c_str, "%x", &targetId);
+	sscanf(temp.c_str(), "%x", &targetId);
 	assert(targetId != -1);//∂¡»°≥…π¶
 	
 	return targetId;
@@ -64,7 +64,7 @@ int Decoder::decodeCreateType()
 
 	int unitType = -1;
 	string temp = _message.substr(3, 2);
-	sscanf(temp.c_str, "%x", &unitType);
+	sscanf(temp.c_str(), "%x", &unitType);
 	assert(unitType != -1);
 
 	return unitType;
@@ -76,9 +76,9 @@ Grid Decoder::decodeCreateGrid()
 
 	Grid ret;
 	string temp = _message.substr(5, 2);
-	sscanf(temp.c_str, "%x", &ret._x);
+	sscanf(temp.c_str(), "%x", &ret._x);
 	temp = _message.substr(7, 2);
-	sscanf(temp.c_str, "%x", &ret._y);
+	sscanf(temp.c_str(), "%x", &ret._y);
 
 	assert(ret._x != -1 && ret._y != -1);
 	

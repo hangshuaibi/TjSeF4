@@ -28,10 +28,16 @@ public:
 	enum State {
 		WONDERING = 0,//发呆中，可能会触发自动攻击
 		MOVING,//移动
-		ATTACKING,//攻击
+		ATTACKING,//攻击，感觉不需要这个逻辑？
 		TRACING,//追击
 	};
 
+	enum Type {
+		TANK = 0,//坦克
+		SOILDER,//士兵
+		FIGHTER,//飞机
+		TOWER//防御塔
+	};
 //protected:
 	void addToMap(GridMap* gridMap, TMXTiledMap* _tiledMap);
 
@@ -59,6 +65,11 @@ public:
 	GridMap::GridVector getPath(const Grid& dest);
 
 protected:
+	void setId(int id)
+	{
+		_id = id;
+	}
+
 	void setManager(UnitManager* unitManager)
 	{
 		_unitManager = unitManager;
@@ -68,13 +79,18 @@ protected:
 	{
 		_state = state;
 	}
+	void setTraceId(int id)
+	{
+		assert(id > 0);
+		_traceId = id;
+	}
 
 	void autoAttack();
 
 	//运动的实际逻辑
 	void move();
 
-	void shoot(/*string attackObject,*/Point end);
+	void shoot(Unit* attackee);
 
 	//初始化血条
 	void initHp();
@@ -95,13 +111,19 @@ protected:
 	int _attackCdMax;//每次攻击冷却需要的时间
 	float _attackRange;//攻击范围
 
-	/*-------------------未实现-----------------*/
 	int _attackEffect;//攻击伤害
 	int _lifeValue;//当前生命值
 	int _lifeValueMax;//最大生命值
-	std::string _attackObject = "";//攻击时释放
+	std::string _attackObject = "";//攻击时释放的东西
+	int _traceId = -1;//追击目标Id
 
 public:
 	void update(float delta);
+
+private:
+	//封装传递攻击消息的逻辑，供autoatk和trace使用
+	void sendAttackMsg(int targetId);
+	void trace();
+	bool inAtkRange(Unit* unit);
 };
 

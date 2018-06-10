@@ -44,8 +44,9 @@ bool MainScene::init()
 
 	//挂起当前线程，等待客户端初始化
 	Sleep(2000);
-	_client->sendMessage("client is ready");
-	
+	_client->sendMessage("Client is ready");
+	//_client->sendMessage(_client->ip);
+
 	//控制面板
 	_controlPanel = ControlPanel::create();
 	this->addChild(_controlPanel, 10);
@@ -143,7 +144,8 @@ bool MainScene::init()
 
 	//test rectSelect
 	_unitManager->createUnit(4, 1);
-	_unitManager->selectOneUnit(4);
+	//_unitManager->deleteUnit(3);
+	//_unitManager->selectOneUnit(4);
 
 	auto mouseListener = EventListenerTouchOneByOne::create();
 	mouseListener->setSwallowTouches(true);//

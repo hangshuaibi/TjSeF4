@@ -57,9 +57,17 @@ private:
 
 	void selectOneUnit(int id);
 
-	void updateUnitHp();
+	//void updateUnitHp();
 
 	void updateUnitState();
 
 	void update(float delta);
+
+	void deleteUnit(int id);
+	void deleteUnit(Unit* unit);
+
+	//ºÏ≤Èunit «∑ÒÀ¿Õˆ
+	void unitMayDead(Unit* attackee);
+
+	int getIdByUnit(Unit* unit);
 };

@@ -1,6 +1,7 @@
 #include "Unit.h"
 #include "PathFinder.h"
 #include "NotGay.h"
+#include "MessageTransfer/Encoder.h"
 
 Unit::Unit():Sprite(),
 _state(WONDERING),
@@ -30,6 +31,7 @@ Unit* Unit::create(const std::string& filename)
 	return nullptr;
 }
 
+//弃用
 void Unit::setProperties()
 {
 	_state = Unit::State::WONDERING;
@@ -156,15 +158,23 @@ void Unit::update(float delta)
 		break;
 	case WONDERING:
 		autoAttack();
+		break;
+	case TRACING:
+		trace();
+		break;
 	default:
 		break;
 	}
+
+	updateHp();//更新血条进度，血量更新的逻辑应该在manager做
 }
 
 //射击
-void Unit::shoot(/*string attackObject,*/Point end)
+void Unit::shoot(Unit* atkee)
 {
 	Point start = getPosition();
+	Point end = atkee->getPosition();
+
 	auto tiledMap = dynamic_cast<TMXTiledMap*>(getParent());
 
 	assert(!_attackObject.empty());
@@ -179,14 +189,16 @@ void Unit::shoot(/*string attackObject,*/Point end)
 	auto length = (end - start).length();
 	auto duration = length / 32.0f;//子弹移动速度
 
-	tiledMap->addChild(bullet, 10);
+	tiledMap->addChild(bullet, 5);
 	bullet->setPosition(start);
 	auto moveTo = MoveTo::create(duration, end);
 
 	auto sequence = Sequence::create(moveTo, 
 		CallFunc::create([=]() {
 		bullet->setVisible(false);
-		tiledMap->removeChild(bullet, true);}), 
+		tiledMap->removeChild(bullet, true);
+		atkee->_lifeValue -= _attackEffect;//承受伤害
+	}), 
 		NULL
 	);
 	
@@ -206,17 +218,15 @@ void Unit::autoAttack()
 	{
 		for (auto item : _unitManager->_getUnitById)
 		{
-			float distance = 
-				//mygetDistance(item.second, this);
-				(this->getPosition() - item.second->getPosition()).length();
 
 			if (_unitManager->isOurBro(item.first)||//友军
-				distance > _attackRange)
+				!inAtkRange(item.second))
 			{
 				continue;
 			}
-			//敌军
-			shoot(item.second->getPosition());
+			sendAttackMsg(item.first);
+
+			//shoot(item.second->getPosition());
 			break;
 		}
 	}
@@ -225,3 +235,67 @@ void Unit::autoAttack()
 		_attackCd = 0;
 }
 
+void Unit::initHp()
+{
+	_hpInterval = 100.0f / _lifeValueMax;
+	_hp = LoadingBar::create("planeHP.png");
+	assert(_hp != nullptr);
+	assert(_unitManager != nullptr);
+
+	_hp->setScale(0.06f, 0.1f);
+	_hp->setDirection(LoadingBar::Direction::LEFT);
+	_hp->setPercent(100);
+	_unitManager->_tiledMap->addChild(_hp, 5);
+	Point unitPos = getPosition();
+	_hp->setPosition(Point(unitPos.x, 
+		unitPos.y + _hp->getContentSize().height * 0.4f));
+	
+}
+
+void Unit::updateHp()
+{
+	Point unitPos = getPosition();
+	_hp->setPosition(Point(unitPos.x,
+		unitPos.y + _hp->getContentSize().height * 0.4f));
+
+	_hp->setPercent(_hpInterval*_lifeValue);
+}
+
+void Unit::sendAttackMsg(int targetId)
+{
+	//这个逻辑大概可以抽成一个函数，供autoatk和trace使用
+	Encoder encoder("a", _id);
+	std::string atkMsg = encoder.encodeAttack(targetId);
+	_unitManager->_client->sendMessage(atkMsg);
+}
+
+void Unit::trace()
+{
+	//不是自己的unit则直接返回
+	if (!_unitManager->isOurBro(_id))
+	{
+		return;
+	}
+	else if (_traceId == -1)
+	{
+		setState(WONDERING);
+		return;
+	}
+
+	auto unit = _unitManager->_getUnitById.at(_traceId);
+	if (unit == nullptr)
+	{
+		_traceId = -1;
+		return;
+	}
+
+
+}
+
+bool Unit::inAtkRange(Unit* unit)
+{
+	assert(unit!= nullptr);
+
+	float distance =(this->getPosition() - unit->getPosition()).length();
+	return distance <= _attackRange;
+}
