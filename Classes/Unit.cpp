@@ -91,7 +91,8 @@ void Unit::move()
 	//路径为空时认为已经到达目的地
 	if (_gridPath.empty())
 	{
-		setState(WONDERING);
+		if(_state==MOVING)
+			setState(WONDERING);
 		_curDest = Grid(-1, -1);//set flag for next time to initialize curDest
 
 		return;
@@ -157,7 +158,7 @@ void Unit::update(float delta)
 		move();
 		break;
 	case WONDERING:
-		autoAttack();
+		//autoAttack();
 		break;
 	case TRACING:
 		trace();
@@ -213,14 +214,14 @@ void Unit::autoAttack()
 	{
 		return;
 	}
-	assert(_id != 3);//>>>>>>>><<<<<<<<
+	//assert(_id != 3);//>>>>>>>><<<<<<<<
 	if (_attackCd == _attackCdMax)
 	{
 		for (auto item : _unitManager->_getUnitById)
 		{
 
 			if (_unitManager->isOurBro(item.first)||//友军
-				!inAtkRange(item.second))
+				!inAtkRange(item.second))//攻击范围内
 			{
 				continue;
 			}
@@ -274,7 +275,7 @@ void Unit::trace()
 	//不是自己的unit则直接返回
 	if (!_unitManager->isOurBro(_id))
 	{
-		return;
+		//return;
 	}
 	else if (_traceId == -1)
 	{
@@ -289,7 +290,30 @@ void Unit::trace()
 		return;
 	}
 
+	if (inAtkRange(unit))//找到攻击目标
+	{
+		if (_unitManager->isOurBro(_id))
+			autoAttack();
+		return;
+	}
 
+	//离攻击目标太远，寻路.....
+	static int timer = 0;//当离追击物太远时每5帧更新一次路径
+	if (++timer == 10)
+	{
+		timer = 0;//置0
+		if (!_unitManager->isOurBro(_id))
+			return;
+		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>抽成函数
+		auto path = getPath(_gridMap->getGrid(unit->getPosition()));
+		//send message
+		Encoder encoder("t", _id);
+		std::string traceMsg = encoder.encodePath(path);
+		_unitManager->_client->sendMessage(traceMsg);
+	}
+	else {
+		move();
+	}
 }
 
 bool Unit::inAtkRange(Unit* unit)

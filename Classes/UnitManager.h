@@ -67,7 +67,7 @@ private:
 	void deleteUnit(Unit* unit);
 
 	//¼ì²éunitÊÇ·ñËÀÍö
-	void unitMayDead(Unit* attackee);
+	bool unitMayDead(Unit* attackee);
 
 	int getIdByUnit(Unit* unit);
 };

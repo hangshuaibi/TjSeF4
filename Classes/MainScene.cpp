@@ -44,7 +44,7 @@ bool MainScene::init()
 
 	//挂起当前线程，等待客户端初始化
 	Sleep(2000);
-	_client->sendMessage("Client is ready");
+	//_client->sendMessage("Client is ready");
 	//_client->sendMessage(_client->ip);
 
 	//控制面板
@@ -140,12 +140,14 @@ bool MainScene::init()
 	//-----------------------//
 
 
-	_unitManager->createUnit(3, 1, Grid(8, 6));
+	_unitManager->createUnit(1, 1, Grid(10, 18));
 
 	//test rectSelect
-	_unitManager->createUnit(4, 1);
+	_unitManager->createUnit(0, 1);
 	//_unitManager->deleteUnit(3);
 	//_unitManager->selectOneUnit(4);
+	//_unitManager->_getUnitById[4]->setTraceId(3);
+	//_unitManager->_getUnitById[4]->setState(Unit::TRACING);
 
 	auto mouseListener = EventListenerTouchOneByOne::create();
 	mouseListener->setSwallowTouches(true);//

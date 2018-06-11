@@ -108,9 +108,14 @@ void UnitManager::selectUnitByPoint(const Point& point)
 					auto unit = _getUnitById.at(id);
 					
 					assert(unit != nullptr);
-					unit->setTraceId(item.first);
-					unit->setGridPath(GridMap::GridVector());//置空格点路径数组
-					unit->setState(Unit::TRACING);
+					Encoder encoder("p", id);
+					std::string msg = encoder.encodeAttack(item.first);
+					_client->sendMessage(msg);
+					//unit->setTraceId(item.first);
+					//unit->setGridPath(GridMap::GridVector());//置空格点路径数组
+					//unit->_gridPath.clear();//抽个函数
+					//unit->setState(Unit::TRACING);
+					//>>>>>>>>>>>>>>>>>>>>>>send traceMessage 
 				}
 
 				return;
@@ -273,11 +278,27 @@ void UnitManager::setPath(int id, GridMap::GridVector path)
 
 void UnitManager::updateUnitState()
 {
+	static bool startFlag = false;
+	static bool imreadyFlag = false;
+
 	string order = _client->getMessage();
-	while (order[0] == 'y' || order[0] == 'C') {
-		order = _client->getMessage();
+	if (!startFlag)//未开始
+	{
+		if (!imreadyFlag&&order[0] == 'I') {//Id(%d
+			_playerId = order[3] - '1';
+			imreadyFlag = true;
+			_client->sendMessage("Client ready!");
+			return;
+		}
+		else if (order[0] == 'S')//Start!
+		{
+			startFlag = true;
+			return;
+		}
+		return;
 	}
-	if (order[0] == 'n')
+
+	if (order[0] == 'n')//没有消息
 	{
 		return;
 	}
@@ -285,6 +306,7 @@ void UnitManager::updateUnitState()
 	Decoder decoder(order);	
 	
 	switch (decoder.getType()) {
+	case 't':
 	case 'm': {
 		int id = decoder.getId();
 		auto path = decoder.decodePath();
@@ -292,12 +314,14 @@ void UnitManager::updateUnitState()
 
 		assert(pUnit != nullptr);	
 
-		pUnit->setState(Unit::WONDERING);
+		//pUnit->setState(Unit::WONDERING);
 		pUnit->setGridPath(path);
 		
 		pUnit->schedule(schedule_selector(Unit::update));
-		pUnit->setState(Unit::MOVING);
 
+		if(decoder.getType()=='m')
+			pUnit->setState(Unit::MOVING);//根据traceFlag来确定状态的设置
+		
 		break;
 	}
 	case 'a': {
@@ -311,8 +335,24 @@ void UnitManager::updateUnitState()
 		auto atker = _getUnitById[id];
 		auto atkee = _getUnitById[targetId];
 		atker->shoot(atkee);
-		unitMayDead(atkee);
+		if (unitMayDead(atkee))//为真时单位在此函数被删除
+		{
+			atker->setTraceId(-1);
+			atker->setState(Unit::WONDERING);
+		}
 
+		break;
+	}
+	case 'p': {
+		int id = decoder.getId();
+		int targetId = decoder.decodeTargetId();
+		if (_getUnitById.count(id) != 1)break;
+		auto unit = _getUnitById[id];
+
+		unit->setTraceId(targetId);
+		unit->_gridPath.clear();//抽个函数
+		unit->setState(Unit::TRACING);
+		//>>>>>>>>>>>>>>>>>>>>>>send traceMessage 
 		break;
 	}
 	case 'c': {
@@ -329,12 +369,14 @@ void UnitManager::update(float delta)
 	updateUnitState();
 }
 
-void UnitManager::unitMayDead(Unit* attackee)
+bool UnitManager::unitMayDead(Unit* attackee)
 {
 	if (attackee->_lifeValue < 0)
 	{
 		deleteUnit(attackee);
+		return true;
 	}
+	return false;
 }
 
 int UnitManager::getIdByUnit(Unit* unit)

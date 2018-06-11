@@ -81,7 +81,7 @@ protected:
 	}
 	void setTraceId(int id)
 	{
-		assert(id > 0);
+		//assert(id > 0);
 		_traceId = id;
 	}
 

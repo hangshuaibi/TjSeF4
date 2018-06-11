@@ -7,7 +7,8 @@
 const char MOVE = 'm';
 const char ATTACK = 'a';
 const char CREATE = 'c';
-
+const char TRACE = 't';
+const char PREATTACK = 'p';
 
 Decoder::Decoder(const string& message) :_message(message)
 {
@@ -22,7 +23,7 @@ int Decoder::getId()
 }
 GridVector Decoder::decodePath()
 {
-	assert(_type[0] == MOVE);
+	assert(_type[0] == MOVE || _type[0] == TRACE);
 	Grid point;
 	int beginPos = 3;
 
@@ -48,7 +49,7 @@ char Decoder::getType()
 
 int Decoder::decodeTargetId()
 {
-	assert(_message[0] == ATTACK);
+	assert(_message[0] == ATTACK || _message[0] == PREATTACK);
 
 	int targetId = -1;
 	string temp = _message.substr(3, 2);

@@ -15,6 +15,7 @@ Encoder::Encoder(const std::string& type, int id) :_type(type), _id(id)
 }
 string& Encoder::encodePath(const GridMap::GridVector& path)
 {
+	assert(_message[0] == 'm' || _message[0] == 't');//移动或者追击
 	char buff[520];
 	int pointer = 0;
 	for (auto point : path)
@@ -29,6 +30,7 @@ string& Encoder::encodePath(const GridMap::GridVector& path)
 
 string& Encoder::encodeAttack(int targetId)
 {
+	assert(_message[0] == 'a' || _message[0] == 'p');//追击或者攻击-------p:prepare attack
 	char buff[5];
 	sprintf(buff, "%02x", targetId);
 	_message.append(buff);
