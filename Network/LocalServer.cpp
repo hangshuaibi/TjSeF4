@@ -24,6 +24,8 @@ typedef std::deque<chat_message> chat_message_queue;
 
 /*-----------------------------------------------------------*/
 int clientNum = 0;//客户端数量，借此识别玩家id
+int preparedClientNum = 0;
+int startFlag = false;//游戏开始后禁止加入
 
 bool	 isIdUsed[MAX_PLAYER_NUM] = { 0,0,0,0 };//
 												/*-----------------------------------------------------------*/
@@ -42,6 +44,17 @@ class chat_server;//room的友元
 class chat_room
 {
 	friend class chat_server;
+
+	chat_message stringToMsg(const char s[])
+	{
+		chat_message msg;
+
+		msg.body_length(strlen(s));
+		memcpy(msg.body(), s, msg.body_length());
+		msg.encode_header();
+
+		return msg;
+	}
 
 public:
 	void join(chat_participant_ptr participant)
@@ -67,12 +80,10 @@ public:
 		assert(validId >= 0);
 		isIdUsed[validId] = 1;
 		participant->_id = validId;
-		chat_message msg;
+
 		char s[20];
-		sprintf(s, "your id is %d", validId + 1);
-		msg.body_length(strlen(s));
-		memcpy(msg.body(), s, msg.body_length());
-		msg.encode_header();
+		sprintf(s, "Id(%d", validId + 1);
+		chat_message msg = stringToMsg(s);
 
 		participant->deliver(msg);
 		/*-----------------------------------------------------------*/
@@ -102,7 +113,20 @@ public:
 			}
 		}
 #endif
+		if (!startFlag && msg.body()[0] == 'C')//Client ready!>>>>>>>>>>>>>>>>>>>>>>>>
+		{
+			if (++preparedClientNum == clientNum
+				&& clientNum >= 2 //游戏人数大于2
+				)
+			{
+				chat_message startMsg = stringToMsg("Start!");
+				for (auto participant : participants_)
+					participant->deliver(startMsg);
 
+				startFlag = true;
+			}
+			return;
+		}
 		//先将发送的消息放入待发送列表。
 		recent_msgs_.push_back(msg);
 		while (recent_msgs_.size() > max_recent_msgs)
