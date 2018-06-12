@@ -143,9 +143,9 @@ bool MainScene::init()
 	_unitManager->createUnit(1, 1, Grid(10, 18));
 
 	//test rectSelect
-	_unitManager->createUnit(0, 1);
+	_unitManager->createUnit(4, 0);
 	//_unitManager->deleteUnit(3);
-	//_unitManager->selectOneUnit(4);
+	_unitManager->selectOneUnit(4);
 	//_unitManager->_getUnitById[4]->setTraceId(3);
 	//_unitManager->_getUnitById[4]->setState(Unit::TRACING);
 

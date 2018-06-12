@@ -89,7 +89,8 @@ void Unit::move()
 	//起点在数组的尾部
 
 	//路径为空时认为已经到达目的地
-	if (_gridPath.empty())
+	if (_gridPath.empty()
+		&&_gridMap->getGrid(getPosition())==_curDest)
 	{
 		if(_state==MOVING)
 			setState(WONDERING);

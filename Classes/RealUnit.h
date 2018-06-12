@@ -9,8 +9,19 @@ class Tank :public Unit {
 	//persudo friend class, for mainScene test
 	friend class MainScene;
 public:
-	static Tank* create(const std::string& filename);
+	static Tank* create(int id);
 		
+
+	virtual void setProperties()override;
+};
+
+class Soldier :public Unit {
+	friend class UnitManager;
+	//persudo friend class, for mainScene test
+	friend class MainScene;
+public:
+	static Soldier* create(int id);
+
 
 	virtual void setProperties()override;
 };

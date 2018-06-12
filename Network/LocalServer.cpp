@@ -96,6 +96,11 @@ public:
 		isIdUsed[participant->_id] = 0;//Çå¿Õflag
 		std::cout << "id  " << participant->_id + 1 << "  is valid" << std::endl;
 		--clientNum;
+		if (startFlag && clientNum == 0)
+		{
+			startFlag = false;
+			preparedClientNum = 0;
+		}
 		assert(clientNum >= 0);
 	}
 

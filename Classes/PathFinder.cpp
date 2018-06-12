@@ -193,6 +193,7 @@ vector<Grid> PathFinder::getPath()
 		assert(NO_PATH);
 	}
 	generatePath();
+	optimizePath();
 
 	return _resultPath;
 }
@@ -242,6 +243,7 @@ void PathFinder::optimizePath()
 	{
 		auto curGrid = *it;
 		auto curDirection = curGrid - prevGrid;
+		prevGrid = curGrid;
 
 		if (prevDiretion == curDirection)
 		{

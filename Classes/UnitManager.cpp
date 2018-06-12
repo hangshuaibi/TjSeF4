@@ -210,8 +210,21 @@ void UnitManager::localCreateUnit(int/* type*/, const Point& point)
 
 void UnitManager::createUnit(int id, int type, const Grid& createGrid)
 {
-	//根据type和playerId选取相应图片
-	auto unit = Tank::create("tank.png");
+	Unit* unit = nullptr;
+	switch(type)
+	{
+	case Unit::Type::TANK: {
+		unit = Tank::create(id);
+		break;
+	}
+	case Unit::Type::SOILDER: {
+		unit = Soldier::create(id);
+		break;
+	}
+	default:
+		break;
+	}
+	
 
 	unit->addToMap(_gridMap, _tiledMap);
 	unit->setPosition(_gridMap->getPoint(createGrid));
