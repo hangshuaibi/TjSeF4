@@ -3,7 +3,10 @@
 #include "GridMap.h"
 #include <map>
 #include "NotGay.h"
+#include"string.h"
+#include"ui/CocosGUI.h"
 
+using namespace ui;
 
 using std::map;
 using std::string;
@@ -17,121 +20,60 @@ public:
 	Building()
 	{}
 
-	virtual int getGold()=0;
+	void setTime(int time)
+	{
+		_time = time;
+	}
 
-	virtual int getElectricity()=0;
+	int getTime()
+	{
+		return _time;
+	}
+
+	void setGold(int gold)
+	{
+		_gold = gold;
+	}
+
+	int getGold()
+	{
+		return _gold;
+	}
+
+	void setElectricity(int electricity)
+	{
+		_electricity = electricity;
+	}
+
+	int getElectricity()
+	{
+		return _electricity;
+	}
 
 	void addToMap(GridMap* gridMap, TMXTiledMap* _tiledMap);
 
 	GridMap* _gridMap = nullptr;
 
-	virtual bool isgold() = 0;
+	void setname(std::string name)
+	{
+		_buildingName = name;
+	}
+
+	std::string getname()
+	{
+		return _buildingName;
+	}
+
+	static Building* create(const std::string& filename);
 
 	UnitManager* _unitManager = nullptr;
 
+private:
 
-
-};
-
-class Barracks:public Building{
-public:
-	virtual int getGold()
-	{
-		return -40;
-	}
-
-	virtual int getElectricity()
-	{
-		return -5;
-	}
-
-	virtual bool isgold()
-	{
-		return 0;
-	}
-
-
-	static Barracks* Barracks::create();
+	std::string _buildingName;
 	
-
-	int id = 0;
-};
-
-class Warfactory :public Building {
-public:
-	virtual int getGold()
-	{
-		return -60;
-	}
-
-	virtual int getElectricity()
-	{
-		return -8;
-	}
-
-	virtual bool isgold()
-	{
-		return 0;
-	}
-
-
-	static Warfactory* Warfactory::create();
+	int _time, _gold, _electricity;
 
 
 };
-
-class Storage :public Building {
-public:
-	virtual int getGold()
-	{
-		return -20;
-	}
-
-	int id = 0;
-
-	virtual int getElectricity()
-	{
-		return 30;
-	}
-
-	virtual bool isgold()
-	{
-		return 0;
-	}
-
-
-
-	static Storage* Storage::create();
-
-};
-
-class Producer :public Building {
-public:
-
-	virtual bool isgold()
-	{
-		return 1;
-	}
-
-
-
-
-	
-	virtual int getGold()
-	{
-		return -20;
-	}
-
-	virtual int getElectricity()
-	{
-		return -3;
-	}
-
-	int id = 0;
-
-	static Producer* Producer::create();
-
-};
-
-
 

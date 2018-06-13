@@ -1,9 +1,13 @@
 #include "MainScene.h"
 #include "cocos2d.h"
 #include "GameManager.h"
-#include"SimpleAudioEngine.h"
-#include"ui/CocosGUI.h"
-#include"Building.h"
+#include "SimpleAudioEngine.h"
+#include "ui/CocosGUI.h"
+#include "Building.h"
+#include "string.h"
+#include <vector>
+
+
 using namespace ui;
 using namespace CocosDenshion;
 
@@ -11,7 +15,9 @@ USING_NS_CC;
 
 //按钮信息储存
 Vector <Sprite*> button;
-int _curGold(200), _curElectricity(20),_goldProducer(0);
+//建造进度条信息储存
+Vector<LoadingBar*>timeBar;
+int _curGold(200),_curElectricity(20),goldProducer(0);
 
 #define PATHFINDER_TEST 0
 
@@ -36,6 +42,7 @@ MainScene* MainScene::createScene()
 	return MainScene::create();
 }
 
+
 bool MainScene::init()
 {
 	//父类函数
@@ -47,12 +54,6 @@ bool MainScene::init()
 	_controlPanel = ControlPanel::create();
 	this->addChild(_controlPanel, 10);
 	_controlPanel->setPosition(_screenWidth, _screenHeight);
-
-
-	int _barracksGold = -40, _barracksElectricity = -5,
-		_warfactoryGold = -60, _warfactoryElectricity = -8,
-		_storageGold = -20, _storageElectricity = 30,
-		_producerGold = -20, _producerElectricity = -3;
 
 	//启用定时器回调更新函数
 	scheduleUpdate();
@@ -104,6 +105,19 @@ bool MainScene::init()
 	_electricityLabel->setPosition(200, _screenHeight*0.9);
 	this->addChild(_electricityLabel);
 
+	//建筑信息
+	std::string name[4] = { "barracks","warfactory","storage","producer" };
+	std::vector<std::string> buildingName(name, name + 4);
+	std::string fileName[4] = { "barracks.png","warfactory.png","storage.png","producer.png" };
+	std::vector<std::string> buildingFileName(fileName, fileName + 4);
+	int golds[4] = { -40,-60,-20,-20 };
+	std::vector<int> buildingGold(golds, golds + 4);
+	int electric[4] = { -5,-8,30,-3 };
+	std::vector<int> buildingElectric(electric, electric + 4);
+	int time[4] = { 60,100,30,30 };
+	std::vector<int> buildingTime(time, time + 4);
+
+
 	auto barracksButton = Sprite::create("barracks.png");
 	barracksButton->setScale(0.3);
 	barracksButton->setTag(0);
@@ -153,9 +167,9 @@ bool MainScene::init()
 	this->addChild(producerButton1);
 
 	//创建单点触摸监听器
-	auto _listener = EventListenerTouchOneByOne::create();
-	_listener->setSwallowTouches(true);
-	_listener->onTouchBegan = [=](Touch* touch, Event* event)
+	auto buildingButtonListener = EventListenerTouchOneByOne::create();
+	buildingButtonListener->setSwallowTouches(true);
+	buildingButtonListener->onTouchBegan = [=](Touch* touch, Event* event)
 	{
 		//获得当前触摸事件的目标对象
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
@@ -176,69 +190,61 @@ bool MainScene::init()
 		}
 		return false;
 	};
-	_listener->onTouchMoved=[](Touch* touch, Event* event)
+	buildingButtonListener->onTouchMoved=[](Touch* touch, Event* event)
 	{
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 		//移动触摸的精灵
 		target->setPosition(target->getPosition() + touch->getDelta());
 
 	};
-	_listener->onTouchEnded = [=](Touch* touch, Event* event)
+	buildingButtonListener->onTouchEnded = [=](Touch* touch, Event* event)
 	{
 		
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 		auto tag = target->getTag();
 		target->setOpacity(255);
-
 		target->setPosition(button.at(tag)->getPosition());
 		Building* building=nullptr;
-		switch (tag)
+		if (_curGold + buildingGold[tag] >= 0 && _curElectricity + buildingElectric[tag] >= 0)
 		{
-		case 0:
-			if (_curgold + _barracksGold < 0 || _curElectricity + _barracksElectricity < 0)
-			{
-				break;
-			}
-			building= (Barracks*)Barracks::create();
-			break;
-		case 1: 
-			if (_curgold + _warfactoryGold < 0 || _curElectricity + _warfactoryElectricity < 0)
-			{
-				break;
-			}
-			building = (Warfactory*)Warfactory::create();
-			break;
-		case 2:  
-			if (_curgold + _storageGold < 0 || _curElectricity + _storageElectricity < 0)
-			{
-				break;
-			}
-			building = (Storage*)Storage::create();
-			break;
-		case 3:  
-			if (_curgold + _producerGold < 0 || _curElectricity + _producerElectricity < 0)
-			{
-				break;
-			}
-			building = (Producer*)Producer::create();
-			break;
+			building = Building::create(buildingFileName[tag]);
+			building->setGold(buildingGold[tag]);
+			building->setName(buildingName[tag]);
+			building->setTime(buildingTime[tag]);
+			building->setElectricity(buildingElectric[tag]);
 		}
 		if (building == nullptr)
 		{
 			return;
 		}
 		building->setScale(0.3);
+		//创建进度条
+		auto bar = LoadingBar::create("CreateBar.png");
+		//设置从左向右递增
+		bar->setDirection(LoadingBar::Direction::LEFT);
+		//设置位置
+		bar->setPercent(100);
+		bar->setScale(0.7);
+		bar->setScaleX(0.4);
+		_tiledMap->addChild(bar, 100);
 		building->addToMap(_gridMap, _tiledMap);
 		building->_unitManager = _unitManager;
-		_curgold += building ->getGold();
-		_goldProducer += building->isgold();
+		_curGold += building ->getGold();
+		if (building->getName() == "producer")
+		{
+			goldProducer++;
+		}
 		_curElectricity += building->getElectricity();
 		building->setPosition(_tiledMap->convertToNodeSpace(touch->getLocation()));
+		bar->setPosition(Vec2(building->getPosition().x, building->getPosition().y + 5));
+
+
+
 	};
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(_listener, barracksButton);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(_listener->clone(), warfactoryButton);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(_listener->clone(), storageButton);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(_listener->clone(), producerButton);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingButtonListener, barracksButton);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingButtonListener->clone(), warfactoryButton);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingButtonListener->clone(), storageButton);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingButtonListener->clone(), producerButton);
 
 
 
@@ -405,8 +411,9 @@ bool MainScene::init()
 
 void MainScene::update(float delta)
 {
-
+	_count++;
 	_gameManager->scrollMap();
+
 }
 
 bool ControlPanel::init()
@@ -437,7 +444,7 @@ void ControlPanel::createFighterCallBack(Ref* psender)
 
 void MainScene::updateRes(float delta)
 {
-	_curgold +=5* _goldProducer;
-	_goldLabel->setString(StringUtils::format("%d", _curgold));
+	_curGold += goldProducer;
+	_goldLabel->setString(StringUtils::format("%d", _curGold));
 	_electricityLabel->setString(StringUtils::format("%d", _curElectricity));
 }

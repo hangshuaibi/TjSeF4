@@ -4,7 +4,10 @@
 #include "cocos2d.h"
 #include "UnitManager.h"
 #include "GameManager.h"
+#include"ui/CocosGUI.h"
+#include"Building.h"
 
+using namespace ui;
 USING_NS_CC;
 
 //矩形选框
@@ -33,9 +36,11 @@ public:
 
 		Label* _electricityLabel;
 
-		int _curgold = 200;
 
 	virtual bool init();
+
+	//帧计时器
+	int _count;
 
 	//virtual void update(float delta);
 
