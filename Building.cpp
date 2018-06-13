@@ -25,3 +25,17 @@ Building* Building::create(const std::string& filename)
 	return nullptr;
 }
 
+
+void Building::update(float delta)
+{
+	_count++;
+	//ÐÞ¸Ä½ø¶È
+	_bar->setPercent(100/ _time * _count);
+	if (_bar->getPercent() >= 100)
+	{
+		_bar->setVisible(0);
+		this->removeChild(_bar,5);
+		_count = 0;
+	}
+}
+

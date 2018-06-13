@@ -68,6 +68,13 @@ public:
 
 	UnitManager* _unitManager = nullptr;
 
+	LoadingBar* _bar;
+
+	int _count=0;
+
+	void update(float delta);
+	
+
 private:
 
 	std::string _buildingName;

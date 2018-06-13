@@ -220,13 +220,15 @@ bool MainScene::init()
 		building->setScale(0.3);
 		//创建进度条
 		auto bar = LoadingBar::create("CreateBar.png");
+		building->_bar = bar;
+		
 		//设置从左向右递增
-		bar->setDirection(LoadingBar::Direction::LEFT);
+		building->_bar->setDirection(LoadingBar::Direction::LEFT);
 		//设置位置
-		bar->setPercent(100);
-		bar->setScale(0.7);
-		bar->setScaleX(0.4);
-		_tiledMap->addChild(bar, 100);
+		building->_bar->setPercent(0);
+		building->_bar->setScale(0.7);
+		building->_bar->setScaleX(0.4);
+		_tiledMap->addChild(building->_bar, 100);
 		building->addToMap(_gridMap, _tiledMap);
 		building->_unitManager = _unitManager;
 		_curGold += building ->getGold();
@@ -236,9 +238,17 @@ bool MainScene::init()
 		}
 		_curElectricity += building->getElectricity();
 		building->setPosition(_tiledMap->convertToNodeSpace(touch->getLocation()));
-		bar->setPosition(Vec2(building->getPosition().x, building->getPosition().y + 5));
-
-
+		if (building->getName() !="warfactory")
+		{
+			building->_bar->setPosition(Vec2(building->getPosition().x, building->getPosition().y + 20));
+		}
+		else
+		{
+			building->_bar->setPosition(Vec2(building->getPosition().x, building->getPosition().y + 25));
+		}
+		building->schedule(schedule_selector(Building::update),1.0f);
+		building->setOpacity(0);
+		building->runAction(FadeIn::create(building->getTime()));
 
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingButtonListener, barracksButton);
