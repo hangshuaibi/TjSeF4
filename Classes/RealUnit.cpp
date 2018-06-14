@@ -1,6 +1,6 @@
 #include "RealUnit.h"
 
-Tank* Tank::create(int id)
+Tank* Tank::create()
 {
 		Tank* ret = new Tank();
 
@@ -35,7 +35,7 @@ void Tank::setProperties()
 	schedule(schedule_selector(Unit::update));
 }
 
-Soldier* Soldier::create(int id)
+Soldier* Soldier::create()
 {
 	Soldier* ret = new Soldier();
 

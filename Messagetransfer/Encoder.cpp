@@ -16,7 +16,7 @@ Encoder::Encoder(const std::string& type, int id) :_type(type), _id(id)
 string& Encoder::encodePath(const GridMap::GridVector& path)
 {
 	assert(_message[0] == 'm' || _message[0] == 't');//移动或者追击
-	char buff[520];
+	char buff[520] = "";//防止空路径
 	int pointer = 0;
 	for (auto point : path)
 	{

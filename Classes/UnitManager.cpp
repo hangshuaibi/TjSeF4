@@ -214,11 +214,11 @@ void UnitManager::createUnit(int id, int type, const Grid& createGrid)
 	switch(type)
 	{
 	case Unit::Type::TANK: {
-		unit = Tank::create(id);
+		unit = Tank::create();
 		break;
 	}
 	case Unit::Type::SOILDER: {
-		unit = Soldier::create(id);
+		unit = Soldier::create();
 		break;
 	}
 	default:
@@ -327,7 +327,10 @@ void UnitManager::updateUnitState()
 
 		assert(pUnit != nullptr);	
 
-		//pUnit->setState(Unit::WONDERING);
+		if (path.empty())
+		{
+			break;
+		}
 		pUnit->setGridPath(path);
 		
 		pUnit->schedule(schedule_selector(Unit::update));

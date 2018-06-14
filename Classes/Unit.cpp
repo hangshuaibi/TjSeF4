@@ -89,29 +89,34 @@ void Unit::move()
 	//起点在数组的尾部
 
 	//路径为空时认为已经到达目的地
-	if (_gridPath.empty()
-		&&_gridMap->getGrid(getPosition())==_curDest)
+	if (_gridPath.empty())
 	{
-		if(_state==MOVING)
+		if (_state == MOVING && _gridMap->getGrid(getPosition()) == _curDest)
+		{
 			setState(WONDERING);
-		_curDest = Grid(-1, -1);//set flag for next time to initialize curDest
-
-		return;
+			_curDest = Grid(-1, -1);//set flag for next time to initialize curDest
+			return;
+		}
+		if (_state == TRACING)
+		{
+			return;
+		}
 	}
 
+	if (!_gridMap->isGridInMap(_curDest))
+	{
+		_curDest = _gridPath.back();
+		_gridPath.pop_back();
+	}
 	auto destPos = _gridMap->getPoint(_curDest);
 
 	//方向
 	auto dirVec = (destPos - getPosition()).getNormalized();
-	//dirVec.normalize();//单位化
-
 	//当前帧的偏移量
 	auto curMoveVec = dirVec * _moveSpeed;
-
 	auto nextPos = curMoveVec + getPosition();
 
-	if (!_gridMap->isGridInMap(_curDest)
-		||willBeyondDest(getPosition(),destPos,curMoveVec))
+	if (willBeyondDest(getPosition(),destPos,curMoveVec))
 	{
 		//在此不考虑越格，因为speed超过32太鬼畜了
 		setPosition(nextPos);
@@ -119,16 +124,6 @@ void Unit::move()
 		_curDest = _gridPath.back();
 		_gridPath.pop_back();
 
-		return;
-	}
-	
-	auto nextGrid = _gridMap->getGrid(nextPos);
-	auto curGrid = _gridMap->getGrid(getPosition());
-	
-/*---此处未实现占据格点的逻辑，因为当前寻路为静态寻路---*/
-	if (nextGrid == curGrid)
-	{
-		setPosition(nextPos);
 		return;
 	}
 	
@@ -283,7 +278,12 @@ void Unit::trace()
 		setState(WONDERING);
 		return;
 	}
-
+	if (_unitManager->_getUnitById.count(_traceId) == 0)
+	{
+		_traceId = -1;
+		setState(WONDERING);
+		return;
+	}
 	auto unit = _unitManager->_getUnitById.at(_traceId);
 	if (unit == nullptr)
 	{
@@ -299,10 +299,11 @@ void Unit::trace()
 	}
 
 	//离攻击目标太远，寻路.....
-	static int timer = 0;//当离追击物太远时每5帧更新一次路径
-	if (++timer == 10)
+	//static int timer = 0;
+	//当离追击物太远时每10帧更新一次路径
+	if (++_traceTimer == 10)
 	{
-		timer = 0;//置0
+		_traceTimer = 0;//置0
 		if (!_unitManager->isOurBro(_id))
 			return;
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>抽成函数

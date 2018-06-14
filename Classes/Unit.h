@@ -65,6 +65,11 @@ public:
 	GridMap::GridVector getPath(const Grid& dest);
 
 protected:
+	virtual bool isBuilding()
+	{
+		return false;
+	}
+
 	void setId(int id)
 	{
 		_id = id;
@@ -110,6 +115,7 @@ protected:
 	int _attackCd;//距离上一次攻击的帧数
 	int _attackCdMax;//每次攻击冷却需要的时间
 	float _attackRange;//攻击范围
+	int _traceTimer = 0;//追击时寻路cd
 
 	int _attackEffect;//攻击伤害
 	int _lifeValue;//当前生命值
