@@ -5,6 +5,8 @@
 #cocos2d-x
 
 #temporary ignore png
+*.Resources
+
 *.png
 
 *.json

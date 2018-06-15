@@ -3,13 +3,14 @@
 #include "GameManager.h"
 #include"SimpleAudioEngine.h"
 #include"ui/CocosGUI.h"
+#include "RealUnit.h"
 using namespace ui;
 using namespace CocosDenshion;
 
 #include <string>
 
 USING_NS_CC;
-
+typedef Unit::Type Type;
 
 MainScene* MainScene::create()
 {
@@ -47,13 +48,9 @@ bool MainScene::init()
 	//_client->sendMessage("Client is ready");
 	//_client->sendMessage(_client->ip);
 
-	//控制面板
-	_controlPanel = ControlPanel::create();
-	this->addChild(_controlPanel, 10);
-	_controlPanel->setPosition(_screenWidth, _screenHeight);
-
-
-
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	_screenWidth = visibleSize.width;
+	_screenHeight = visibleSize.height;
 
 	//启用定时器回调更新函数
 	scheduleUpdate();
@@ -62,21 +59,23 @@ bool MainScene::init()
 	_gameManager = GameManager::create(this);
 	this->addChild(_gameManager);
 
-	auto visibleSize = Director::getInstance()->getVisibleSize();
-	_screenWidth = visibleSize.width;
-	_screenHeight = visibleSize.height;
-
 	//暂时用lostTemple.tmx
 	_tiledMap = TMXTiledMap::create("Map/LostTemple.tmx");
 
 	_tiledMap->setAnchorPoint(Vec2::ZERO);
 	_tiledMap->setPosition(Vec2::ZERO);
+	this->addChild(_tiledMap, 0);
+
+	//控制面板
+	_controlPanel = ControlPanel::create();
+	_tiledMap->addChild(_controlPanel, 10);
+	_controlPanel->setPosition(0, 0);
+	//_controlPanel->setAnchorPoint(Vec2(0.f, 0.f));
+	_controlPanel->setVisible(false);
 
 	_gridMap = GridMap::create(_tiledMap);
-
 	this->addChild(_gridMap);
 
-	this->addChild(_tiledMap, 0);
 
 	_unitManager = UnitManager::createWithScene(this);
 	_unitManager->schedule(schedule_selector(UnitManager::update));
@@ -131,10 +130,10 @@ bool MainScene::init()
 		auto target = static_cast<Sprite*>(event->getCurrentTarget());
 		target->setOpacity(255);
 		target->setPosition(base_0_position);
-		Unit* base_0 = Unit::create("base_0.png");
-		base_0->addToMap(_gridMap, _tiledMap);
-		base_0->_unitManager = _unitManager;
-		base_0->setPosition(_tiledMap->convertToNodeSpace(touch->getLocation()));
+		log("touch: %f, %f", touch->getLocation().x, touch->getLocation().y);
+		auto pos = _tiledMap->convertToNodeSpace(touch->getLocation());
+		//auto grid = _gridMap->getGrid(pos);
+		_unitManager->localCreateUnit(Type::FACTORY, pos);
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, base_0_button);
 	//-----------------------//
@@ -143,11 +142,11 @@ bool MainScene::init()
 	_unitManager->createUnit(1, 0, Grid(10, 18));
 
 	//test rectSelect
-	_unitManager->createUnit(4, 0);
-	_unitManager->createUnit(8, 0);
-	_unitManager->selectOneUnit(8);
+	//_unitManager->createUnit(4, 0);
+	//_unitManager->createUnit(8, 0);
+	//_unitManager->selectOneUnit(8);
 
-	_unitManager->selectOneUnit(4);
+	//_unitManager->selectOneUnit(4);
 	//_unitManager->_getUnitById[4]->setTraceId(1);
 	//_unitManager->_getUnitById[8]->setTraceId(1);
 	//_unitManager->_getUnitById[4]->setState(Unit::TRACING);
@@ -205,7 +204,6 @@ bool MainScene::init()
 
 		return true;
 	};
-
 	keyboardListener->onKeyReleased = [=](EventKeyboard::KeyCode keyCode, Event* event)
 	{
 		auto mapCenter = this->_tiledMap->getPosition();
@@ -278,17 +276,36 @@ bool ControlPanel::init()
 	_fighter = MenuItemImage::create("fighter.png",
 		"fighter.png", CC_CALLBACK_1(ControlPanel::createFighterCallBack, this));
 	assert(_fighter != nullptr);
+	_tank = MenuItemImage::create("tank.png",
+		"tank.png", CC_CALLBACK_1(ControlPanel::createTankCallBack, this));
+	assert(_tank != nullptr);
 
-	_fighter->setAnchorPoint(Vec2(1, 1));
-	_fighter->setPosition(getContentSize().width, getContentSize().height);
-	//把坦克的图片挂在控制面板上
+	_fighter->setScale(0.8f);
+	_tank->setScale(0.8f);
+
+	_fighter->setAnchorPoint(Vec2::ZERO);
+	_fighter->setPosition(getContentSize().width / 2 - 10, getContentSize().height / 2);
+	_tank->setAnchorPoint(Vec2::ZERO);
+	_tank->setPosition(getContentSize().width / 2 + 10, getContentSize().height / 2);
+
+	//把图片挂在控制面板上
 	this->addChild(_fighter, 10);
-
+	this->addChild(_tank, 10);
 
 	return true;
 }
 
+class Factory;
 void ControlPanel::createFighterCallBack(Ref* psender)
 {
-	_fighter->setOpacity(100);
+	//_fighter->setOpacity(100);
+	setVisible(false);
+	_factory->localCreateUnit_(Type::FIGHTER);
+}
+
+void ControlPanel::createTankCallBack(Ref* pSender)
+{
+	//_tank->setOpacity(100);
+	setVisible(false);
+	_factory->localCreateUnit_(Type::TANK);
 }

@@ -25,13 +25,15 @@ bool UnitManager::initWithScene(MainScene* mainScene)
 	_client = mainScene->_client;
 	_tiledMap = mainScene->_tiledMap;
 	_gridMap = mainScene->_gridMap;
+	_controlPanel = mainScene->_controlPanel;
 
 	assert(_client != nullptr);
 	assert(_tiledMap != nullptr);
 	assert(_gridMap != nullptr);
+	assert(_controlPanel != nullptr);
 
 	_playerId = 0;//联网后此处得改
-	_nextId = _playerId;
+	_nextId = _playerId + MAX_PLAYER_NUM;
 
 	return true;
 }
@@ -41,6 +43,7 @@ bool UnitManager::init()
 {
 	_playerId = 0;
 	_nextId = _playerId;
+
 
 	return true;
 }
@@ -70,6 +73,14 @@ void UnitManager::selectUnitByRect(const Rect& rect)
 	selectId(rect);
 }
 
+void UnitManager::selectBuilding(Unit* building)
+{
+	Building* camp = dynamic_cast<Building*>(building);
+	assert(camp != nullptr);
+	
+	camp->localCreateUnit();
+}
+
 void UnitManager::selectUnitByPoint(const Point& point)
 {
 	//如果没有选中的单位
@@ -80,6 +91,12 @@ void UnitManager::selectUnitByPoint(const Point& point)
 			if (isOurBro(item.first) &&
 				item.second->getBoundingBox().containsPoint(point))
 			{
+				if (item.second->isBuilding())
+				{
+					selectBuilding(item.second);
+					return;
+				}
+
 				selectOneUnit(item.first);//选中一个单位，返回
 				return;
 			}
@@ -97,6 +114,12 @@ void UnitManager::selectUnitByPoint(const Point& point)
 			if (isOurBro(item.first))
 			{
 				abandonSelectedId();
+				
+				if (item.second->isBuilding())//选中建筑
+				{
+					selectBuilding(item.second);
+					return;
+				}
 				selectOneUnit(item.first);//选中一个单位，返回
 				return;
 			}
@@ -111,11 +134,7 @@ void UnitManager::selectUnitByPoint(const Point& point)
 					Encoder encoder("p", id);
 					std::string msg = encoder.encodeAttack(item.first);
 					_client->sendMessage(msg);
-					//unit->setTraceId(item.first);
-					//unit->setGridPath(GridMap::GridVector());//置空格点路径数组
-					//unit->_gridPath.clear();//抽个函数
-					//unit->setState(Unit::TRACING);
-					//>>>>>>>>>>>>>>>>>>>>>>send traceMessage 
+					
 				}
 
 				return;
@@ -183,7 +202,8 @@ void UnitManager::selectId(const Rect& rect)
 	for (const auto&idWithUnit : _getUnitById)
 	{
 		if (isOurBro(idWithUnit.first) && //自己人才享有控制权
-			rect.containsPoint(idWithUnit.second->getPosition()))
+			rect.containsPoint(idWithUnit.second->getPosition())&&
+			!idWithUnit.second->isBuilding())//建筑不被框选
 		{
 			selectOneUnit(idWithUnit.first);
 		}
@@ -193,10 +213,10 @@ void UnitManager::selectId(const Rect& rect)
 void UnitManager::selectOneUnit(int id)
 {
 	_selectId.push_back(id);
-	_getUnitById[id]->setOpacity(100);
+	_getUnitById[id]->setOpacity(200);
 }
 
-void UnitManager::localCreateUnit(int/* type*/, const Point& point)
+void UnitManager::localCreateUnit(int type, const Point& point)
 {
 	//!!!--------加个判断不让point选取在障碍物之上--------!!!//
 	auto createGrid = _gridMap->getGrid(point);
@@ -205,29 +225,62 @@ void UnitManager::localCreateUnit(int/* type*/, const Point& point)
 	int id = getNextId();
 
 	//根据type,id,position发信息给客户端
-	_client->sendMessage("create a unit");
+	Encoder encoder("c", id);
+	std::string createMsg = encoder.encodeCreate(type, nearValidGrid);
+	_client->sendMessage(createMsg);
 }
 
 void UnitManager::createUnit(int id, int type, const Grid& createGrid)
+{
+	auto sequence = Sequence::create(
+		DelayTime::create(2.0f),
+		CallFunc::create([=] {
+		createUnit_(id, type, createGrid);
+	}),
+		NULL
+		);
+
+	runAction(sequence);
+}
+
+void UnitManager::createUnit_(int id, int type, const Grid& createGrid)
 {
 	Unit* unit = nullptr;
 	switch(type)
 	{
 	case Unit::Type::TANK: {
-		unit = Tank::create();
+		unit = Tank::create(id);
 		break;
 	}
 	case Unit::Type::SOILDER: {
-		unit = Soldier::create();
+		unit = Soldier::create(id);
+		break;
+	}
+	case Unit::Type::SOLDIERCAMP: {
+		unit = SoldierCamp::create(id);
+		break;
+	}
+	case Unit::Type::BASE: {
+		unit = Base::create(id);
+		break;
+	}
+	case Unit::Type::FIGHTER: {
+		unit = Fighter::create(id);
+		break;
+	}
+	case Unit::Type::FACTORY: {
+		unit = Factory::create(id);
 		break;
 	}
 	default:
+		assert(0);//控制不应该到达这里
 		break;
 	}
 	
 
-	unit->addToMap(_gridMap, _tiledMap);
 	unit->setPosition(_gridMap->getPoint(createGrid));
+	unit->addToMap(_gridMap, _tiledMap);//注意setPosition和addToMap的先后顺序，事关Building
+
 	unit->setManager(this);
 	unit->setId(id);
 
@@ -238,11 +291,22 @@ void UnitManager::createUnit(int id, int type, const Grid& createGrid)
 
 void UnitManager::deleteUnit(int id)
 {
+	if (_getUnitById.count(id) == 0)
+	{
+		return;
+	}
 	auto unit = _getUnitById.at(id);
 	assert(unit != nullptr);
 
+	if (unit->isBuilding())//建筑需要去除其在格点地图占位的逻辑
+	{
+		auto grid = _gridMap->getGrid(unit->getPosition());
+		_gridMap->_isOccupied[grid._x][grid._y] = 0;
+	}
+	_tiledMap->removeChild(unit->_hp,true);
 	_tiledMap->removeChild(unit, true);
 	_getUnitById.erase(id);
+	
 }
 void UnitManager::deleteUnit(Unit* unit)
 {
@@ -299,12 +363,15 @@ void UnitManager::updateUnitState()
 	{
 		if (!imreadyFlag&&order[0] == 'I') {//Id(%d
 			_playerId = order[3] - '1';
+			_nextId = _playerId + MAX_PLAYER_NUM;
 			imreadyFlag = true;
 			_client->sendMessage("Client ready!");
 			return;
 		}
 		else if (order[0] == 'S')//Start!
 		{
+			_playerNum = order[7] - '0';
+			initAllBase();
 			startFlag = true;
 			return;
 		}
@@ -317,11 +384,11 @@ void UnitManager::updateUnitState()
 	}
 	
 	Decoder decoder(order);	
-	
+	int id = decoder.getId();
+
 	switch (decoder.getType()) {
 	case 't':
 	case 'm': {
-		int id = decoder.getId();
 		auto path = decoder.decodePath();
 		auto pUnit = _getUnitById[id];
 
@@ -341,7 +408,7 @@ void UnitManager::updateUnitState()
 		break;
 	}
 	case 'a': {
-		int id = decoder.getId();
+		//int id = decoder.getId();
 		int targetId = decoder.decodeTargetId();
 		/*Encoder encoder("a", id);
 		auto msg = encoder.encodeAttack(targetId);
@@ -360,7 +427,7 @@ void UnitManager::updateUnitState()
 		break;
 	}
 	case 'p': {
-		int id = decoder.getId();
+		//int id = decoder.getId();
 		int targetId = decoder.decodeTargetId();
 		if (_getUnitById.count(id) != 1)break;
 		auto unit = _getUnitById[id];
@@ -372,7 +439,9 @@ void UnitManager::updateUnitState()
 		break;
 	}
 	case 'c': {
-		
+		int type = decoder.decodeCreateType();
+		auto grid = decoder.decodeCreateGrid();
+		createUnit(id, type, grid);
 		break;
 	}
 	default:
@@ -406,4 +475,16 @@ int UnitManager::getIdByUnit(Unit* unit)
 	}
 
 	return -1;//该单位已拜拜
+}
+
+void UnitManager::initAllBase()
+{
+	assert(_playerNum > 0);
+	for (int id = 0;id < _playerNum;++id)
+	{
+		createUnit_(id, Unit::Type::BASE, basePos[id]);
+	}
+
+	assert(_playerId >= 0 && _playerId < MAX_PLAYER_NUM);
+	_basePos = basePos[_playerId];
 }

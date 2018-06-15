@@ -28,7 +28,7 @@ public:
 	enum State {
 		WONDERING = 0,//发呆中，可能会触发自动攻击
 		MOVING,//移动
-		ATTACKING,//攻击，感觉不需要这个逻辑？
+		NOSTATE,//建筑专用
 		TRACING,//追击
 	};
 
@@ -36,10 +36,13 @@ public:
 		TANK = 0,//坦克
 		SOILDER,//士兵
 		FIGHTER,//飞机
-		TOWER//防御塔
+		SOLDIERCAMP,//兵营
+		FACTORY,//坦克和飞机工厂
+		BASE,//基地
+		TOWER,//防御塔
 	};
 //protected:
-	void addToMap(GridMap* gridMap, TMXTiledMap* _tiledMap);
+	virtual void addToMap(GridMap* gridMap, TMXTiledMap* _tiledMap);
 
 	int _id = 0;//每个Unit的id都是不一样的
 
@@ -62,7 +65,7 @@ public:
 
 	void moveTest();
 
-	GridMap::GridVector getPath(const Grid& dest);
+	virtual GridMap::GridVector getPath(const Grid& dest);
 
 protected:
 	virtual bool isBuilding()
@@ -131,5 +134,6 @@ private:
 	void sendAttackMsg(int targetId);
 	void trace();
 	bool inAtkRange(Unit* unit);
+	void attack(int id);//追击时的攻击
 };
 

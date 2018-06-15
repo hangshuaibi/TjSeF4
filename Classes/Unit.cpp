@@ -149,6 +149,8 @@ void Unit::update(float delta)
 {
 	
 	switch (_state) {
+	case NOSTATE:
+		break;
 	case MOVING:
 		//moveTest();
 		move();
@@ -268,16 +270,7 @@ void Unit::sendAttackMsg(int targetId)
 
 void Unit::trace()
 {
-	//不是自己的unit则直接返回
-	if (!_unitManager->isOurBro(_id))
-	{
-		//return;
-	}
-	else if (_traceId == -1)
-	{
-		setState(WONDERING);
-		return;
-	}
+	//不是自己的id不发消息
 	if (_unitManager->_getUnitById.count(_traceId) == 0)
 	{
 		_traceId = -1;
@@ -285,16 +278,14 @@ void Unit::trace()
 		return;
 	}
 	auto unit = _unitManager->_getUnitById.at(_traceId);
-	if (unit == nullptr)
-	{
-		_traceId = -1;
-		return;
-	}
+	assert(unit != nullptr);
 
 	if (inAtkRange(unit))//找到攻击目标
 	{
 		if (_unitManager->isOurBro(_id))
-			autoAttack();
+		{
+			attack(_traceId);//发消息
+		}
 		return;
 	}
 
@@ -324,4 +315,21 @@ bool Unit::inAtkRange(Unit* unit)
 
 	float distance =(this->getPosition() - unit->getPosition()).length();
 	return distance <= _attackRange;
+}
+
+void Unit::attack(int id)
+{
+	if (_unitManager->_getUnitById.count(id) == 0)
+	{
+		return;
+	}
+
+	if (_attackCd == _attackCdMax)
+	{
+		sendAttackMsg(id);
+	}
+	if (++_attackCd > _attackCdMax)
+	{
+		_attackCd = 0;
+	}
 }

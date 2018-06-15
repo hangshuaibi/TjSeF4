@@ -5,6 +5,7 @@
 #include "UnitManager.h"
 #include "GameManager.h"
 #include "Network/Client.h"
+//#include "RealUnit.h"
 
 USING_NS_CC;
 
@@ -63,14 +64,19 @@ private:
 };
 
 class ControlPanel :public Menu {
+	friend class Factory;
 public:
 	CREATE_FUNC(ControlPanel);
 	bool init();
 
 	void createFighterCallBack(Ref* pSender);
+	void createTankCallBack(Ref* pSender);
 private:
 	//children
 	MenuItemImage* _fighter = nullptr;
+	MenuItemImage* _tank = nullptr;
+	Factory* _factory = nullptr;//当前和控制面板连接的factory，实现回调
+	
 
 	/*用mainScene初始化panel，用于代替init*/
 	bool initWithScene(MainScene* scene);
