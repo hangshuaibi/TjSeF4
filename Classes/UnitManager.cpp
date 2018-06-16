@@ -27,15 +27,19 @@ bool UnitManager::initWithScene(MainScene* mainScene)
 	_gridMap = mainScene->_gridMap;
 	_controlPanel = mainScene->_controlPanel;
 	_notice = mainScene->_notice;
+	_goldLabel = mainScene->_goldLabel;
+	_powerLabel = mainScene->_powerLabel;
 
 	assert(_client != nullptr);
 	assert(_tiledMap != nullptr);
 	assert(_gridMap != nullptr);
 	assert(_controlPanel != nullptr);
 	assert(_notice != nullptr);
+	assert(_goldLabel != nullptr);
+	assert(_powerLabel != nullptr);
 
-	_playerId = 0;//联网后此处得改
-	_nextId = _playerId + MAX_PLAYER_NUM;
+	//_playerId = 0;//联网后此处得改
+	//_nextId = _playerId + MAX_PLAYER_NUM;
 
 	return true;
 }
@@ -357,6 +361,8 @@ void UnitManager::setPath(int id, GridMap::GridVector path)
 
 void UnitManager::updateUnitState()
 {
+	updateLabel();//更新资源
+
 	static bool startFlag = false;
 	static bool imreadyFlag = false;
 
@@ -385,6 +391,7 @@ void UnitManager::updateUnitState()
 		return;
 	}
 	
+
 	Decoder decoder(order);	
 	int id = decoder.getId();
 
@@ -528,4 +535,26 @@ void UnitManager::notice(Notice note)
 		NULL
 		);
 	runAction(sequence);
+}
+
+void UnitManager::updateLabel()
+{
+	static int timer = 0;
+	static char gold[20] = "";//烫烫烫烫烫
+	static char power[20] = "";
+	static std::string gold_;
+	static std::string power_;
+
+
+	if (++timer == 60)
+	{
+		timer = 0;
+		sprintf(gold, "%d", _gold);
+		sprintf(power, "%d", _electricity);
+		gold_.assign(gold);
+		power_.assign(power);
+
+		_goldLabel->setString(gold_);
+		_powerLabel->setString(power_);
+	}
 }

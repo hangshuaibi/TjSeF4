@@ -51,6 +51,8 @@ public:
 private:
 	int _gold = 1000;
 	int _electricity = 1000;
+	Label* _goldLabel = nullptr;
+	Label* _powerLabel = nullptr;
 
 	int _playerNum = 0;
 
@@ -115,7 +117,7 @@ private:
 
 	void selectOneUnit(int id);
 
-	//void updateUnitHp();
+	void updateLabel();
 
 	void updateUnitState();
 

@@ -30,12 +30,16 @@ public:
 	static MainScene* create();
 
 	static MainScene* createScene();
-
-	virtual bool init();
-
-	//virtual void update(float delta);
-
 private:
+	bool init();
+
+	void initButton(EventListenerTouchOneByOne* buildingButton);
+
+	void initLabel();
+private:
+	Label* _goldLabel = nullptr;//金钱的显示
+	Label* _powerLabel = nullptr;//电力的显示
+
 	ControlPanel* _controlPanel = nullptr;//生产飞机和坦克的控制面板
 	Label* _notice = nullptr;//消息提示
 

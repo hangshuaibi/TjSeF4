@@ -104,8 +104,8 @@ Base* Base::create(int id)
 {
 	Base* ret = new Base();
 
-	std::string filename = "picture/units/base";
-	filename.append(suffix[id%MAX_PLAYER_NUM]);
+	std::string filename = "picture/units/basement.png";
+	//filename.append(suffix[id%MAX_PLAYER_NUM]);
 
 	if (ret&&ret->initWithFile(filename))
 	{
@@ -158,7 +158,7 @@ Factory* Factory::create(int id)
 {
 	Factory* ret = new Factory();
 
-	std::string filename = "picture/units/soldiercamp";
+	std::string filename = "picture/units/factory";
 	filename.append(suffix[id%MAX_PLAYER_NUM]);
 
 	if (ret&&ret->initWithFile(filename))
@@ -176,8 +176,8 @@ Mine* Mine::create(int id)
 {
 	Mine* ret = new Mine();
 
-	std::string filename = "picture/units/base";
-	filename.append(suffix[id%MAX_PLAYER_NUM]);
+	std::string filename = "picture/units/barracks.png";
+	//filename.append(suffix[id%MAX_PLAYER_NUM]);
 
 	if (ret&&ret->initWithFile(filename))
 	{
@@ -185,7 +185,7 @@ Mine* Mine::create(int id)
 
 		return ret;
 	}
-
+	assert(0);
 	CC_SAFE_DELETE(ret);
 	return nullptr;
 }
@@ -194,8 +194,8 @@ ElectricityFactory* ElectricityFactory::create(int id)
 {
 	ElectricityFactory* ret = new ElectricityFactory();
 
-	std::string filename = "picture/units/base";
-	filename.append(suffix[id%MAX_PLAYER_NUM]);
+	std::string filename = "picture/units/storage.png";
+	//filename.append(suffix[id%MAX_PLAYER_NUM]);
 
 	if (ret&&ret->initWithFile(filename))
 	{
@@ -203,7 +203,7 @@ ElectricityFactory* ElectricityFactory::create(int id)
 
 		return ret;
 	}
-
+	assert(0);
 	CC_SAFE_DELETE(ret);
 	return nullptr;
 }

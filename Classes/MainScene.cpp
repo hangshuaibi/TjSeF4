@@ -4,6 +4,10 @@
 #include"SimpleAudioEngine.h"
 #include"ui/CocosGUI.h"
 #include "RealUnit.h"
+#include "Button.h"
+
+#include <tuple>
+
 using namespace ui;
 using namespace CocosDenshion;
 
@@ -55,6 +59,7 @@ bool MainScene::init()
 	//启用定时器回调更新函数
 	scheduleUpdate();
 
+	//消息提示
 	_notice = Label::create();
 	_notice->setPosition(_screenWidth / 2, _screenHeight - 10.0f);
 	_notice->setString("so boring");
@@ -81,67 +86,48 @@ bool MainScene::init()
 	_gridMap = GridMap::create(_tiledMap);
 	this->addChild(_gridMap);
 
+	initLabel();
 
 	_unitManager = UnitManager::createWithScene(this);
 	_unitManager->schedule(schedule_selector(UnitManager::update));
 	
 	this->addChild(_unitManager);
-
+	
 	_mouseRect = MouseRect::create();
 	_mouseRect->setVisible(false);
 	_tiledMap->addChild(_mouseRect, 10);
 	//-----------------------//
-	auto base_0_button = Sprite::create("base_0.png");
-	base_0_button->setPosition(Vec2(visibleSize.width- base_0_button->getContentSize().width * 2, visibleSize.height - base_0_button->getContentSize().height * 2));
-	this->addChild(base_0_button);
-	Vec2 base_0_position = base_0_button->getPosition();
-	auto base_0_button1 = Sprite::create("base_0.png");
-	base_0_button1->setPosition(base_0_position);
-	this->addChild(base_0_button1);
 	//创建单点触摸监听器
-	auto listener1 = EventListenerTouchOneByOne::create();
-	listener1->setSwallowTouches(true);
-	listener1->onTouchBegan = [=](Touch* touch, Event* event)
-	{
-		//获得当前触摸事件的目标对象
-		auto target = static_cast<Sprite*>(event->getCurrentTarget());
-		//获得当前的触摸点
-		Point locationPoint = target->convertToNodeSpace(touch->getLocation());
-		//获得触摸坐标
-		Vec2 touchLocation = touch->getLocation();
-		
+	auto buildingListener = EventListenerTouchOneByOne::create();
+	buildingListener->setSwallowTouches(true);
 
-		//获得触摸对象的contentSize
-		Size s = target->getContentSize();
-		//获得位置矩形
-		Rect rect = Rect(0, 0, s.width, s.height);
-		if (rect.containsPoint(locationPoint))
-		{
-			target->setOpacity(180);
-			return true;
-		}
-		return false;
-	};
-	listener1->onTouchMoved=[](Touch* touch, Event* event)
+	buildingListener->onTouchBegan = [=](Touch* touch, Event* event)
 	{
-		auto target = static_cast<Sprite*>(event->getCurrentTarget());
+		auto target = dynamic_cast<BButton*>(event->getCurrentTarget());
+		assert(target != nullptr);
+
+		target->onPress();
+		return target->isTouched(touch);
+	};
+	buildingListener->onTouchMoved=[](Touch* touch, Event* event)
+	{
+		auto target = dynamic_cast<BButton*>(event->getCurrentTarget());
+		assert(target != nullptr);
+		auto copy = target->copy();
+
 		//移动触摸的精灵
-		target->setPosition(target->getPosition() + touch->getDelta());
+		copy->setPosition(copy->getPosition() + touch->getDelta());
 
 	};
-	listener1->onTouchEnded = [=](Touch* touch, Event* event)
+	buildingListener->onTouchEnded = [=](Touch* touch, Event* event)
 	{
-		
-		auto target = static_cast<Sprite*>(event->getCurrentTarget());
-		target->setOpacity(255);
-		target->setPosition(base_0_position);
-		log("touch: %f, %f", touch->getLocation().x, touch->getLocation().y);
-		auto pos = _tiledMap->convertToNodeSpace(touch->getLocation());
-		//auto grid = _gridMap->getGrid(pos);
-		_unitManager->localCreateUnit(Type::FACTORY, pos);
+		auto target = dynamic_cast<BButton*>(event->getCurrentTarget());
+		assert(target != nullptr);
+
+		target->onRelease();
 	};
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(listener1, base_0_button);
 	//-----------------------//
+	initButton(buildingListener);
 
 
 	_unitManager->createUnit(1, 0, Grid(10, 18));
@@ -269,6 +255,55 @@ bool MainScene::init()
 void MainScene::update(float delta)
 {
 	_gameManager->scrollMap();
+}
+
+void MainScene::initButton(EventListenerTouchOneByOne* buildingListener)
+{//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	auto factoryButton = BButton::create(this, Type::FACTORY, "picture/units/factory_0.png");
+	auto campButton = BButton::create(this, Type::SOLDIERCAMP, "picture/units/soldiercamp_0.png");
+	auto mineButton = BButton::create(this, Type::MINE, "picture/units/barracks.png");
+	auto eleFactoryButton = BButton::create(this, Type::ELECTRICITYFACTORY, "picture/units/storage.png");
+
+	factoryButton->setPosition(_screenWidth - 40, _screenHeight - 80);
+	campButton->setPosition(_screenWidth - 40, _screenHeight - 130);
+	mineButton->setPosition(_screenWidth - 40, _screenHeight - 180);
+	eleFactoryButton->setPosition(_screenWidth - 40, _screenHeight - 230);
+
+	this->addChild(factoryButton, 10);
+	this->addChild(campButton, 10);
+	this->addChild(mineButton, 10);
+	this->addChild(eleFactoryButton, 10);
+
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener, factoryButton);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), campButton);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), mineButton);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), eleFactoryButton);
+}
+
+void MainScene::initLabel()
+{
+	auto goldPng = Sprite::create("picture/ui/gold_.png");
+	auto powerPng = Sprite::create("picture/ui/power.png");
+	goldPng->setPosition(15.0f, _screenHeight - 15.0f);
+	powerPng->setPosition(_screenWidth / 4 - 10.0f, _screenHeight - 15.0f);
+	powerPng->setScale(0.7f);
+
+	this->addChild(goldPng);
+	this->addChild(powerPng);
+
+	_goldLabel = Label::create();
+	_powerLabel = Label::create();
+
+	_goldLabel->setPosition(goldPng->getPosition().x + goldPng->getContentSize().width * 0.7f,
+		goldPng->getPosition().y);
+	_powerLabel->setPosition(powerPng->getPosition().x + powerPng->getContentSize().width * 0.7f,
+		powerPng->getPosition().y);
+
+	this->addChild(_goldLabel);
+	this->addChild(_powerLabel);
+
+	_goldLabel->setColor(Color3B::YELLOW);
+	_powerLabel->setColor(Color3B::YELLOW);
 }
 
 bool ControlPanel::init()
