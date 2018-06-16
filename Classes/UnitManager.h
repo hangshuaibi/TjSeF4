@@ -11,6 +11,13 @@
 using std::map;
 USING_NS_CC;
 
+enum Notice {
+	NO_ENOUGH_MONEY=0,//金钱不足
+	BASE_ATTACKED,//基地遭受攻击
+	OCCUPIED_POSITION,//地方被占据（生产
+	PLEASE_WAIT,//
+};
+
 class Unit;
 class ControlPanel;
 class UnitManager:public Node {
@@ -19,14 +26,32 @@ class UnitManager:public Node {
 	friend class Unit;
 	friend class SoldierCamp;
 	friend class Factory;
-public:
+	friend class Mine;
+	friend class ElectricityFactory;
+private:
 	Grid basePos[MAX_PLAYER_NUM] = {//基地坐标
 		Grid(12,8),Grid(119,118),Grid(114,9),Grid(11,119),
 	};
+private:
+	//每个单位生产消耗的金钱
+	int costGold[10] = {
+		200,100,300,500,700,0,300,400
+	};
+	//每个单位生产消耗的电力
+	int costElectricity[10] = {
+		100,50,200,300,400,0,100,200
+	};
+public:
+	bool canCreate(int type);
 
+	void costForCreate(int type);
+//private:
 	Grid _basePos;//基地坐标
 	void initAllBase();
 private:
+	int _gold = 1000;
+	int _electricity = 1000;
+
 	int _playerNum = 0;
 
 	int _playerId = 0;
@@ -38,15 +63,32 @@ private:
 	TMXTiledMap* _tiledMap = nullptr;
 	Client* _client = nullptr;
 	ControlPanel* _controlPanel = nullptr;
+	Label* _notice = nullptr;
 
 private:
 	bool initWithScene(MainScene* mainScene);
+
 	bool init();
+
 	void selectId(const Rect& rect);//做矩形框选的实际工作
+
 	int getNextId();//下个id见			
-	void abandonSelectedId();//清空选择							 
+
+	void abandonSelectedId();//清空选择			
+
 	bool isOurBro(int id);//检测id对应的Unit是不是自己人
+
 public:
+	//获得当前的金钱总数
+	int getGold()
+	{
+		return _gold;
+	}
+	//获得当前的电力总数
+	int getElectricity()
+	{
+		return _electricity;
+	}
 
 	static UnitManager* createWithScene(MainScene* mainScene);
 
@@ -86,4 +128,6 @@ private:
 	bool unitMayDead(Unit* attackee);
 
 	int getIdByUnit(Unit* unit);
+
+	void notice(Notice note);
 };

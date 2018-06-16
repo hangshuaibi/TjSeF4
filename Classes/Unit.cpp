@@ -292,9 +292,9 @@ void Unit::trace()
 	//离攻击目标太远，寻路.....
 	//static int timer = 0;
 	//当离追击物太远时每10帧更新一次路径
-	if (++_traceTimer == 10)
+	if (++_timer == 10)
 	{
-		_traceTimer = 0;//置0
+		_timer = 0;//置0
 		if (!_unitManager->isOurBro(_id))
 			return;
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>抽成函数

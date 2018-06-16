@@ -12,6 +12,9 @@ protected:
 		_state = Unit::State::NOSTATE;
 		_moveSpeed = 0.f;
 		_attackEffect = 0;
+
+		initHp();
+		schedule(schedule_selector(Unit::update));
 	}
 
 	bool isBuilding()override

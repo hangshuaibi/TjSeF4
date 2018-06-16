@@ -26,11 +26,13 @@ bool UnitManager::initWithScene(MainScene* mainScene)
 	_tiledMap = mainScene->_tiledMap;
 	_gridMap = mainScene->_gridMap;
 	_controlPanel = mainScene->_controlPanel;
+	_notice = mainScene->_notice;
 
 	assert(_client != nullptr);
 	assert(_tiledMap != nullptr);
 	assert(_gridMap != nullptr);
 	assert(_controlPanel != nullptr);
+	assert(_notice != nullptr);
 
 	_playerId = 0;//联网后此处得改
 	_nextId = _playerId + MAX_PLAYER_NUM;
@@ -487,4 +489,43 @@ void UnitManager::initAllBase()
 
 	assert(_playerId >= 0 && _playerId < MAX_PLAYER_NUM);
 	_basePos = basePos[_playerId];
+}
+
+bool UnitManager::canCreate(int type)
+{
+	return getGold() > costGold[type] &&
+		getElectricity() > costElectricity[type];
+}
+
+void UnitManager::costForCreate(int type)
+{
+	_gold -= costGold[type];
+	_electricity -= costElectricity[type];
+
+	for (int i = 0;i < 8;++i)
+	{
+		log("costGold: %d", costGold[i]);
+	}
+}
+
+void UnitManager::notice(Notice note)
+{
+	static std::string msg[10] = {
+		"No enough money!",
+		"Base is attacked!",
+		"Position is occupied!",
+		"Please wait!",
+	};
+	
+	_notice->setVisible(true);
+	_notice->setString(msg[note]);
+	//延时消失
+	auto sequence = Sequence::create(
+		DelayTime::create(2.0f),
+		CallFunc::create([=] {
+		_notice->setVisible(false);
+	}),
+		NULL
+		);
+	runAction(sequence);
 }

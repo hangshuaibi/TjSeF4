@@ -39,7 +39,9 @@ public:
 		SOLDIERCAMP,//兵营
 		FACTORY,//坦克和飞机工厂
 		BASE,//基地
-		TOWER,//防御塔
+		MINE,//矿场
+		ELECTRICITYFACTORY,//电厂
+		//TOWER,//防御塔
 	};
 //protected:
 	virtual void addToMap(GridMap* gridMap, TMXTiledMap* _tiledMap);
@@ -118,7 +120,7 @@ protected:
 	int _attackCd;//距离上一次攻击的帧数
 	int _attackCdMax;//每次攻击冷却需要的时间
 	float _attackRange;//攻击范围
-	int _traceTimer = 0;//追击时寻路cd
+	int _timer = 0;//内部计数器
 
 	int _attackEffect;//攻击伤害
 	int _lifeValue;//当前生命值
@@ -127,7 +129,7 @@ protected:
 	int _traceId = -1;//追击目标Id
 
 public:
-	void update(float delta);
+	virtual void update(float delta);
 
 private:
 	//封装传递攻击消息的逻辑，供autoatk和trace使用

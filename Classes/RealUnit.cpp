@@ -171,3 +171,39 @@ Factory* Factory::create(int id)
 	CC_SAFE_DELETE(ret);
 	return nullptr;
 }
+
+Mine* Mine::create(int id)
+{
+	Mine* ret = new Mine();
+
+	std::string filename = "picture/units/base";
+	filename.append(suffix[id%MAX_PLAYER_NUM]);
+
+	if (ret&&ret->initWithFile(filename))
+	{
+		ret->autorelease();
+
+		return ret;
+	}
+
+	CC_SAFE_DELETE(ret);
+	return nullptr;
+}
+
+ElectricityFactory* ElectricityFactory::create(int id)
+{
+	ElectricityFactory* ret = new ElectricityFactory();
+
+	std::string filename = "picture/units/base";
+	filename.append(suffix[id%MAX_PLAYER_NUM]);
+
+	if (ret&&ret->initWithFile(filename))
+	{
+		ret->autorelease();
+
+		return ret;
+	}
+
+	CC_SAFE_DELETE(ret);
+	return nullptr;
+}

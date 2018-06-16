@@ -36,7 +36,8 @@ public:
 	//virtual void update(float delta);
 
 private:
-	ControlPanel* _controlPanel = nullptr;
+	ControlPanel* _controlPanel = nullptr;//生产飞机和坦克的控制面板
+	Label* _notice = nullptr;//消息提示
 
 	cocos2d::Point _cursorPosition{ 0, 0 };
 

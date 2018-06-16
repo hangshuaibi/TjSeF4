@@ -62,20 +62,24 @@ private:
 		_curCreateNum = 0;
 
 		Building::setProperties();
-
-		initHp();
-		schedule(schedule_selector(Unit::update));
 	}
 
 	virtual void localCreateUnit()override
 	{
 		if (_curCreateNum >= _maxCreateNum)
 		{
+			_unitManager->notice(Notice::PLEASE_WAIT);
 			return;
 		}
-		
+		if (!_unitManager->canCreate(Type::SOILDER))
+		{
+			_unitManager->notice(Notice::NO_ENOUGH_MONEY);
+			return;
+		}
+		log("gold: %d, money: %d", _unitManager->getGold(), _unitManager->getElectricity());
 		++_curCreateNum;
-		
+		_unitManager->costForCreate(Type::SOILDER);
+
 		auto validPos = findCreatePos();
 
 		_unitManager->localCreateUnit(Type::SOILDER, validPos);
@@ -130,9 +134,6 @@ private:
 		_curCreateNum = 0;
 
 		Building::setProperties();
-
-		initHp();
-		schedule(schedule_selector(Unit::update));
 	}
 
 	virtual void localCreateUnit()override
@@ -171,9 +172,21 @@ private:
 	{
 		if (_curCreateNum >= _maxCreateNum)
 		{
+			_unitManager->notice(Notice::PLEASE_WAIT);
 			return;
 		}
+
+		if (!_unitManager->canCreate(type))
+		{
+			_unitManager->notice(Notice::NO_ENOUGH_MONEY);
+			return;
+		}
+
 		++_curCreateNum;
+		_unitManager->costForCreate(type);
+		log("gold: %d, money: %d", _unitManager->getGold(), _unitManager->getElectricity());
+
+
 		auto validpos = findCreatePos();
 		_unitManager->localCreateUnit(type, validpos);
 		auto sequence = Sequence::create(
@@ -185,4 +198,83 @@ private:
 			);
 		runAction(sequence);
 	}
+};
+
+class Mine :public Building {
+public:
+	static Mine* create(int id);
+
+	void setProperties()override
+	{
+		_lifeValueMax = 300;
+		_lifeValue = _lifeValueMax;
+
+		Building::setProperties();
+	}
+private:
+	void localCreateUnit()override{/*empty*/ }
+
+	//血量自动减少，自然死亡1分钟
+	void updateLifeValue()
+	{
+		_lifeValue -= 5;
+	}
+
+	//增加金钱逻辑，每秒50
+	void updateGold()
+	{
+		_unitManager->_gold += 15;
+	}
+public:
+	void update(float delta)override
+	{
+		if (_timer == 60)
+		{
+			updateGold();
+			updateLifeValue();
+			_timer = 0;
+		}
+		++_timer;
+
+		Unit::updateHp();//调用父类updateHp
+	}
+};
+
+class ElectricityFactory:public Building {
+public:
+	static ElectricityFactory* create(int id);
+private:
+	void setProperties()override
+	{
+		_lifeValueMax = 600;
+		_lifeValue = _lifeValueMax;
+
+		Building::setProperties();
+	}
+
+	void updateLifeValue()
+	{
+		_lifeValue -= 6;
+	}
+
+	void updateElectricity()
+	{
+		_unitManager->_electricity += 10;
+	}
+public:
+	void update(float delta)override
+	{
+		if (_timer == 60)
+		{
+			updateElectricity();
+			updateLifeValue();
+			_timer = 0;
+		}
+		++_timer;
+
+		Unit::updateHp();//调用父类updateHp
+	}
+
+private:
+	void localCreateUnit()override {/*empty*/ }
 };

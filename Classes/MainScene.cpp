@@ -55,6 +55,11 @@ bool MainScene::init()
 	//启用定时器回调更新函数
 	scheduleUpdate();
 
+	_notice = Label::create();
+	_notice->setPosition(_screenWidth / 2, _screenHeight - 10.0f);
+	_notice->setString("so boring");
+	this->addChild(_notice, 10);
+
 	//获取GameManager实例
 	_gameManager = GameManager::create(this);
 	this->addChild(_gameManager);
