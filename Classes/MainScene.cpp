@@ -130,19 +130,6 @@ bool MainScene::init()
 	initButton(buildingListener);
 
 
-	_unitManager->createUnit(1, 0, Grid(10, 18));
-
-	//test rectSelect
-	//_unitManager->createUnit(4, 0);
-	//_unitManager->createUnit(8, 0);
-	//_unitManager->selectOneUnit(8);
-
-	//_unitManager->selectOneUnit(4);
-	//_unitManager->_getUnitById[4]->setTraceId(1);
-	//_unitManager->_getUnitById[8]->setTraceId(1);
-	//_unitManager->_getUnitById[4]->setState(Unit::TRACING);
-	//_unitManager->_getUnitById[8]->setState(Unit::TRACING);
-
 	auto mouseListener = EventListenerTouchOneByOne::create();
 	mouseListener->setSwallowTouches(true);//
 	mouseListener->onTouchBegan = [=](Touch* touch, Event* /*event*/) {

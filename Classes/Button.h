@@ -10,11 +10,13 @@
 USING_NS_CC;
 typedef  typename Unit::Type Type;
 
+class UnitManager;
 class BButton :public Sprite{
 private:
 	//副本，用于拖动时的显示
 	Sprite * _buttonCopy = nullptr;
 	Type _type;
+	UnitManager* _unitManager = nullptr;
 
 public:
 	static BButton* create(MainScene* scene, Type type, std::string filename);
@@ -30,4 +32,5 @@ public:
 
 	void onPress();//将副本设置为可见
 	void onRelease();//释放时生产单位
+	//void setUnitManager(UnitManager* unitManager);
 };

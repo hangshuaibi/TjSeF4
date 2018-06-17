@@ -133,10 +133,13 @@ void UnitManager::selectUnitByPoint(const Point& point)
 				//!!!-----暂未实现选中敌方的逻辑-----!!!//
 				for (auto id : _selectId)
 				{
-					assert(_getUnitById.count(id) == 1);
-					auto unit = _getUnitById.at(id);
+					if (_getUnitById.count(id) == 0)
+					{
+						continue;
+					}
+					//auto unit = _getUnitById.at(id);
 					
-					assert(unit != nullptr);
+					//assert(unit != nullptr);
 					Encoder encoder("p", id);
 					std::string msg = encoder.encodeAttack(item.first);
 					_client->sendMessage(msg);
@@ -278,6 +281,14 @@ void UnitManager::createUnit_(int id, int type, const Grid& createGrid)
 		unit = Factory::create(id);
 		break;
 	}
+	case Unit::Type::ELECTRICITYFACTORY: {
+		unit = ElectricityFactory::create(id);
+		break;
+	}
+	case Unit::Type::MINE: {
+		unit = Mine::create(id);
+		break;
+	}
 	default:
 		assert(0);//控制不应该到达这里
 		break;
@@ -308,6 +319,18 @@ void UnitManager::deleteUnit(int id)
 	{
 		auto grid = _gridMap->getGrid(unit->getPosition());
 		_gridMap->_isOccupied[grid._x][grid._y] = 0;
+		if (unit->_id < 4 && unit->_id >= 0)//这...这是基地的坐标
+		{
+			if (unit->_id == _playerId)
+			{
+				notice("Loser!");//loser
+				//切换场景
+			}
+			else if (++_loserNum == _playerNum - 1)
+			{
+				notice("Winner!");//winner
+			}
+		}
 	}
 	_tiledMap->removeChild(unit->_hp,true);
 	_tiledMap->removeChild(unit, true);
@@ -361,13 +384,11 @@ void UnitManager::setPath(int id, GridMap::GridVector path)
 
 void UnitManager::updateUnitState()
 {
-	updateLabel();//更新资源
-
-	static bool startFlag = false;
+	//static bool startFlag = false;
 	static bool imreadyFlag = false;
 
 	string order = _client->getMessage();
-	if (!startFlag)//未开始
+	if (!_startFlag)//未开始
 	{
 		if (!imreadyFlag&&order[0] == 'I') {//Id(%d
 			_playerId = order[3] - '1';
@@ -380,7 +401,7 @@ void UnitManager::updateUnitState()
 		{
 			_playerNum = order[7] - '0';
 			initAllBase();
-			startFlag = true;
+			_startFlag = true;
 			return;
 		}
 		return;
@@ -427,6 +448,10 @@ void UnitManager::updateUnitState()
 		auto atker = _getUnitById[id];
 		auto atkee = _getUnitById[targetId];
 		atker->shoot(atkee);
+		if (targetId == _playerId)
+		{
+			notice(Notice::BASE_ATTACKED);
+		}
 		if (unitMayDead(atkee))//为真时单位在此函数被删除
 		{
 			atker->setTraceId(-1);
@@ -460,6 +485,7 @@ void UnitManager::updateUnitState()
 
 void UnitManager::update(float delta)
 {
+	updateLabel();//更新资源
 	updateUnitState();
 }
 
@@ -522,6 +548,7 @@ void UnitManager::notice(Notice note)
 		"Base is attacked!",
 		"Position is occupied!",
 		"Please wait!",
+		"Relax, game hasn't been started.",
 	};
 	
 	_notice->setVisible(true);
@@ -535,6 +562,12 @@ void UnitManager::notice(Notice note)
 		NULL
 		);
 	runAction(sequence);
+}
+
+void UnitManager::notice(std::string note)
+{
+	_notice->setColor(Color3B::RED);
+	_notice->setString(note);
 }
 
 void UnitManager::updateLabel()

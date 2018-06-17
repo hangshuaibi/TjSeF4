@@ -104,12 +104,10 @@ public:
 	static Base* create(int id);
 	void setProperties()override
 	{
-		Building::setProperties();
-		initHp();
-
 		_lifeValueMax = 1000;
 		_lifeValue = _lifeValueMax;
-		schedule(schedule_selector(Unit::update));
+
+		Building::setProperties();
 	}
 	void localCreateUnit()override
 	{/*empty*/ }
@@ -218,16 +216,27 @@ private:
 	void updateLifeValue()
 	{
 		_lifeValue -= 5;
+		if (_lifeValue <= 0)
+		{
+			unschedule(schedule_selector(Unit::update));//<<<<<<<<<<<
+			_unitManager->deleteUnit(_id);
+		}
 	}
 
 	//增加金钱逻辑，每秒50
 	void updateGold()
 	{
+		if (!_unitManager->isOurBro(_id))
+		{
+			return;
+		}
 		_unitManager->_gold += 15;
 	}
 public:
 	void update(float delta)override
 	{
+		Unit::updateHp();//调用父类updateHp
+
 		if (_timer == 60)
 		{
 			updateGold();
@@ -235,8 +244,6 @@ public:
 			_timer = 0;
 		}
 		++_timer;
-
-		Unit::updateHp();//调用父类updateHp
 	}
 };
 
@@ -255,15 +262,26 @@ private:
 	void updateLifeValue()
 	{
 		_lifeValue -= 6;
+		if (_lifeValue <= 0)
+		{
+			unschedule(schedule_selector(Unit::update));//<<<<<<<<<<<
+			_unitManager->deleteUnit(_id);
+		}
 	}
 
 	void updateElectricity()
 	{
+		if (!_unitManager->isOurBro(_id))
+		{
+			return;
+		}
 		_unitManager->_electricity += 10;
 	}
 public:
 	void update(float delta)override
 	{
+		Unit::updateHp();//调用父类updateHp
+
 		if (_timer == 60)
 		{
 			updateElectricity();
@@ -271,8 +289,6 @@ public:
 			_timer = 0;
 		}
 		++_timer;
-
-		Unit::updateHp();//调用父类updateHp
 	}
 
 private:

@@ -21,10 +21,12 @@ struct MouseRect:public DrawNode {
 class ControlPanel;
 class GameManager;
 class UnitManager;
+class BButton;
 class MainScene :public Scene {
 	friend class GameManager;
 	friend class ControlPanel;//for create callback function
 	friend class UnitManager;
+	friend class BButton;
 
 public:
 	static MainScene* create();
@@ -33,7 +35,7 @@ public:
 private:
 	bool init();
 
-	void initButton(EventListenerTouchOneByOne* buildingButton);
+	void initButton(EventListenerTouchOneByOne* buildingListener);
 
 	void initLabel();
 private:

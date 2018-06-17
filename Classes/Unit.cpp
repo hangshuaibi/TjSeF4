@@ -147,7 +147,8 @@ void Unit::moveTest()
 
 void Unit::update(float delta)
 {
-	
+	updateHp();//更新血条进度，血量更新的逻辑应该在manager做
+
 	switch (_state) {
 	case NOSTATE:
 		break;
@@ -165,7 +166,6 @@ void Unit::update(float delta)
 		break;
 	}
 
-	updateHp();//更新血条进度，血量更新的逻辑应该在manager做
 }
 
 //射击

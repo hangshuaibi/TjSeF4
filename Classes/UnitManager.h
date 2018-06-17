@@ -15,7 +15,8 @@ enum Notice {
 	NO_ENOUGH_MONEY=0,//金钱不足
 	BASE_ATTACKED,//基地遭受攻击
 	OCCUPIED_POSITION,//地方被占据（生产
-	PLEASE_WAIT,//
+	PLEASE_WAIT,//生产兵需要cd
+	WAIT_FOR_START,//不要猴急
 };
 
 class Unit;
@@ -28,6 +29,7 @@ class UnitManager:public Node {
 	friend class Factory;
 	friend class Mine;
 	friend class ElectricityFactory;
+	friend class BButton;
 private:
 	Grid basePos[MAX_PLAYER_NUM] = {//基地坐标
 		Grid(12,8),Grid(119,118),Grid(114,9),Grid(11,119),
@@ -41,9 +43,12 @@ private:
 	int costElectricity[10] = {
 		100,50,200,300,400,0,100,200
 	};
+	bool _startFlag = false;
 public:
-	bool canCreate(int type);
+	bool isStart() { return _startFlag; }
 
+	bool canCreate(int type);
+	//肯定要花钱啊
 	void costForCreate(int type);
 //private:
 	Grid _basePos;//基地坐标
@@ -55,6 +60,7 @@ private:
 	Label* _powerLabel = nullptr;
 
 	int _playerNum = 0;
+	int _loserNum = 0;
 
 	int _playerId = 0;
 	int _nextId = -1;//下一个兵的id
@@ -130,6 +136,7 @@ private:
 	bool unitMayDead(Unit* attackee);
 
 	int getIdByUnit(Unit* unit);
-
+public:
 	void notice(Notice note);
+	void notice(std::string);
 };
