@@ -244,7 +244,7 @@ void UnitManager::createUnit(int id, int type, const Grid& createGrid)
 	auto sequence = Sequence::create(
 		DelayTime::create(2.0f),
 		CallFunc::create([=] {
-		createUnit_(id, type, createGrid);
+		createUnit_(id, type, createGrid);//转发
 	}),
 		NULL
 		);
@@ -317,8 +317,9 @@ void UnitManager::deleteUnit(int id)
 
 	if (unit->isBuilding())//建筑需要去除其在格点地图占位的逻辑
 	{
-		auto grid = _gridMap->getGrid(unit->getPosition());
-		_gridMap->_isOccupied[grid._x][grid._y] = 0;
+		auto area = unit->getOccupiedArea();//获取占据区域
+		_gridMap->setAreaValid(area);//将格点区域的bool逻辑设置为0
+
 		if (unit->_id < 4 && unit->_id >= 0)//这...这是基地的坐标
 		{
 			if (unit->_id == _playerId)

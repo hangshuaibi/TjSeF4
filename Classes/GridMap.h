@@ -58,5 +58,17 @@ public:
 	Grid getGrid(const Point& p);
 
 	bool isGridValid(const Grid& g);
+	bool isAreaValid(const GridVector& area);
+
+	//传入size和中心点得到对应范围的格点数组
+	GridMap::GridVector getArea(const Size& size, const Point& pos);
+	//设置区域被占据
+	void setAreaOccupied(const GridVector& area);
+	//清除区域被占据的逻辑
+	void setAreaValid(const GridVector& area);
+
+	void setGridOccupied(const Grid& grid);
+
+	void setGridValid(const Grid& grid);
 };
 

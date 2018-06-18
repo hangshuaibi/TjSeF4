@@ -6,7 +6,6 @@
 #include "RealUnit.h"
 #include "Button.h"
 
-#include <tuple>
 
 using namespace ui;
 using namespace CocosDenshion;
@@ -246,7 +245,26 @@ void MainScene::update(float delta)
 
 void MainScene::initButton(EventListenerTouchOneByOne* buildingListener)
 {//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-	auto factoryButton = BButton::create(this, Type::FACTORY, "picture/units/factory_0.png");
+	std::vector<BButton*> buttons = {
+		BButton::create(this, Type::FACTORY, "picture/units/factory_0.png"),
+		BButton::create(this, Type::SOLDIERCAMP, "picture/units/soldiercamp_0.png"),
+		BButton::create(this, Type::MINE, "picture/units/barracks.png"),
+		BButton::create(this, Type::ELECTRICITYFACTORY, "picture/units/storage.png"),
+	};
+	std::vector<Point> points = { Point(_screenWidth - 40, _screenHeight - 80),
+		Point(_screenWidth - 40, _screenHeight - 130),Point(_screenWidth - 40, _screenHeight - 180),
+		Point(_screenWidth - 40, _screenHeight - 230),
+	};
+
+	for (int i = 0;i < 4;++i)
+	{
+		this->addChild(buttons[i]);
+		buttons[i]->setPosition(points[i]);
+		auto listener = i == 0 ? (buildingListener) : (buildingListener->clone());
+		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, buttons[i]);
+	}
+
+	/*auto factoryButton = BButton::create(this, Type::FACTORY, "picture/units/factory_0.png");
 	auto campButton = BButton::create(this, Type::SOLDIERCAMP, "picture/units/soldiercamp_0.png");
 	auto mineButton = BButton::create(this, Type::MINE, "picture/units/barracks.png");
 	auto eleFactoryButton = BButton::create(this, Type::ELECTRICITYFACTORY, "picture/units/storage.png");
@@ -264,7 +282,7 @@ void MainScene::initButton(EventListenerTouchOneByOne* buildingListener)
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener, factoryButton);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), campButton);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), mineButton);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), eleFactoryButton);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), eleFactoryButton);*/
 }
 
 void MainScene::initLabel()

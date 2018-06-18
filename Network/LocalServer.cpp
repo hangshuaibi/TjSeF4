@@ -1,5 +1,8 @@
 #pragma once
 
+//#pragma warning(disable:4996)
+//#define ASIO_STANDALONE
+
 #include <cstdlib>
 #include <deque>
 #include <iostream>
@@ -121,10 +124,13 @@ public:
 		if (!startFlag && msg.body()[0] == 'C')//Client ready!>>>>>>>>>>>>>>>>>>>>>>>>
 		{
 			if (++preparedClientNum == clientNum
-				&& clientNum >= 2 //游戏人数大于2
+				//&& clientNum >= 2 //游戏人数大于2
 				)
 			{
-				chat_message startMsg = stringToMsg("Start!");
+				char info[20] = "";
+				sprintf(info, "Start!(%d", clientNum);
+
+				chat_message startMsg = stringToMsg(info);
 				for (auto participant : participants_)
 					participant->deliver(startMsg);
 

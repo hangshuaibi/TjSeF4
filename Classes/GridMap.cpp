@@ -196,3 +196,61 @@ bool GridMap::isGridValid(const Grid& g)
 {
 	return isGridInMap(g) && (_isOccupied[g._x][g._y] == 0);
 }
+
+bool GridMap::isAreaValid(const GridVector& area)
+{
+	for (auto& grid : area)
+	{
+		if (!isGridValid(grid))//有一个不合法则该区域不合法
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+GridMap::GridVector GridMap::getArea(const Size& size, const Point& pos)
+{
+	Point start_(pos.x - size.width / 2, pos.y - size.height / 2),
+		end_(pos.x + size.width / 2, pos.y + size.height / 2);
+
+	GridMap::GridVector area;
+	Grid start = getGrid(start_), end = getGrid(end_);
+	for (int x = start._x;x <= end._x;++x)
+	{
+		for (int y = start._y;y <= end._y;++y)
+		{
+			area.push_back(Grid(x, y));
+		}
+	}
+
+	return area;
+}
+
+void GridMap::setAreaOccupied(const GridVector& area)
+{
+	for (const auto& grid : area)
+	{
+		assert(isGridValid(grid));
+		setGridOccupied(grid);
+	}
+}
+
+void GridMap::setAreaValid(const GridVector& area)
+{
+	for (const auto& grid : area)
+	{
+		assert(!isGridValid(grid));
+		setGridValid(grid);
+	}
+}
+
+void GridMap::setGridOccupied(const Grid& grid)
+{
+	_isOccupied[grid._x][grid._y] = 1;
+}
+
+void GridMap::setGridValid(const Grid& grid)
+{
+	_isOccupied[grid._x][grid._y] = 0;
+}

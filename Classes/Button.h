@@ -33,4 +33,7 @@ public:
 	void onPress();//将副本设置为可见
 	void onRelease();//释放时生产单位
 	//void setUnitManager(UnitManager* unitManager);
+	GridMap::GridVector getArea(Point pos);//计算建筑以pos为中心将会占据的格点数组
+
+	bool isAreaOccupied(GridMap::GridVector area);
 };

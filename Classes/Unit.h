@@ -70,6 +70,13 @@ public:
 	virtual GridMap::GridVector getPath(const Grid& dest);
 
 protected:
+	virtual void setOccupiedArea(GridMap::GridVector area)//建筑类重载该函数
+	{/*empty*/ }
+	virtual GridMap::GridVector getOccupiedArea()
+	{
+		return GridMap::GridVector();//空数组
+	}
+
 	virtual bool isBuilding()
 	{
 		return false;
