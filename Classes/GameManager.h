@@ -11,7 +11,7 @@ class MainScene;
 class GameManager :public cocos2d::Node
 {
 protected:
-	MainScene* _mainScene;
+	MainScene * _mainScene;
 
 	TMXTiledMap* _tiledMap = nullptr;
 
@@ -23,4 +23,9 @@ public:
 	void focusOnBase();
 
 	void scrollMap();
+
+	std::string gameEncodeChat(std::string type, int id, std::string chatMessage);
+
+	std::string gameDecodeChat(std::string message);
 };
+

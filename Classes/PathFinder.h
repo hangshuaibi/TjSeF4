@@ -17,16 +17,16 @@ class PathFinder {
 	static const int DISTANCE1 = 14;
 
 	static const int DIRECTION_NUM = 8;
-	
+
 
 private:
 	struct grid {//作为PathFinder的内部实现
 		static const int MAX_VALUE = (1 << 31) - 1;
 
-		grid(int x = -1, int y = -1):
-			x(x),y(y),state(UNOCCUPIED),fValue(MAX_VALUE),
-			gValue(MAX_VALUE),hValue(MAX_VALUE),
-			parent(nullptr){}
+		grid(int x = -1, int y = -1) :
+			x(x), y(y), state(UNOCCUPIED), fValue(MAX_VALUE),
+			gValue(MAX_VALUE), hValue(MAX_VALUE),
+			parent(nullptr) {}
 
 
 		//横纵坐标
@@ -49,7 +49,7 @@ private:
 
 		grid* parent;
 
-	
+
 	};
 
 	int _mapWidth, _mapHeight;
@@ -61,7 +61,7 @@ private:
 
 	vector<vector<grid> > _gridTable;//格点表
 
-	
+
 	vector<grid*> _openList;//maybe use heap to make PA better
 
 public:
@@ -71,7 +71,7 @@ public:
 	bool searchPath();
 	void generatePath();
 
-private: 
+private:
 	//优化路径（缩短路径的长度，减少传输信息压力
 	void optimizePath();
 

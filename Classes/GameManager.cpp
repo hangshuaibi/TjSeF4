@@ -1,6 +1,7 @@
 #include "Data.h"
 #include "MainScene.h"
-
+#include "Messagetransfer/Encoder.h"
+#include "Messagetransfer/Decoder.h"
 USING_NS_CC;
 
 GameManager* GameManager::create(MainScene* mainScene)
@@ -30,18 +31,19 @@ void GameManager::focusOnBase()
 {
 	float duration = 0.1f;
 
-	Vec2 position = Vec2(100, 100);      //暂定的基地的位置
+	static Point basePos = _mainScene->_gridMap->getPoint(_mainScene->_unitManager->_basePos);
+	//Vec2 position = Vec2(100, 100);      //暂定的基地的位置
 
-	int x = MAX(position.x, _mainScene->_screenWidth / 2);
-	int y = MAX(position.y, _mainScene->_screenHeight / 2);
+	int x = MAX(basePos.x, _mainScene->_screenWidth / 2);
+	int y = MAX(basePos.y, _mainScene->_screenHeight / 2);
 
 	// 不让显示区域超出地图的边界
 
 	x = MIN(x, (_mainScene->_tiledMap->getMapSize().width *
-		_mainScene->_tiledMap->getTileSize().width - _mainScene->_screenWidth / 2));
+		_mainScene->_tiledMap->getTileSize().width / CC_CONTENT_SCALE_FACTOR() - _mainScene->_screenWidth / 2));
 
 	y = MIN(y, (_mainScene->_tiledMap->getMapSize().height *
-		_mainScene->_tiledMap->getTileSize().height - _mainScene->_screenHeight / 2));
+		_mainScene->_tiledMap->getTileSize().height / CC_CONTENT_SCALE_FACTOR() - _mainScene->_screenHeight / 2));
 
 	// 实际移动的位置坐标
 	Point actualPosition = Point(x, y);
@@ -139,4 +141,16 @@ void GameManager::scrollMap()
 		_mainScene->_tiledMap->setPosition(mapCenter);
 	}
 
+}
+
+std::string GameManager::gameEncodeChat(std::string type, int id, std::string chatMessage)
+{
+	Encoder encoder(type, id);
+	return encoder.encodeChat(chatMessage);
+}
+
+std::string GameManager::gameDecodeChat(std::string message)
+{
+	Decoder decoder(message);
+	return decoder.decodeChat();
 }

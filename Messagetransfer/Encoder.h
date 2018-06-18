@@ -8,31 +8,6 @@
 #include "Data.h"
 using namespace std;
 
-//定义move操作类型为'm'
-const char MOVE = 'm';
-
-//定义攻击操作类型为'p'
-const char ATTACK = 'a';
-
-//定义生产兵或者生产建筑物的操作码为'p'
-const char PRODUCE = 'p';
-
-//定义不同生产物(建筑或士兵的指定码）
-
-
-const string ELECTRICITY = "el";     //定义电厂
-
-const string MINE = "mi";           //定义矿场
-
-const string CAMP = "ca";           //定义兵营
-
-const string FACTORY = "fa";         //定义战车工厂
-
-const string DOG = "do";             //定义警犬
-
-const string SOLDIER = "so";         //定义大兵
-
-const string TANK = "ta";            //定义坦克
 
 class Encoder {
 private:
@@ -55,9 +30,13 @@ public:
 
 
 	//将要攻击的士兵的Id，执行攻击的士兵的id, 操作类型转换成字符串，并返回
-	string& encodeAttack(int id);
+	string& encodeAttack(int targetId);
 
 
 	//将要生产的士兵或建筑物等的类型, 转换成字符串，并返回。（produceType为每种生产的东西的const 字符串的代号，如电厂为"el"）
-	string& encodeProduce(const string& produceType);
+	string& encodeCreate(int unitType, const Grid& createGrid);
+
+
+	//将聊天的信息解码到字符串中
+	string encodeChat(string& chatMessage);
 };

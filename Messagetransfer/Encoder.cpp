@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include "GridMap.h"
-
+#include <vector>
 
 
 
@@ -28,16 +28,28 @@ string& Encoder::encodePath(GridMap::GridVector& path)
 	return _message;
 }
 
-string& Encoder::encodeAttack(int id)
+string& Encoder::encodeAttack(int targetId)
 {
-	char buff[20];
-	sprintf(buff, "%02x", id);
+	assert(_message[0] == 'a' || _message[0] == 'p');//追击或者攻击-------p:prepare attack
+	char buff[5];
+	sprintf(buff, "%02x", targetId);
 	_message.append(buff);
+
 	return _message;
 }
 
-string& Encoder::encodeProduce(const string& produceType)
+string& Encoder::encodeCreate(int unitType, const Grid& createGrid)
 {
-	_message.append(produceType);
+	char buff[20];
+	sprintf(buff, "%02x", unitType);//创造的兵种类
+	sprintf(buff + 2, "%02x%02x", createGrid._x, createGrid._y);
+	_message.append(buff);
+
+	return _message;
+}
+
+string Encoder::encodeChat(string& chatMessage)
+{
+	_message.append(chatMessage);
 	return _message;
 }

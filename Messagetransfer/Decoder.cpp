@@ -4,31 +4,15 @@
 #include "GridMap.h"
 
 
-//定义move操作类型为'm'
 const char MOVE = 'm';
-
-//定义攻击操作类型为'p'
 const char ATTACK = 'a';
+const char CREATE = 'c';
+const char TRACE = 't';
+const char PREATTACK = 'p';
 
-//定义生产兵或者生产建筑物的操作码为'p'
-const char PRODUCE = 'p';
+//定义游戏内聊天的操作类型为'g'
+const char GOSSIP = 'o';
 
-//定义不同生产物(建筑或士兵的指定码）
-
-
-const string ELECTRICITY = "el";     //定义电厂
-
-const string MINE = "mi";           //定义矿场
-
-const string CAMP = "ca";           //定义兵营
-
-const string FACTORY = "fa";         //定义战车工厂
-
-const string DOG = "do";             //定义警犬
-
-const string SOLDIER = "so";         //定义大兵
-
-const string TANK = "ta";            //定义坦克
 
 Decoder::Decoder(const string& message) :_message(message)
 {
@@ -44,7 +28,7 @@ int Decoder::getId()
 
 GridVector& Decoder::decodePath()
 {
-	assert(_type[0] == MOVE);
+	assert(_type[0] == MOVE || _type[0] == TRACE);
 	Grid point;
 	int beginPos = 3;
 
@@ -63,23 +47,56 @@ GridVector& Decoder::decodePath()
 	return _path;
 }
 
-int Decoder::decodeAttackId()
+int Decoder::decodeTargetId()
 {
-	assert(_type[0] == ATTACK);
-	int id;
+	assert(_message[0] == ATTACK || _message[0] == PREATTACK);
+
+	int targetId = -1;
 	string temp = _message.substr(3, 2);
-	sscanf(temp.c_str(), "%x", &id);
-	return id;
+	sscanf(temp.c_str(), "%x", &targetId);
+	assert(targetId != -1);//读取成功
+
+	return targetId;
 }
 
-string& Decoder::decodeProduceType()
+int Decoder::decodeCreateType()
 {
-	assert(_type[0] == PRODUCE);
+	assert(_message[0] == CREATE);
 
-	_produceType = _message.substr(3, 2);
-	return _produceType;
+	int unitType = -1;
+	string temp = _message.substr(3, 2);
+	sscanf(temp.c_str(), "%x", &unitType);
+	assert(unitType != -1);
+
+	return unitType;
 }
 char Decoder::getType()
 {
 	return _message[0];
+}
+
+string Decoder::decodeChat()
+{
+
+	assert(_type[0] == GOSSIP);
+	int id = getId();
+	string temp = to_string(id).append(" : ");
+	_chatMessage = _message.substr(3);
+	_chatMessage = temp.append(_chatMessage);
+	return _chatMessage;
+}
+
+Grid Decoder::decodeCreateGrid()
+{
+	assert(_message[0] == CREATE);
+
+	Grid ret;
+	string temp = _message.substr(5, 2);
+	sscanf(temp.c_str(), "%x", &ret._x);
+	temp = _message.substr(7, 2);
+	sscanf(temp.c_str(), "%x", &ret._y);
+
+	assert(ret._x != -1 && ret._y != -1);
+
+	return ret;
 }

@@ -33,12 +33,12 @@ GridMap::GridVector GridMap::findValidGridsNear(const Grid& g, int size)
 	//菱形查找
 	GridVector dirVec = { Grid(1,1),Grid(1,-1),Grid(-1,-1),Grid(-1,1) };
 
-	for (int i = 0;i < _mapWidth + _mapHeight;++i)
+	for (int i = 0; i < _mapWidth + _mapHeight; ++i)
 	{
 		Grid nearg = g + Grid(-i, 0);
-		for (int dir = 0;dir < 4;++dir)
+		for (int dir = 0; dir < 4; ++dir)
 		{
-			for (int j = 0;j < i;++j)
+			for (int j = 0; j < i; ++j)
 			{
 				nearg = nearg + dirVec[dir];
 				if (isGridValid(nearg))
@@ -69,12 +69,12 @@ Grid GridMap::findValidGridNear(const Grid& g)
 	//菱形查找
 	GridVector dirVec = { Grid(1,1),Grid(1,-1),Grid(-1,-1),Grid(-1,1) };
 
-	for (int i = 0;i < _mapWidth + _mapHeight;++i)
+	for (int i = 0; i < _mapWidth + _mapHeight; ++i)
 	{
 		Grid nearg = g + Grid(-i, 0);
-		for (int dir = 0;dir < 4;++dir)
+		for (int dir = 0; dir < 4; ++dir)
 		{
-			for (int j = 0;j < i;++j)
+			for (int j = 0; j < i; ++j)
 			{
 				nearg = nearg + dirVec[dir];
 				if (isGridValid(nearg))
@@ -90,7 +90,7 @@ Grid GridMap::findValidGridNear(const Grid& g)
 
 Point GridMap::getPoint(const Grid& g)
 {
-	return Point(g._x * _gridWidth, g._y * _gridHeight) 
+	return Point(g._x * _gridWidth, g._y * _gridHeight)
 		+ _pointOffset;//偏移量
 }
 
@@ -163,6 +163,8 @@ bool GridMap::initWithTiledMap(TMXTiledMap* tiledMap)
 	_gridWidth = tiledMap->getTileSize().width / CC_CONTENT_SCALE_FACTOR();
 	_gridHeight = tiledMap->getTileSize().height / CC_CONTENT_SCALE_FACTOR();
 
+	log("gridwidth %f, gridheight %f, offset %f", _gridWidth, _gridHeight, CC_CONTENT_SCALE_FACTOR());
+
 	_pointOffset = Vec2(_gridWidth / 2.0f, _gridHeight / 2.0f);
 	_isOccupied.assign(_mapWidth, vector<int>(_mapHeight, 0));
 	_occupiedId.assign(_mapWidth, vector<int>(_mapHeight, 0));
@@ -170,9 +172,9 @@ bool GridMap::initWithTiledMap(TMXTiledMap* tiledMap)
 	auto InfoLayer = tiledMap->getLayer("InfoLayer");
 	assert(InfoLayer != 0);
 
-	for (int gridX = 0;gridX < _mapWidth;++gridX)
+	for (int gridX = 0; gridX < _mapWidth; ++gridX)
 	{
-		for (int gridY = 0;gridY < _mapHeight;++gridY)
+		for (int gridY = 0; gridY < _mapHeight; ++gridY)
 		{
 			int gid = InfoLayer->getTileGIDAt(Vec2(gridX, _mapHeight - 1 - gridY));
 

@@ -29,6 +29,8 @@ private:
 
 	//信息中要建造的东西的类型
 	string _produceType;
+
+	string _chatMessage;
 public:
 
 	//用取到的信息构造Decoder
@@ -37,11 +39,15 @@ public:
 	//从信息中解码出路径
 	GridVector& decodePath();
 
-	//从信息中解码出要攻击对象的Id
-	int decodeAttackId();
+	int decodeTargetId();
 
-	//从信息中解码出要生产的建筑或士兵
-	string& decodeProduceType();
+	int decodeCreateType();
+
+	Grid decodeCreateGrid();
+
+
+
+	string decodeChat();
 
 	//返回信息中士兵的id
 	int getId();

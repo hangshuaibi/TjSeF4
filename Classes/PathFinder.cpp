@@ -4,8 +4,8 @@
 
 PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 	const Grid& start, const Grid& end) :
-	_mapWidth(gridTable.size()),_mapHeight(gridTable[0].size()),
-	 _start(nullptr),
+	_mapWidth(gridTable.size()), _mapHeight(gridTable[0].size()),
+	_start(nullptr),
 	_end(nullptr) {
 	//初始化格点表
 	_gridTable.assign(_mapWidth,
@@ -17,12 +17,12 @@ PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 	//_start->x = start._x, _start->y = start._y;
 	_end->x = end._x, _end->y = end._y;
 
-	for (int i = 0; i < _mapWidth;++i)
+	for (int i = 0; i < _mapWidth; ++i)
 	{
-		for (int j = 0;j < _mapHeight;++j)
+		for (int j = 0; j < _mapHeight; ++j)
 		{
 			grid& rg = _gridTable[i][j];
-			rg.x = i, rg.y = j;		
+			rg.x = i, rg.y = j;
 
 			rg.hValue = calculateHValue(&rg, _end);
 
@@ -33,7 +33,7 @@ PathFinder::PathFinder(const vector<vector<int> >&gridTable,
 				setState(&rg, grid::OCCUPIED);
 			}
 		}
-	
+
 	}
 
 	assert(_end != nullptr&&_start != nullptr);
@@ -68,9 +68,9 @@ bool PathFinder::isGridValid(const grid* pg)
 
 void PathFinder::checkSurroundGrid(const grid* pg)
 {
-	for (int i = 0;i < DIRECTION_NUM;++i)
+	for (int i = 0; i < DIRECTION_NUM; ++i)
 	{
-		int x =pg->x + DIRECTIONS[i][0], y = pg->y + DIRECTIONS[i][1];
+		int x = pg->x + DIRECTIONS[i][0], y = pg->y + DIRECTIONS[i][1];
 
 		if (x < 0 || x >= _mapWidth || y < 0 || y >= _mapHeight)
 		{
@@ -79,7 +79,7 @@ void PathFinder::checkSurroundGrid(const grid* pg)
 		//pointer to candidate grid
 		grid* pcg = &_gridTable[x][y];
 		if (!isGridValid(pcg))//
-			//|| !checkCorner(pg, pcg))
+							  //|| !checkCorner(pg, pcg))
 		{
 			//log("(%d %d)", x, y);/////////////////////////
 			continue;
@@ -92,7 +92,7 @@ void PathFinder::checkSurroundGrid(const grid* pg)
 			pcg->gValue = gValueByPg + pg->gValue;
 			pcg->fValue = pcg->gValue + pcg->hValue;
 		}
-	
+
 		if (!isInOpenList(pcg))
 		{
 			_openList.push_back(pcg);
@@ -140,7 +140,7 @@ bool PathFinder::isInOpenList(const grid*g)
 void PathFinder::removeFromOpenList(grid* g)
 {
 	assert(g != nullptr);
-	for (auto it = _openList.begin();it!=_openList.end();++it)
+	for (auto it = _openList.begin(); it != _openList.end(); ++it)
 	{
 		if (g != *it)
 		{
@@ -187,7 +187,13 @@ PathFinder::grid* PathFinder::nextToSearch()
 
 vector<Grid> PathFinder::getPath()
 {
-	//generatePath();
+	if (!searchPath())
+	{
+		const int NO_PATH = 0;
+		assert(NO_PATH);
+	}
+	generatePath();
+	optimizePath();
 
 	return _resultPath;
 }
@@ -195,7 +201,7 @@ vector<Grid> PathFinder::getPath()
 void PathFinder::generatePath()
 {
 	grid* cur = _end;
-	
+
 	/*这里传出去的路径起点（的前一个grid）在尾部，终点在头部*/
 
 	//在此起点并不会被push_back
@@ -208,7 +214,7 @@ void PathFinder::generatePath()
 		cur = cur->parent;
 	}
 
-	
+
 }
 
 bool PathFinder::searchPath()
@@ -233,10 +239,11 @@ void PathFinder::optimizePath()
 
 	Grid prevDiretion(0, 0);
 	Grid prevGrid = _resultPath.back();
-	for (auto it = _resultPath.end() - 2;it != _resultPath.begin();--it)
+	for (auto it = _resultPath.end() - 2; it != _resultPath.begin(); --it)
 	{
 		auto curGrid = *it;
 		auto curDirection = curGrid - prevGrid;
+		prevGrid = curGrid;
 
 		if (prevDiretion == curDirection)
 		{

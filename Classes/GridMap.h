@@ -11,7 +11,7 @@ struct Grid {
 	int _x;//横坐标，左上角为原点
 	int _y;
 
-	Grid(int x = -1, int y = -1):_x(x),_y(y){}
+	Grid(int x = -1, int y = -1) :_x(x), _y(y) {}
 };
 
 bool operator==(const Grid& lhs, const Grid& rhs);
@@ -21,14 +21,14 @@ Grid operator+(const Grid& lhs, const Grid&rhs);
 Grid operator-(const Grid& lhs, const Grid&rhs);
 
 //GridMap的坐标系与TiledMap不同
-class GridMap:public cocos2d::Node {
+class GridMap :public cocos2d::Node {
 private:
 	int _mapWidth, _mapHeight;//格点地图的长宽
 	float _gridWidth, _gridHeight;//每个格点的像素
 
 	bool initWithTiledMap(TMXTiledMap* tileMap);//用该类型的map初始化
 
-	
+
 	Vec2 _pointOffset;//点中心到所取点的偏移，这是由于int类型造成的
 
 	void occupyGrid(int id, const Grid& g);//占领格点的实际工作者
@@ -39,12 +39,12 @@ public:
 
 	static GridMap* create(TMXTiledMap* tileMap);
 	bool isGridInMap(const Grid& g);//判断是否在地图内
-	//bool isPointOccupied(const Point& p);
+									//bool isPointOccupied(const Point& p);
 	bool isGridOccupied(const Grid& g);//若被占领返回1
 
 	bool tryToOccupyGrid(int id, const Grid& g);//id单位尝试占领某位置，占领成功返回true
 	void leaveGrid(int id, const Grid& g);//id离开当前格点
-	
+
 	typedef vector<Grid> GridVector;
 
 	//搜寻P点附近空闲的点，返回一个大小为size的数组
