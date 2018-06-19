@@ -59,6 +59,9 @@ bool MainScene::init()
 	scheduleUpdate();
 	schedule(schedule_selector(MainScene::updateRes), 1.0f);
 
+	//动画初始化
+	MainScene::animationInit();
+
 	//获取GameManager实例
 	_gameManager = GameManager::create(this);
 	this->addChild(_gameManager);
@@ -114,55 +117,55 @@ bool MainScene::init()
 	std::vector<int> buildingGold(golds, golds + 4);
 	int electric[4] = { -5,-8,30,-3 };
 	std::vector<int> buildingElectric(electric, electric + 4);
-	int time[4] = { 60,100,30,30 };
+	int time[4] = { 100,100,30,30 };
 	std::vector<int> buildingTime(time, time + 4);
 
 
 	auto barracksButton = Sprite::create("barracks.png");
-	barracksButton->setScale(0.3);
+	barracksButton->setScale(0.4);
 	barracksButton->setTag(0);
 	barracksButton->setPosition(Vec2(_screenWidth - 40, _screenHeight - 80));
 	this->addChild(barracksButton);
 	Vec2 barracks_position = barracksButton->getPosition();
 	auto barracksButton1 = Sprite::create("barracks.png");
 	barracksButton1->setPosition(barracks_position);
-	barracksButton1->setScale(0.3);
+	barracksButton1->setScale(0.4);
 	button.pushBack(barracksButton1);
 	this->addChild(barracksButton1);
 
 	auto warfactoryButton = Sprite::create("warfactory.png");
 	warfactoryButton->setTag(1);
-	warfactoryButton->setScale(0.3);
+	warfactoryButton->setScale(0.4);
 	warfactoryButton->setPosition(Vec2(_screenWidth - 40, _screenHeight - 130));
 	this->addChild(warfactoryButton);
 	Vec2 warfactory_position = warfactoryButton->getPosition();
 	auto warfactoryButton1 = Sprite::create("warfactory.png");
 	warfactoryButton1->setPosition(warfactory_position);
-	warfactoryButton1->setScale(0.3);
+	warfactoryButton1->setScale(0.4);
 	button.pushBack(warfactoryButton1);
 	this->addChild(warfactoryButton1);
 
 	auto storageButton = Sprite::create("storage.png");
 	storageButton->setTag(2);
-	storageButton->setScale(0.3);
+	storageButton->setScale(0.4);
 	storageButton->setPosition(Vec2(_screenWidth - 40, _screenHeight - 160));
 	this->addChild(storageButton);
 	Vec2 storage_position = storageButton->getPosition();
 	auto storageButton1 = Sprite::create("storage.png");
 	storageButton1->setPosition(storage_position);
-	storageButton1->setScale(0.3);
+	storageButton1->setScale(0.4);
 	button.pushBack(storageButton1);
 	this->addChild(storageButton1);
 
 	auto producerButton = Sprite::create("producer.png");
 	producerButton->setTag(3);
-	producerButton->setScale(0.25);
+	producerButton->setScale(0.4);
 	producerButton->setPosition(Vec2(_screenWidth - 40, _screenHeight - 200));
 	this->addChild(producerButton);
 	Vec2 producer_position = producerButton->getPosition();
 	auto producerButton1 = Sprite::create("producer.png");
 	producerButton1->setPosition(producer_position);
-	producerButton1->setScale(0.3);
+	producerButton1->setScale(0.4);
 	button.pushBack(producerButton1);
 	this->addChild(producerButton1);
 
@@ -249,6 +252,16 @@ bool MainScene::init()
 		building->schedule(schedule_selector(Building::update),1.0f);
 		building->setOpacity(0);
 		building->runAction(FadeIn::create(building->getTime()));
+		auto creation = AnimationCache::getInstance()->getAnimation("create");
+		auto animate = Animate::create(creation);
+		auto repeat = Repeat::create(animate,building->getTime()/3+1);
+		auto animationSprite = Sprite::createWithSpriteFrameName("animate1.png");
+		_tiledMap->addChild(animationSprite,100);
+		animationSprite->setPosition(building->getPosition());
+		//animationSprite->runAction(repeat);
+		Sequence* seq = Sequence::create(repeat, RemoveSelf::create(true), NULL);
+		animationSprite->runAction(seq);
+
 
 	};
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingButtonListener, barracksButton);
@@ -457,4 +470,20 @@ void MainScene::updateRes(float delta)
 	_curGold += goldProducer;
 	_goldLabel->setString(StringUtils::format("%d", _curGold));
 	_electricityLabel->setString(StringUtils::format("%d", _curElectricity));
+}
+
+void MainScene::animationInit()
+{
+	//创建精灵帧缓存单例对象并添加纹理到缓存中
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("animation.plist");
+	auto animation = Animation::create();
+	for (int i = 1; i < 15; i++)
+	{
+		std::string name = StringUtils::format("animate%d.png", i);
+		animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
+	}
+	animation->setDelayPerUnit(3.0f / 14.0f);
+	animation->setRestoreOriginalFrame(true);
+	AnimationCache::getInstance()->addAnimation(animation, "create");
+
 }

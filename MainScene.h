@@ -26,6 +26,8 @@ class MainScene :public Scene {
 	friend class ControlPanel;//for create callback function
 
 public:
+	void animationInit();
+
 	static MainScene* create();
 
 	static MainScene* createScene();
