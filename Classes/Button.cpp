@@ -59,6 +59,7 @@ void BButton::onRelease()
 	auto truePos = _unitManager->_tiledMap->convertToNodeSpace(pos);
 	//---------------//
 	static GridMap* map = _unitManager->_gridMap;
+	truePos = map->getPoint(map->getGrid(truePos));
 	auto area = map->getArea(getContentSize()*0.4f, truePos);
 	if (!map->isAreaValid(area))
 	{

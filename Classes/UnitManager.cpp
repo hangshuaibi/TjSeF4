@@ -229,13 +229,13 @@ void UnitManager::localCreateUnit(int type, const Point& point)
 {
 	//!!!--------加个判断不让point选取在障碍物之上--------!!!//
 	auto createGrid = _gridMap->getGrid(point);
-	auto nearValidGrid = _gridMap->findValidGridNear(createGrid);
+	//auto nearValidGrid = _gridMap->findValidGridNear(createGrid);
 
 	int id = getNextId();
 
 	//根据type,id,position发信息给客户端
 	Encoder encoder("c", id);
-	std::string createMsg = encoder.encodeCreate(type, nearValidGrid);
+	std::string createMsg = encoder.encodeCreate(type, createGrid);
 	_client->sendMessage(createMsg);
 }
 

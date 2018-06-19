@@ -231,7 +231,8 @@ void GridMap::setAreaOccupied(const GridVector& area)
 {
 	for (const auto& grid : area)
 	{
-		assert(isGridValid(grid));
+		//if(!isGridValid(grid))
+			assert(isGridValid(grid));
 		setGridOccupied(grid);
 	}
 }
@@ -240,7 +241,10 @@ void GridMap::setAreaValid(const GridVector& area)
 {
 	for (const auto& grid : area)
 	{
-		assert(!isGridValid(grid));
+		//if (isGridValid(grid))
+		//{
+			assert(!isGridValid(grid));
+	//	}
 		setGridValid(grid);
 	}
 }
