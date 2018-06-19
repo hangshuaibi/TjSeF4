@@ -11,6 +11,7 @@
 using namespace ui;
 using namespace CocosDenshion;
 std::string Ip; //手动输入的Ip；
+Client* _Client;
 
 #include <string>
 
@@ -32,9 +33,9 @@ MainScene* MainScene::create()
 	return nullptr;
 }
 
-MainScene* MainScene::createScene(std::string ip)
+MainScene* MainScene::createScene(Client* client)
 {
-	Ip = ip;
+	_Client = client;
 	return MainScene::create();
 }
 
@@ -48,14 +49,14 @@ bool MainScene::init()
 	system("ping 255.255.255.255");
 
 	//客户端
-	_client = Client::create(Ip);
+	_client = _Client;
 	this->addChild(_client);
 
 	//挂起当前线程，等待客户端初始化
 
 
 
-	Sleep(2000);
+	//Sleep(2000);
 	//_client->sendMessage("client is ready");
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();

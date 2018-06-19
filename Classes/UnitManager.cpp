@@ -486,6 +486,25 @@ void UnitManager::updateUnitState()
 		createUnit(id, type, grid);
 		break;
 	}
+	case 'o': {
+		//int id = decoder.getId();
+		//std::string temp = to_string(id).append(": ");
+		std::string temp(decoder.decodeChat());
+		if (isLabelFree[0])
+		{
+			_displayValueLabel1->setString(temp);
+			isLabelFree[0] = false;
+			isLabelFree[1] = true;
+		}
+		else
+		{
+			_displayValueLabel2->setString(temp);
+			isLabelFree[1] = false;
+			isLabelFree[0] = true;
+		}
+		break;
+
+	}
 	default:
 		break;
 	}

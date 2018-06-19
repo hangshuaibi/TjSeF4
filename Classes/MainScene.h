@@ -31,7 +31,7 @@ class MainScene :public Scene {
 public:
 	static MainScene* create();
 
-	static MainScene* createScene(std::string ip);
+	static MainScene* createScene(Client* client);
 
 	virtual bool init();
 

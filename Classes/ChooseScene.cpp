@@ -3,6 +3,7 @@
 #include "ui/CocosGUI.h"
 #include "MainScene.h"
 #include "cocos2d.h"
+#include "../Network/Client.h"
 
 using namespace ui;
 //using namespace CocosDenshion;
@@ -69,7 +70,10 @@ bool ChooseScene::init() {
 		if (type == Widget::TouchEventType::ENDED) {
 			
 			_ip = _chatWindow->getString();
-			auto transition = TransitionFade::create(2.0, MainScene::createScene(_ip));
+			auto client = Client::create(_ip);
+			//this->addChild(client);
+
+			auto transition = TransitionFade::create(2.0, MainScene::createScene(client));
 			Director::getInstance()->replaceScene(transition);
 
 		
