@@ -30,6 +30,14 @@ bool UnitManager::initWithScene(MainScene* mainScene)
 	_goldLabel = mainScene->_goldLabel;
 	_powerLabel = mainScene->_powerLabel;
 
+	//----------//
+	_displayValueLabel[0] = mainScene->_displayValueLabel[0];
+	_displayValueLabel[1] = mainScene->_displayValueLabel[1];
+
+	assert(_displayValueLabel[0] != nullptr);
+	assert(_displayValueLabel[1] != nullptr);
+	//----------//
+
 	assert(_client != nullptr);
 	assert(_tiledMap != nullptr);
 	assert(_gridMap != nullptr);
@@ -412,9 +420,9 @@ void UnitManager::updateUnitState()
 	{
 		return;
 	}
-	
 
-	Decoder decoder(order);	
+
+	Decoder decoder(order);
 	int id = decoder.getId();
 
 	switch (decoder.getType()) {
@@ -423,19 +431,19 @@ void UnitManager::updateUnitState()
 		auto path = decoder.decodePath();
 		auto pUnit = _getUnitById[id];
 
-		assert(pUnit != nullptr);	
+		assert(pUnit != nullptr);
 
 		if (path.empty())
 		{
 			break;
 		}
 		pUnit->setGridPath(path);
-		
+
 		pUnit->schedule(schedule_selector(Unit::update));
 
-		if(decoder.getType()=='m')
+		if (decoder.getType() == 'm')
 			pUnit->setState(Unit::MOVING);//根据traceFlag来确定状态的设置
-		
+
 		break;
 	}
 	case 'a': {
@@ -479,9 +487,19 @@ void UnitManager::updateUnitState()
 		createUnit(id, type, grid);
 		break;
 	}
+	case 'g': {
+		std::string temp(decoder.decodeChat());
+		
+		_displayValueLabel[isLabelFree[0]^1]->setString(temp);
+		isLabelFree[0] ^= 1;//异或
+		isLabelFree[1] ^= 1;
+
+		break;
+	}
 	default:
 		break;
 	}
+	
 }
 
 void UnitManager::update(float delta)

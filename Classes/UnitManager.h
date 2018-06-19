@@ -7,9 +7,11 @@
 #include "NotGay.h"
 #include "Network/Client.h"
 //#include "MainScene.h"
+#include "ui/CocosGui.h"
 
 using std::map;
 USING_NS_CC;
+using namespace ui;
 
 enum Notice {
 	NO_ENOUGH_MONEY=0,//金钱不足
@@ -35,6 +37,13 @@ private:
 		Grid(12,8),Grid(119,118),Grid(114,9),Grid(11,119),
 	};
 private:
+	//-----聊天部分-----//
+	bool isLabelFree[2] = { true, false };
+
+	Text* _displayValueLabel[2] = { nullptr,nullptr };
+	//Text* _displayValueLabel2 = nullptr;
+	//------------------//
+
 	//每个单位生产消耗的金钱
 	int costGold[10] = {
 		200,100,300,500,700,0,300,400

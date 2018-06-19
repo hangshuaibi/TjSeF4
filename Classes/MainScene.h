@@ -41,7 +41,15 @@ private:
 private:
 	Label* _goldLabel = nullptr;//金钱的显示
 	Label* _powerLabel = nullptr;//电力的显示
+	//---------------//
+	Text * _displayValueLabel[2] = { nullptr ,nullptr , };         //聊天消息显示栏
+	//Text * _displayValueLabel2 = nullptr;
+	TextField* _chatWindow = nullptr;
+	Sprite* _inputBar = nullptr;
+	Button* _sendMessageButton = nullptr;
 
+	bool _isInput = false;
+	//-------------//
 	ControlPanel* _controlPanel = nullptr;//生产飞机和坦克的控制面板
 	Label* _notice = nullptr;//消息提示
 
@@ -67,6 +75,8 @@ private:
 private:
 
 	Client * _client = nullptr;
+
+	void textFieldEvent(Ref *pSender, cocos2d::ui::TextField::EventType type);
 	//void createFighterCallBack(Ref* pSender);
 };
 

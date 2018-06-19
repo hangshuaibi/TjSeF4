@@ -9,6 +9,7 @@ const char ATTACK = 'a';
 const char CREATE = 'c';
 const char TRACE = 't';
 const char PREATTACK = 'p';
+const char GOSSIP = 'g';
 
 Decoder::Decoder(const string& message) :_message(message)
 {
@@ -17,10 +18,12 @@ Decoder::Decoder(const string& message) :_message(message)
 	string id = _message.substr(1, 2);
 	sscanf(id.c_str(), "%x", &_id);
 }
+
 int Decoder::getId()
 {
 	return _id;
 }
+
 GridVector Decoder::decodePath()
 {
 	assert(_type[0] == MOVE || _type[0] == TRACE);
@@ -84,4 +87,20 @@ Grid Decoder::decodeCreateGrid()
 	assert(ret._x != -1 && ret._y != -1);
 	
 	return ret;
+}
+
+const string Decoder::decodeChat()
+{
+	assert(_type[0] == GOSSIP);
+
+	int id = getId();
+
+	string temp = std::to_string(id).append(" : ");
+
+	 std::string chatMessage = _message.substr(3);
+
+	chatMessage = temp.append(chatMessage);
+
+	return chatMessage;
+
 }

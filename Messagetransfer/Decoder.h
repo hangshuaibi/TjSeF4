@@ -6,7 +6,7 @@
 #include <string>
 #include <vector>
 
-using namespace std;
+using std::string;
 typedef GridMap::GridVector GridVector;
 
 
@@ -41,4 +41,6 @@ public:
 
 	//从信息中解码出路径
 	GridVector decodePath();
+
+	const string decodeChat();
 };

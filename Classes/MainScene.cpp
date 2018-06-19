@@ -87,6 +87,20 @@ bool MainScene::init()
 
 	initLabel();
 
+	//------------//
+	_displayValueLabel[0] = Text::create("Press enter to start to chat!", "Marker Felt.ttf", 10);
+	_displayValueLabel[0]->setAnchorPoint(Vec2(0, 0));
+	_displayValueLabel[0]->setPosition(Vec2(20, visibleSize.height - 40));
+
+	this->addChild(_displayValueLabel[0]);
+
+	_displayValueLabel[1] = Text::create(" ", "Marker Felt.ttf", 10);
+	_displayValueLabel[1]->setAnchorPoint(Vec2(0, 0));
+	_displayValueLabel[1]->setPosition(Vec2(20, visibleSize.height - 60));
+
+	this->addChild(_displayValueLabel[1]);
+	//-------//
+
 	_unitManager = UnitManager::createWithScene(this);
 	_unitManager->schedule(schedule_selector(UnitManager::update));
 	
@@ -187,6 +201,10 @@ bool MainScene::init()
 
 		Director::getInstance()->getVisibleSize();
 
+		if (_isInput)
+		{
+			return;
+		}
 		switch (keyCode)
 		{
 		case EventKeyboard::KeyCode::KEY_W:
@@ -216,6 +234,11 @@ bool MainScene::init()
 		case EventKeyboard::KeyCode::KEY_SPACE:
 			_gameManager->focusOnBase();
 			break;
+		case EventKeyboard::KeyCode::KEY_ENTER:
+			_inputBar->setVisible(true);
+			_chatWindow->setTouchAreaEnabled(true);
+			_isInput = true;
+			break;
 
 		default:
 			break;
@@ -235,7 +258,66 @@ bool MainScene::init()
 	};
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(mouse_event, this);
 	
+	//-------------------//
+	_chatWindow = cocos2d::ui::TextField::create("  ", "Arial", 18);
+	_chatWindow->setMaxLengthEnabled(true);
+	_chatWindow->setMaxLength(20);
+	_chatWindow->setTouchSize(Size(200, 60));
+	_chatWindow->setFontSize(7);
+	_chatWindow->setTouchAreaEnabled(true);
+	_chatWindow->setPosition(Point(visibleSize.width / 3 * 1.2,
+		(visibleSize.height - 90) / 6 * 1));
+	_chatWindow->addEventListener(CC_CALLBACK_2(MainScene::textFieldEvent, this));
+
+	this->addChild(_chatWindow, 2);
+
+	//int playerId = _unitManager->_playerId;
+
+	_sendMessageButton = Button::create("button.png");
+	this->addChild(_sendMessageButton);
+	_sendMessageButton->setPosition(Vec2(
+		visibleSize.width / 2 * 1.7,
+		(visibleSize.height - 90) / 6 * 1));
+	_sendMessageButton->setTitleText("send message");
+	_sendMessageButton->setTitleFontSize(7);
+	_sendMessageButton->addTouchEventListener([&](Ref* pSender, Widget::TouchEventType type) {
+
+		if (type == Widget::TouchEventType::ENDED) {
+			auto chatMessage = _chatWindow->getStringValue();
+
+			auto message = _gameManager->gameEncodeChat("g", _unitManager->_playerId, chatMessage);  
+			_client->sendMessage(message);
+
+
+			_chatWindow->setString("");
+			_inputBar->setVisible(false);
+			_chatWindow->setTouchAreaEnabled(false);
+
+			_isInput = false;
+		}
+
+	});
+
+	_inputBar = Sprite::create("InputBar.png");
+	_inputBar->setPosition(Point(visibleSize.width / 3 * 1.2,
+		(visibleSize.height - 90) / 6 * 1));
+	_inputBar->setVisible(false);
+
+	this->addChild(_inputBar, 1);
+	//------------------//
+
 	return true;
+}
+
+void MainScene::textFieldEvent(Ref *pSender, cocos2d::ui::TextField::EventType type)
+{
+	if(cocos2d::ui::TextField::EventType::ATTACH_WITH_IME==type)
+	{
+		_isInput = true;
+		//cocos2d::ui::TextField* textField = dynamic_cast<cocos2d::ui::TextField*>(pSender);
+		//Size screenSize = CCDirector::getInstance()->getWinSize();
+	}
+	
 }
 
 void MainScene::update(float delta)

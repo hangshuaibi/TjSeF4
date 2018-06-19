@@ -1,5 +1,7 @@
 #include "Data.h"
 #include "MainScene.h"
+#include "MessageTransfer/Decoder.h"
+#include "MessageTransfer/Encoder.h"
 
 USING_NS_CC;
 
@@ -140,4 +142,18 @@ void GameManager::scrollMap()
 		_mainScene->_tiledMap->setPosition(mapCenter);
 	}
 
+}
+
+std::string GameManager::gameEncodeChat(std::string type, int id, std::string chatMessage)
+{
+	Encoder encoder(type, id);
+
+	return encoder.encodeChat(chatMessage);
+}
+
+std::string GameManager::gameDecodeChat(std::string message)
+{
+	Decoder decoder(message);
+
+	return decoder.decodeChat();
 }
