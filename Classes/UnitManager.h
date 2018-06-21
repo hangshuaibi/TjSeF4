@@ -146,7 +146,12 @@ private:
 	bool unitMayDead(Unit* attackee);
 
 	int getIdByUnit(Unit* unit);
+
+	//播放建造建筑的动画
+	void displayAnimate(Point pos);
+
 public:
+	//消息提示
 	void notice(Notice note);
 	void notice(std::string);
 };

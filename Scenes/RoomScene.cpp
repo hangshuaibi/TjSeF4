@@ -49,10 +49,9 @@ bool RoomScene::init()
 		Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED)
 		{
-			
-			auto transiton = TransitionSlideInL::create(2.f, MainScene::create(_client, _server));
-			Director::getInstance()->pushScene(transiton);
 			_server->startGame();
+			auto transiton = TransitionSlideInL::create(2.f, MainScene::create(_client));
+			Director::getInstance()->pushScene(transiton);
 		}
 	});
 	this->addChild(button);

@@ -130,8 +130,7 @@ public:
 		if (msg.body()[0] == 'C')//Client ready!>>>>>>>>>>>>>>>>>>>>>>>>
 		{
 			++_preparedClientNum;
-			//startGame();
-			//assert(0);
+		
 			return;
 		}
 		

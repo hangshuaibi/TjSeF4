@@ -90,7 +90,9 @@ bool BButton::isTouched(Touch* touch)
 	return false;
 }
 
-GridMap::GridVector BButton::getArea(Point pos)
+
+
+/*GridMap::GridVector BButton::getArea(Point pos)
 {
 	auto size = getContentSize();
 	Point start_(pos.x - size.width / 2, pos.y - size.height / 2),
@@ -121,4 +123,4 @@ bool BButton::isAreaOccupied(GridMap::GridVector area)
 		}
 	}
 	return false;
-}
+}*/

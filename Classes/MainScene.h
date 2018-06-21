@@ -5,7 +5,7 @@
 #include "UnitManager.h"
 #include "GameManager.h"
 #include "Network/Client.h"
-#include "Network/LocalServer.h"
+//#include "Network/LocalServer.h"
 //#include "RealUnit.h"
 
 USING_NS_CC;
@@ -30,9 +30,9 @@ class MainScene :public Scene {
 	friend class BButton;
 
 public:
-	static MainScene* create(Client* client = nullptr, LocalServer* server = nullptr);
+	static MainScene* create(Client* client = nullptr);
 
-	void initNetwork(Client* client, LocalServer* server);
+	void initNetwork(Client* client);
 
 	static MainScene* createScene();
 private:
@@ -78,9 +78,10 @@ private:
 private:
 
 	Client * _client = nullptr;
-	LocalServer* _server = nullptr;
+	//LocalServer* _server = nullptr;
 
 	void textFieldEvent(Ref *pSender, cocos2d::ui::TextField::EventType type);
+	void animationInit();
 	//void createFighterCallBack(Ref* pSender);
 };
 

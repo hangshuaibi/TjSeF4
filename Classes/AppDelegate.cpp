@@ -100,8 +100,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     //auto scene = HelloWorld::createScene();
-	auto scene =// MainScene
-		RoomScene
+	auto scene =RoomScene
 		::create();
 
     // run

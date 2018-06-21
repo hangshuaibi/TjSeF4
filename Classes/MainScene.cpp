@@ -15,12 +15,12 @@ using namespace CocosDenshion;
 USING_NS_CC;
 typedef Unit::Type Type;
 
-MainScene* MainScene::create(Client* client, LocalServer* server)
+MainScene* MainScene::create(Client* client)
 {
 	MainScene* mainScene = new MainScene();
 	if (mainScene)
 	{
-		mainScene->initNetwork(client, server);
+		mainScene->_client = client;//初始化客户端
 		mainScene->init();
 		mainScene->autorelease();
 		return mainScene;
@@ -32,13 +32,6 @@ MainScene* MainScene::create(Client* client, LocalServer* server)
 	return nullptr;
 }
 
-void MainScene::initNetwork(Client* client, LocalServer* server)
-{
-	//Scene::init();
-	assert(server != nullptr);
-	_client = client;
-	_server = server;
-}
 
 MainScene* MainScene::createScene()
 {
@@ -61,8 +54,7 @@ bool MainScene::init()
 		Sleep(2000);
 	}
 
-	//_client->sendMessage("Client is ready");
-	//_client->sendMessage(_client->ip);
+	
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	_screenWidth = visibleSize.width;
@@ -271,6 +263,8 @@ bool MainScene::init()
 	};
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(mouse_event, this);
 	
+	animationInit();
+
 	//-------------------//
 	_chatWindow = cocos2d::ui::TextField::create("  ", "Arial", 18);
 	_chatWindow->setMaxLengthEnabled(true);
@@ -448,4 +442,21 @@ void ControlPanel::createTankCallBack(Ref* pSender)
 	//_tank->setOpacity(100);
 	setVisible(false);
 	_factory->localCreateUnit_(Type::TANK);
+}
+
+void MainScene::animationInit()
+{
+	//创建精灵帧缓存单例对象并添加纹理到缓存中
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("animation.plist");
+
+	auto animation = Animation::create();
+	for (int i = 1; i < 15; i++)
+	{
+		std::string name = StringUtils::format("animate%d.png", i);
+		animation->addSpriteFrame(SpriteFrameCache::getInstance()->getSpriteFrameByName(name));
+	}
+	animation->setDelayPerUnit(3.0f / 14.0f);
+	animation->setRestoreOriginalFrame(true);
+
+	AnimationCache::getInstance()->addAnimation(animation, "create");
 }
