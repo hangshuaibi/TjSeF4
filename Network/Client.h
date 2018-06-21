@@ -74,7 +74,7 @@ public:
 	std::string getMessage();
 	/*-----------------------------------------------------------*/
 
-	static Client* create(std::string ip);
+	static Client* create(std::string ip, int mode);
 	
 };
 

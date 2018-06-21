@@ -2,6 +2,8 @@
 #include "StartMenu.h"
 #include "ui/CocosGUI.h"
 #include "ChooseScene.h"
+#include "../Network/Client.h"
+#include "MainScene.h"
 
 USING_NS_CC;
 using namespace ui;
@@ -27,35 +29,54 @@ bool StartMenu::init() {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 
 
-	auto bg = Sprite::create("bg.png");
+	auto bg = Sprite::create("bg.jpg");
 	bg->setScaleY(2);
 	bg->setScaleX(3);
 	this->addChild(bg);
 	bg->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 
+	auto netButton = Button::create("netfight.png");
+	this->addChild(netButton);
+	netButton->setPosition(Vec2(
+		visibleSize.width / 2,
+		visibleSize.height * 0.9));
+	netButton->setTouchEnabled(true);
+	netButton->addTouchEventListener([&](Ref* pSender, Widget::TouchEventType type) {
+		if (type == Widget::TouchEventType::ENDED) {
+
+			auto client = Client::create("0", 1);
+			this->addChild(client);
+
+
+			auto transition = TransitionFade::create(2.0, MainScene::createScene(client));
+			Director::getInstance()->pushScene(transition);
+
+
+
+
+		}
+	});
+
 	// ¡°¿ªÊ¼ÓÎÏ·¡±°´Å¥
-	auto startButton = Button::create("button.png");
-	startButton->setScale(2.2);
-	startButton->setTitleText("Start");
-	startButton->setTitleFontName("Î¢ÈíÑÅºÚ");
-	startButton->setTitleFontSize(12);
-	startButton->setPosition(Vec2(visibleSize.width / 2, visibleSize.height*0.8));
-	startButton->addTouchEventListener([](Ref* pSender, Widget::TouchEventType type) {
+	auto lanButton = Button::create("lanfight.png");
+	this->addChild(lanButton);
+	lanButton->setPosition(Vec2(
+		visibleSize.width / 2,
+		visibleSize.height * 0.7));
+	lanButton->setTouchEnabled(true);
+	lanButton->addTouchEventListener([&](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED) {
 			// ÇÐ»»µ½PreLoad³¡¾°
 			auto transition = TransitionSlideInL::create(2.0, ChooseScene::createScene());
 			Director::getInstance()->replaceScene(transition);
 		}
 	});
-	this->addChild(startButton);
 
 	// ¡°ÓÎÏ·ÉèÖÃ¡±°´Å¥
-	auto setButton = Button::create("button.png");
-	setButton->setScale(2.2);
-	setButton->setTitleText("Settings");
+	auto setButton = Button::create("settings.png");
 	setButton->setTitleFontName("Î¢ÈíÑÅºÚ");
 	setButton->setTitleFontSize(12);
-	setButton->setPosition(Vec2(visibleSize.width / 2, visibleSize.height*0.55));
+	setButton->setPosition(Vec2(visibleSize.width / 2, visibleSize.height*0.5));
 	setButton->addTouchEventListener([](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED) {
 			// ÇÐ»»µ½AudioControl³¡¾°
@@ -65,9 +86,7 @@ bool StartMenu::init() {
 	this->addChild(setButton);
 
 	// ¡°ÍË³öÓÎÏ·¡±°´Å¥
-	auto closeButton = Button::create("button.png");
-	closeButton->setScale(2.2);
-	closeButton->setTitleText("Quit");
+	auto closeButton = Button::create("quit.png");
 	closeButton->setTitleFontName("Î¢ÈíÑÅºÚ");
 	closeButton->setTitleFontSize(12);
 	closeButton->setPosition(Vec2(visibleSize.width / 2, visibleSize.height*0.3));

@@ -50,7 +50,7 @@ bool MainScene::init()
 
 	//客户端
 	_client = _Client;
-	this->addChild(_client);
+	//this->addChild(_client);
 
 	//挂起当前线程，等待客户端初始化
 
@@ -294,13 +294,11 @@ bool MainScene::init()
 
 	int playerId = _unitManager->_playerId;
 
-	_sendMessageButton = Button::create("button.png");
+	_sendMessageButton = Button::create("sendMessageButton.png");
 	this->addChild(_sendMessageButton);
 	_sendMessageButton->setPosition(Vec2(
 		visibleSize.width / 2 * 1.7,
 		(visibleSize.height - 90) / 6 * 1));
-	_sendMessageButton->setTitleText("send message");
-	_sendMessageButton->setTitleFontSize(7);
 	_sendMessageButton->addTouchEventListener([&](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED) {
 			auto chatMessage = _chatWindow->getStringValue();

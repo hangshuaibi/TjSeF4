@@ -297,7 +297,7 @@ void UnitManager::createUnit_(int id, int type, const Grid& createGrid)
 		break;
 	}
 	default:
-		assert(0);//控制不应该到达这里
+		//assert(0);//控制不应该到达这里
 		break;
 	}
 
@@ -403,6 +403,7 @@ void UnitManager::updateUnitState()
 			_nextId = _playerId + MAX_PLAYER_NUM;
 			imreadyFlag = true;
 			_client->sendMessage("Client ready!");
+
 			return;
 		}
 		else if (order[0] == 'S')//Start!

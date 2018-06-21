@@ -44,7 +44,7 @@ private:
 	int costElectricity[10] = {
 		100,50,200,300,400,0,100,200
 	};
-	bool _startFlag = false;
+	bool _startFlag = true;
 public:
 	bool isStart() { return _startFlag; }
 

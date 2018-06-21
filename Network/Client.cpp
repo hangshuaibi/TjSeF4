@@ -11,6 +11,7 @@ std::vector<std::string>    ipList;          //所有连接到该网段的设备的ip地址表
 std::vector<std::string> serverIpList;
 std::string ipOut;
 std::string _ip; //MainScene传入的手动ip
+int Mode;//客户端创建的方式，0表示连接到局域网主机，1表示连接到互联网主机
 
 
 static Client* thisClient = nullptr;
@@ -148,9 +149,10 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 		this->write(msg);
 	}
 	/*-----------------------------------------------------------*/
-	Client* Client::create(std::string ip)
+	Client* Client::create(std::string ip, int mode)
 	{
 		_ip = ip;
+		Mode = mode;
 		Client* sprite = new Client();
 		if (sprite)
 		{
@@ -282,10 +284,14 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 
 		try {
 			boost::asio::io_service io_service;
-
+			std::string ip;
 			tcp::resolver resolver(io_service);//10.22.5.232
-			auto endpoint_iterator = resolver.resolve({_ip, "1024" });
-			//auto endpoint_iterator = resolver.resolve({ipList.at(serverIndex), "1024" });
+			if (Mode == 1)
+				ip = "118.25.134.24";
+			else
+				ip = _ip;
+			//auto endpoint_iterator = resolver.resolve({_ip, "1024" });
+			auto endpoint_iterator = resolver.resolve({ip, "1024" });
 			chat_client c(io_service, endpoint_iterator);//客户端
 
 			_client = &c;

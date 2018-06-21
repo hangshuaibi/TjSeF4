@@ -4,6 +4,7 @@
 #include "MainScene.h"
 #include "cocos2d.h"
 #include "../Network/Client.h"
+#include "../Network/Server.h"
 
 using namespace ui;
 //using namespace CocosDenshion;
@@ -34,21 +35,17 @@ bool ChooseScene::init() {
 	Size visibleSize = Director::getInstance()->getVisibleSize();
 
 
-	auto bg = Sprite::create("bg.png");
+	auto bg = Sprite::create("bg1.jpg");
 	bg->setScaleY(2);
 	bg->setScaleX(3);
 	this->addChild(bg);
 	bg->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2));
 
-	auto nameBackGroud = Sprite::create("NameInput.png");
-	nameBackGroud->setScale(2);
-	this->addChild(nameBackGroud);
-	nameBackGroud->setPosition(Vec2(visibleSize.width / 2, visibleSize.height / 2 + 10));
 
 
 	_chatWindow = cocos2d::ui::TextField::create("  ", "Arial", 10);
 	this->addChild(_chatWindow, 2);
-	_chatWindow->setPosition(Vec2(visibleSize.width / 2 ,visibleSize.height / 2));
+	_chatWindow->setPosition(Vec2(visibleSize.width / 2 ,visibleSize.height / 2 + 40));
 	_chatWindow->setMaxLengthEnabled(true);
 	_chatWindow->setMaxLength(20);
 	_chatWindow->setTouchSize(Size(200, 60));
@@ -60,21 +57,27 @@ bool ChooseScene::init() {
 	
 
 
-	auto startButton = Button::create("ButtonStart.png");
+	auto startButton = Button::create("start.png");
 	this->addChild(startButton);
 	startButton->setPosition(Vec2(
 		visibleSize.width / 2,
-		(visibleSize.height - 90) / 2));
+		visibleSize.height  / 2));
 	startButton->setTouchEnabled(true);
 	startButton->addTouchEventListener([&](Ref* pSender, Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED) {
 			
 			_ip = _chatWindow->getString();
-			auto client = Client::create(_ip);
-			//this->addChild(client);
+			
+			
+			auto server = Server::create();
+			Sleep(2000);
+			auto client = Client::create(_ip, 0);
+			this->addChild(server);
+			this->addChild(client);
+
 
 			auto transition = TransitionFade::create(2.0, MainScene::createScene(client));
-			Director::getInstance()->replaceScene(transition);
+			Director::getInstance()->pushScene(transition);
 
 		
 
@@ -82,9 +85,11 @@ bool ChooseScene::init() {
 		}
 	});
 	
+	
+
 	auto inputBar = Sprite::create("InputBar.png");
 	inputBar->setPosition(Point(visibleSize.width / 2,
-		(visibleSize.height) / 2));
+		(visibleSize.height) / 2 + 40));
 	inputBar->setScale(1.2);
 	this->addChild(inputBar, 1);
 	
