@@ -298,7 +298,8 @@ void Unit::trace()
 		if (!_unitManager->isOurBro(_id))
 			return;
 		//>>>>>>>>>>>>>>>>>>>>>>>>>>>>³é³Éº¯Êý
-		auto path = getPath(_gridMap->getGrid(unit->getPosition()));
+		auto targetGrid = _gridMap->getGrid(unit->getPosition());
+		auto path = getPath(_gridMap->findValidGridNear(targetGrid));
 		//send message
 		Encoder encoder("t", _id);
 		std::string traceMsg = encoder.encodePath(path);
