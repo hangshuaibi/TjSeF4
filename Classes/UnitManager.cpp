@@ -5,6 +5,8 @@
 #include "MainScene.h"
 #include "Messagetransfer/Encoder.h"
 #include "Messagetransfer/Decoder.h"
+#include "Scenes/EndScene.h"
+
 class MainScene;
 
 UnitManager* UnitManager::createWithScene(MainScene* mainScene)
@@ -249,6 +251,12 @@ void UnitManager::localCreateUnit(int type, const Point& point)
 
 void UnitManager::createUnit(int id, int type, const Grid& createGrid)
 {
+	if (type > Unit::Type::FIGHTER)
+	{
+		//建筑播放动画
+		displayAnimate(_gridMap->getPoint(createGrid));
+	}
+
 	auto sequence = Sequence::create(
 		DelayTime::create(2.0f),
 		CallFunc::create([=] {
@@ -314,6 +322,22 @@ void UnitManager::createUnit_(int id, int type, const Grid& createGrid)
 	unit->setProperties();
 }
 
+void UnitManager::displayAnimate(Point pos)
+{
+	auto creation = AnimationCache::getInstance()->getAnimation("create");
+
+	auto animate = Animate::create(creation);
+	//auto repeat = Repeat::create(animate, 2.f / 2 + 1);
+
+	auto animationSprite = Sprite::createWithSpriteFrameName("animate1.png");
+	_tiledMap->addChild(animationSprite, 10);
+	animationSprite->setPosition(pos);
+
+
+	Sequence* seq = Sequence::create(animate, RemoveSelf::create(true), NULL);
+	animationSprite->runAction(seq);
+}
+
 void UnitManager::deleteUnit(int id)
 {
 	if (_getUnitById.count(id) == 0)
@@ -334,10 +358,14 @@ void UnitManager::deleteUnit(int id)
 			{
 				notice("Loser!");//loser
 				//切换场景
+				auto transiton = TransitionSlideInL::create(2.f, EndScene::createScene(false));
+				Director::getInstance()->replaceScene(transiton);
 			}
-			else if (++_loserNum == _playerNum - 1)
+			else if (++_loserNum == _playerNum - 1)//无敌是多么多么地寂寞
 			{
 				notice("Winner!");//winner
+				auto transiton = TransitionSlideInL::create(2.f, EndScene::createScene(true));
+				Director::getInstance()->replaceScene(transiton);
 			}
 		}
 	}
