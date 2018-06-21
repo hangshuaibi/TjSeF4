@@ -2,6 +2,7 @@
 #include "HelloWorldScene.h"
 #include "MainScene.h"
 #include "Scenes/RoomScene.h"
+#include "Scenes/NetMenu.h"
 
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -100,8 +101,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
 
     // create a scene. it's an autorelease object
     //auto scene = HelloWorld::createScene();
-	auto scene =RoomScene
-		::create();
+	auto scene =//RoomScene
+		NetMenu::create();
 
     // run
     director->runWithScene(scene);
