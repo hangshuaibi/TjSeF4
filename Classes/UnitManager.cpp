@@ -404,6 +404,7 @@ void UnitManager::updateUnitState()
 			_nextId = _playerId + MAX_PLAYER_NUM;
 			imreadyFlag = true;
 			_client->sendMessage("Client ready!");
+
 			return;
 		}
 		else if (order[0] == 'S')//Start!
@@ -411,6 +412,7 @@ void UnitManager::updateUnitState()
 			_playerNum = order[7] - '0';
 			initAllBase();
 			_startFlag = true;
+			notice(Notice::GAME_START);
 			return;
 		}
 		return;
@@ -553,11 +555,6 @@ void UnitManager::costForCreate(int type)
 {
 	_gold -= costGold[type];
 	_electricity -= costElectricity[type];
-
-	for (int i = 0;i < 8;++i)
-	{
-		log("costGold: %d", costGold[i]);
-	}
 }
 
 void UnitManager::notice(Notice note)
@@ -568,6 +565,7 @@ void UnitManager::notice(Notice note)
 		"Position is occupied!",
 		"Please wait!",
 		"Relax, game hasn't been started.",
+		"Start now!"
 	};
 	
 	_notice->setVisible(true);

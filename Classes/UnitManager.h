@@ -14,11 +14,12 @@ USING_NS_CC;
 using namespace ui;
 
 enum Notice {
-	NO_ENOUGH_MONEY=0,//金钱不足
+	NO_ENOUGH_MONEY = 0,//金钱不足
 	BASE_ATTACKED,//基地遭受攻击
 	OCCUPIED_POSITION,//地方被占据（生产
 	PLEASE_WAIT,//生产兵需要cd
 	WAIT_FOR_START,//不要猴急
+	GAME_START,//游戏开始
 };
 
 class Unit;

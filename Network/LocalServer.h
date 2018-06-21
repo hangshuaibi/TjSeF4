@@ -13,6 +13,8 @@
 #include <boost/asio.hpp>
 #include "chat_message.h"
 
+#include "cocos2d.h"
+
 #define TEST_CODE
 
 /*-----------------------------------------------------------*/
@@ -25,13 +27,6 @@ using boost::asio::ip::tcp;
 
 typedef std::deque<chat_message> chat_message_queue;
 
-/*-----------------------------------------------------------*/
-int clientNum = 0;//客户端数量，借此识别玩家id
-int preparedClientNum = 0;
-int startFlag = false;//游戏开始后禁止加入
-
-bool	 isIdUsed[MAX_PLAYER_NUM] = { 0,0,0,0 };//
-												/*-----------------------------------------------------------*/
 
 class chat_participant
 {
@@ -47,17 +42,31 @@ class chat_server;//room的友元
 class chat_room
 {
 	friend class chat_server;
-
-	chat_message stringToMsg(const char s[])
+public:
+	int getClientNum()
 	{
-		chat_message msg;
-
-		msg.body_length(strlen(s));
-		memcpy(msg.body(), s, msg.body_length());
-		msg.encode_header();
-
-		return msg;
+		return _clientNum;
 	}
+
+	int getReadyClientNum()
+	{
+		return _preparedClientNum;
+	}
+
+	void startGame()
+	{
+		char info[50] = "";
+		sprintf(info, "Start!(%d", _clientNum);
+
+		deliver(stringToMsg(info));
+	}
+
+private:
+	int _clientNum = 0;//客户端数量，借此识别玩家id
+	int _preparedClientNum = 0;
+	//int startFlag = false;//游戏开始后禁止加入
+
+	bool	 _isIdUsed[MAX_PLAYER_NUM] = { 0,0,0,0 };//
 
 public:
 	void join(chat_participant_ptr participant)
@@ -69,19 +78,19 @@ public:
 
 		/*-----------------------------------------------------------*/
 		//发送玩家id给client
-		++clientNum;
-		assert(clientNum <= 4);
+		++_clientNum;
+		assert(_clientNum <= MAX_PLAYER_NUM);
 		int validId = -1;
 		for (int i = 0;i < MAX_PLAYER_NUM;++i)
 		{
-			if (!isIdUsed[i])
+			if (!_isIdUsed[i])
 			{
 				validId = i;
 				break;
 			}
 		}
 		assert(validId >= 0);
-		isIdUsed[validId] = 1;
+		_isIdUsed[validId] = 1;
 		participant->_id = validId;
 
 		char s[20];
@@ -96,15 +105,12 @@ public:
 	{
 		participants_.erase(participant);//remove a client
 
-		isIdUsed[participant->_id] = 0;//清空flag
+		_isIdUsed[participant->_id] = 0;//清空flag
 		std::cout << "id  " << participant->_id + 1 << "  is valid" << std::endl;
-		--clientNum;
-		if (startFlag && clientNum == 0)
-		{
-			startFlag = false;
-			preparedClientNum = 0;
-		}
-		assert(clientNum >= 0);
+		--_clientNum;
+		--_preparedClientNum;
+
+		assert(_clientNum >= 0);
 	}
 
 	void deliver(const chat_message& msg)
@@ -121,23 +127,15 @@ public:
 			}
 		}
 #endif
-		if (!startFlag && msg.body()[0] == 'C')//Client ready!>>>>>>>>>>>>>>>>>>>>>>>>
+		if (msg.body()[0] == 'C')//Client ready!>>>>>>>>>>>>>>>>>>>>>>>>
 		{
-			if (++preparedClientNum == clientNum
-				//&& clientNum >= 2 //游戏人数大于2
-				)
-			{
-				char info[20] = "";
-				sprintf(info, "Start!(%d", clientNum);
-
-				chat_message startMsg = stringToMsg(info);
-				for (auto participant : participants_)
-					participant->deliver(startMsg);
-
-				startFlag = true;
-			}
+			++_preparedClientNum;
+			//startGame();
+			//assert(0);
 			return;
 		}
+		
+
 		//先将发送的消息放入待发送列表。
 		recent_msgs_.push_back(msg);
 		while (recent_msgs_.size() > max_recent_msgs)
@@ -151,6 +149,18 @@ private:
 	std::set<chat_participant_ptr> participants_;//all client
 	enum { max_recent_msgs = 0 };//保存的最大聊条记录数量
 	chat_message_queue recent_msgs_;
+
+
+	chat_message stringToMsg(const char s[])
+	{
+		chat_message msg;
+
+		msg.body_length(strlen(s));
+		memcpy(msg.body(), s, msg.body_length());
+		msg.encode_header();
+
+		return msg;
+	}
 };//chat room
 
 class chat_session :
@@ -255,8 +265,10 @@ private:
 	chat_message_queue write_msgs_;
 };//seesion
 
+	class LocalServer;//前置声明
 class chat_server
 {
+	friend  class LocalServer;
 public:
 	//constructor
 	chat_server(boost::asio::io_service& io_service,
@@ -294,34 +306,77 @@ private:
 	chat_room room_;//chat_room class//保存所有的client
 };
 
+class LocalServer :public cocos2d::Node {
 
-int main(int argc, char* argv[])
-{
-	try
+	typedef boost::shared_ptr<chat_server>  chat_server_ptr;
+	typedef std::list<chat_server_ptr>      chat_server_list;
+public:
+	static LocalServer * create()
 	{
-#if 0
-		if (argc < 2)
+		LocalServer *sprite = new LocalServer();
+		if (sprite)
 		{
-			std::cerr << "Usage: chat_server <port> [<port> ...]\n";
-			return 1;
+			sprite->autorelease();
+			sprite->runServer();
+
+			return sprite;
 		}
-#endif
-
-		boost::asio::io_service io_service;
-
-		std::list<chat_server> servers;
-		//  for (int i = 1; i < argc; ++i)
-		//  {
-		tcp::endpoint endpoint(tcp::v4(), 1024);//listen 1024 port
-		servers.emplace_back(io_service, endpoint);//constructor
-												   //  }
-
-		io_service.run();
+		CC_SAFE_DELETE(sprite);
+		return nullptr;
 	}
-	catch (std::exception& e)
+
+	int getClientNum()
 	{
-		std::cerr << "Exception: " << e.what() << "\n";
+		return _server->room_.getClientNum();
 	}
 
-	return 0;
-}
+	int getReadyClientNum()
+	{
+		return _server->room_.getReadyClientNum();
+	}
+
+	void startGame()
+	{
+		_server->room_.startGame();
+	}
+
+private:
+	chat_server * _server = nullptr;
+
+private:
+	bool init()
+	{
+		runServer();
+		return true;
+	}
+
+	void runServer()
+	{
+		std::thread t(&LocalServer::server, this);
+		t.detach();//直接返回
+	}
+
+	void server()
+	{
+		try
+		{
+			boost::asio::io_service io_service;
+
+			std::list<chat_server> servers;
+			
+			tcp::endpoint endpoint(tcp::v4(), 1024);//listen 1024 port
+			servers.emplace_back(io_service, endpoint);//constructor
+
+			//servers.push_back(server_ptr);
+			_server = &servers.front();//赋值为内部指针
+
+			io_service.run();
+		}
+		catch (std::exception& e)
+		{
+			std::cerr << "Exception: " << e.what() << "\n";
+		}
+	}
+
+};
+

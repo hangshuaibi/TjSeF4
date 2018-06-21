@@ -15,11 +15,13 @@ using namespace CocosDenshion;
 USING_NS_CC;
 typedef Unit::Type Type;
 
-MainScene* MainScene::create()
+MainScene* MainScene::create(Client* client, LocalServer* server)
 {
 	MainScene* mainScene = new MainScene();
-	if (mainScene&&mainScene->init())
+	if (mainScene)
 	{
+		mainScene->initNetwork(client, server);
+		mainScene->init();
 		mainScene->autorelease();
 		return mainScene;
 	}
@@ -28,6 +30,14 @@ MainScene* MainScene::create()
 
 	CC_SAFE_DELETE(mainScene);
 	return nullptr;
+}
+
+void MainScene::initNetwork(Client* client, LocalServer* server)
+{
+	//Scene::init();
+	assert(server != nullptr);
+	_client = client;
+	_server = server;
 }
 
 MainScene* MainScene::createScene()
@@ -42,12 +52,15 @@ bool MainScene::init()
 	{
 		return false;
 	}
-	//客户端
-	_client = Client::create();
-	this->addChild(_client);
+	if (0&&nullptr == _client)
+	{
+		//客户端
+		_client = Client::create();
+		this->addChild(_client);
+		//挂起当前线程，等待客户端初始化
+		Sleep(2000);
+	}
 
-	//挂起当前线程，等待客户端初始化
-	Sleep(2000);
 	//_client->sendMessage("Client is ready");
 	//_client->sendMessage(_client->ip);
 

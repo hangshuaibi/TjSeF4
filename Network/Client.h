@@ -161,6 +161,7 @@ private:
 
 class Client :public Node {
 	chat_client* _client;
+	std::string _serverIp;
 
 public:
 	void runClient()
@@ -174,7 +175,7 @@ public:
 		boost::asio::io_service io_service;
 
 		tcp::resolver resolver(io_service);
-		auto endpoint_iterator = resolver.resolve({ "127.0.0.1", "1024" });
+		auto endpoint_iterator = resolver.resolve({ _serverIp, "1024" });
 		chat_client c(io_service, endpoint_iterator);//¿Í»§¶Ë
 
 		_client = &c;
@@ -201,12 +202,13 @@ public:
 	}
 	/*-----------------------------------------------------------*/
 
-	static Client* create()
+	static Client* create(std::string serverIp = "127.0.0.1")
 	{
 		Client* sprite = new Client();
 		if (sprite)
 		{
 			sprite->autorelease();
+			sprite->_serverIp = serverIp;
 			sprite->runClient();
 
 			return sprite;
