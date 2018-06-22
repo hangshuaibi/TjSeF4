@@ -91,6 +91,24 @@ bool MainScene::init()
 	_mouseRect->setVisible(false);
 	_tiledMap->addChild(_mouseRect, 10);
 
+	//²à±ßÀ¸
+	auto sidebar1 = Sprite::create("_sidebar.png");
+	sidebar1->setScale(0.3);
+	sidebar1->setPosition(_screenWidth*0.9 + 72, _screenHeight*0.7);
+	sidebar1->setAnchorPoint(Vec2(0, 1));
+	addChild(sidebar1);
+	auto sidebar2 = Sprite::create("_sidebar.png");
+	sidebar2->setScale(0.3);
+	sidebar2->setPosition(_screenWidth*0.9 + 72, _screenHeight*0.3);
+	sidebar2->setAnchorPoint(Vec2(0, 1));
+	addChild(sidebar2);
+	auto sidebar = Sprite::create("sidebar1.jpg");
+	sidebar->setScale(1);
+	sidebar->setPosition(_screenWidth*0.82 + 72, _screenHeight*0.85);
+	sidebar->setAnchorPoint(Vec2(0, 1));
+	addChild(sidebar);
+
+	
 	//½ðÇ®Í¼±ê
 	auto gold = Sprite::create("money.jpg");
 	gold->setPosition(50, _screenHeight*0.9);
@@ -124,8 +142,8 @@ bool MainScene::init()
 	auto barracksButton = Sprite::create("barracks.png");
 	barracksButton->setScale(0.4);
 	barracksButton->setTag(0);
-	barracksButton->setPosition(Vec2(_screenWidth - 40, _screenHeight - 80));
-	this->addChild(barracksButton);
+	barracksButton->setPosition(Vec2(_screenWidth +23, _screenHeight - 80));
+	this->addChild(barracksButton,1);
 	Vec2 barracks_position = barracksButton->getPosition();
 	auto barracksButton1 = Sprite::create("barracks.png");
 	barracksButton1->setPosition(barracks_position);
@@ -136,7 +154,7 @@ bool MainScene::init()
 	auto warfactoryButton = Sprite::create("warfactory.png");
 	warfactoryButton->setTag(1);
 	warfactoryButton->setScale(0.4);
-	warfactoryButton->setPosition(Vec2(_screenWidth - 40, _screenHeight - 130));
+	warfactoryButton->setPosition(Vec2(_screenWidth + 23, _screenHeight - 130));
 	this->addChild(warfactoryButton);
 	Vec2 warfactory_position = warfactoryButton->getPosition();
 	auto warfactoryButton1 = Sprite::create("warfactory.png");
@@ -148,7 +166,7 @@ bool MainScene::init()
 	auto storageButton = Sprite::create("storage.png");
 	storageButton->setTag(2);
 	storageButton->setScale(0.4);
-	storageButton->setPosition(Vec2(_screenWidth - 40, _screenHeight - 160));
+	storageButton->setPosition(Vec2(_screenWidth + 23, _screenHeight - 160));
 	this->addChild(storageButton);
 	Vec2 storage_position = storageButton->getPosition();
 	auto storageButton1 = Sprite::create("storage.png");
@@ -160,7 +178,7 @@ bool MainScene::init()
 	auto producerButton = Sprite::create("producer.png");
 	producerButton->setTag(3);
 	producerButton->setScale(0.4);
-	producerButton->setPosition(Vec2(_screenWidth - 40, _screenHeight - 200));
+	producerButton->setPosition(Vec2(_screenWidth + 23, _screenHeight - 200));
 	this->addChild(producerButton);
 	Vec2 producer_position = producerButton->getPosition();
 	auto producerButton1 = Sprite::create("producer.png");
@@ -410,6 +428,41 @@ bool MainScene::init()
 			_gameManager->focusOnBase();
 			break;
 
+		case EventKeyboard::KeyCode::KEY_H:
+			if (sidebar1->getPosition().x>_screenWidth)
+			{
+				auto moveBy = MoveBy::create(1, Point(-83, 0));
+				sidebar->runAction(moveBy);
+				sidebar1->runAction(moveBy->clone());
+				sidebar2->runAction(moveBy->clone());
+				barracksButton->runAction(moveBy->clone());
+				warfactoryButton->runAction(moveBy->clone());
+				storageButton->runAction(moveBy->clone());
+				producerButton->runAction(moveBy->clone());
+				barracksButton1->runAction(moveBy->clone());
+				warfactoryButton1->runAction(moveBy->clone());
+				storageButton1->runAction(moveBy->clone());
+				producerButton1->runAction(moveBy->clone());
+			}
+			else
+			{
+				auto moveBy = MoveBy::create(1, Point(83, 0));
+				sidebar->runAction(moveBy);
+				sidebar1->runAction(moveBy->clone());
+				sidebar2->runAction(moveBy->clone());
+				barracksButton->runAction(moveBy->clone());
+				warfactoryButton->runAction(moveBy->clone());
+				storageButton->runAction(moveBy->clone());
+				producerButton->runAction(moveBy->clone());
+				barracksButton1->runAction(moveBy->clone());
+				warfactoryButton1->runAction(moveBy->clone());
+				storageButton1->runAction(moveBy->clone());
+				producerButton1->runAction(moveBy->clone());
+			}
+			break;
+
+
+
 		default:
 			break;
 		}
@@ -485,5 +538,7 @@ void MainScene::animationInit()
 	animation->setDelayPerUnit(3.0f / 14.0f);
 	animation->setRestoreOriginalFrame(true);
 	AnimationCache::getInstance()->addAnimation(animation, "create");
+
+
 
 }
