@@ -6,6 +6,7 @@
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 #include "RoomScene.h"
+#include "WaitingScene.h"
 
 USING_NS_CC;
 using namespace ui;
@@ -40,7 +41,8 @@ private:
 		serverButton->setPosition(cocos2d::Vec2(visibleSize.width / 2, visibleSize.height*0.7));
 		serverButton->addTouchEventListener([](Ref* pSender, cocos2d::ui::Widget::TouchEventType type) {
 			if (type == cocos2d::ui::Widget::TouchEventType::ENDED) {
-				assert(0);
+				auto transiton = TransitionSlideInL::create(2.f, WaitingScene::create());
+				Director::getInstance()->replaceScene(transiton);
 			}
 		});
 

@@ -11,12 +11,14 @@ bool RoomScene::init()
 	//初始化服务端
 	_server = LocalServer::create();
 	this->addChild(_server);
-	Sleep(3000);//睡一会
+	Sleep(300);//睡一会
 
 	//等待服务端初始化后初始化客户端
-	_client = Client::create();
+	_client = Client::create("127.0.0.1");
 	this->addChild(_client);
-	//Sleep(2000);
+	Sleep(200);
+
+	_client->sendMessage("Client is ready");
 
 	//初始化游戏人数标签标签和开始游戏按钮
 	auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -35,23 +37,13 @@ bool RoomScene::init()
 	_readyClientNum->setString("fuck!");
 
 	
-	auto sequence = Sequence::create(
-		DelayTime::create(3.0f),//延时确保同时开始
-		CallFunc::create([=] {
-		_server->startGame();
-	}),
-		NULL
-		);
-	//this->runAction(sequence);
-	//切换场景
+	
 	auto button = Button::create("picture/MenuItems/ButtonStartGame.png", "picture/MenuItems/ButtonStartGameSelected.png");
 	button->addTouchEventListener([=](Ref*,
 		Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED)
 		{
 			_server->startGame();
-			auto transiton = TransitionSlideInL::create(2.f, MainScene::create(_client));
-			Director::getInstance()->pushScene(transiton);
 		}
 	});
 	this->addChild(button);
@@ -64,6 +56,11 @@ bool RoomScene::init()
 
 void RoomScene::update(float delta)
 {
+	if (_client->isStart())
+	{
+		auto transiton = TransitionSlideInL::create(2.f, MainScene::create(_client));
+		Director::getInstance()->pushScene(transiton);
+	}
 	_clientNum->setString(string("All Clients num: ").append(num2Str(_server->getClientNum())));
 	_readyClientNum->setString(string("Ready Clients num: ").append(num2Str(_server->getReadyClientNum())));
 }

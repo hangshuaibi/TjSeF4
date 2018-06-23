@@ -186,34 +186,8 @@ void UnitManager::selectUnitByPoint(const Point& point)
 		string message = encoder.encodePath(path);
 		_client->sendMessage(message);//id,path
 
-		if(0)
-		{
-			string order = _client->getMessage();
-			while(order[0] == 'y' || order[0] == 'c'||order[0]=='n') {
-				order = _client->getMessage();
-			}
-			Decoder decoder(order);
-			Encoder test("m", decoder.getId());
-			auto dpath = decoder.decodePath();
-			string testmsg = test.encodePath(dpath);
-			testmsg.push_back('T');
-
-			_client->sendMessage(testmsg);
-		}
-
-		if(0)//还没加网络哦
-		{
-			pUnit->setState(Unit::WONDERING);
-			pUnit->setDestination(gridVector[size]);
-
-			pUnit->findPath();
-			pUnit->schedule(schedule_selector(Unit::update));
-
-			pUnit->setState(Unit::MOVING);
-		}
 	}
 
-	
 }
 
 void UnitManager::selectId(const Rect& rect)
@@ -431,7 +405,7 @@ void UnitManager::updateUnitState()
 			_playerId = order[3] - '1';
 			_nextId = _playerId + MAX_PLAYER_NUM;
 			imreadyFlag = true;
-			_client->sendMessage("Client ready!");
+			//_client->sendMessage("Client ready!");
 
 			return;
 		}
@@ -477,12 +451,8 @@ void UnitManager::updateUnitState()
 		break;
 	}
 	case 'a': {
-		//int id = decoder.getId();
 		int targetId = decoder.decodeTargetId();
-		/*Encoder encoder("a", id);
-		auto msg = encoder.encodeAttack(targetId);
-		msg.append("T");
-		_client->sendMessage(msg);*/
+		
 		if (_getUnitById.count(id) != 1)break;
 		auto atker = _getUnitById[id];
 		auto atkee = _getUnitById[targetId];
@@ -500,7 +470,6 @@ void UnitManager::updateUnitState()
 		break;
 	}
 	case 'p': {
-		//int id = decoder.getId();
 		int targetId = decoder.decodeTargetId();
 		if (_getUnitById.count(id) != 1)break;
 		auto unit = _getUnitById[id];
@@ -508,16 +477,18 @@ void UnitManager::updateUnitState()
 		unit->setTraceId(targetId);
 		unit->_gridPath.clear();//抽个函数
 		unit->setState(Unit::TRACING);
-		//>>>>>>>>>>>>>>>>>>>>>>send traceMessage 
+		//unit->_timer = 59;//60-1
+		
 		break;
 	}
 	case 'c': {
 		int type = decoder.decodeCreateType();
 		auto grid = decoder.decodeCreateGrid();
 		createUnit(id, type, grid);
+
 		break;
 	}
-	case 'g': {
+	case 'g': {//gossip
 		std::string temp(decoder.decodeChat());
 		
 		_displayValueLabel[isLabelFree[0]^1]->setString(temp);
@@ -542,6 +513,7 @@ bool UnitManager::unitMayDead(Unit* attackee)
 {
 	if (attackee->_lifeValue < 0)
 	{
+		attackee->unschedule(schedule_selector(Unit::update));
 		deleteUnit(attackee);
 		return true;
 	}

@@ -45,16 +45,6 @@ bool MainScene::init()
 	{
 		return false;
 	}
-	if (0&&nullptr == _client)
-	{
-		//客户端
-		_client = Client::create();
-		this->addChild(_client);
-		//挂起当前线程，等待客户端初始化
-		Sleep(2000);
-	}
-
-	
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	_screenWidth = visibleSize.width;
@@ -290,7 +280,7 @@ bool MainScene::init()
 	_sendMessageButton->addTouchEventListener([&](Ref* pSender, Widget::TouchEventType type) {
 
 		if (type == Widget::TouchEventType::ENDED) {
-			auto chatMessage = _chatWindow->getStringValue();
+			auto chatMessage = _chatWindow->getString();
 
 			auto message = _gameManager->gameEncodeChat("g", _unitManager->_playerId, chatMessage);  
 			_client->sendMessage(message);

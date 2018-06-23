@@ -51,10 +51,6 @@ protected:
 		_gridMap->setAreaOccupied(area);//加入地图时把格点区域覆盖为1
 		setOccupiedArea(area);//设置单位本身的占据区域
 		//-----------------//
-
-		/*auto grid = _gridMap->getGrid(getPosition());
-		assert(!_gridMap->isGridOccupied(grid));
-		_gridMap->_isOccupied[grid._x][grid._y] = 1;//标识建筑物所在格点*/
 	}
 
 	Point findCreatePos()

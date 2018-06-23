@@ -162,8 +162,7 @@ private:
 class Client :public Node {
 	chat_client* _client;
 	std::string _serverIp;
-
-public:
+private:
 	void runClient()
 	{
 		std::thread t(&Client::client, this);
@@ -190,7 +189,8 @@ public:
 		c.close();
 		t.join();
 	}
-	/*-----------------------------------------------------------*/
+public:
+	/*---------------UnitManager收发消息的接口---------------*/
 	void sendMessage(std::string sendMsg)
 	{
 		_client->sendMessage(sendMsg);
@@ -202,7 +202,7 @@ public:
 	}
 	/*-----------------------------------------------------------*/
 
-	static Client* create(std::string serverIp = "127.0.0.1")
+	static Client* create(std::string serverIp)
 	{
 		Client* sprite = new Client();
 		if (sprite)
@@ -215,6 +215,25 @@ public:
 		}
 		CC_SAFE_DELETE(sprite);
 		return nullptr;
+	}
+
+	//获知当前有多少命令
+	int getOrderSize()
+	{
+		return _client->_orderList.size();
+	}
+
+	bool isConnected()
+	{
+		return _client->_orderList.size() >= 1 
+			&& _client->_orderList.front()[0] == 'I';
+	}
+
+	bool isStart()
+	{
+		return _client->_orderList.size() >= 2
+			&& _client->_orderList.front()[0] == 'I'
+			&& (*++(_client->_orderList.begin()))[0] == 'S';
 	}
 
 private:
