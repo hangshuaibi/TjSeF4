@@ -69,7 +69,7 @@ bool EndScene::init(bool flag)
 }
 void EndScene::menuGoToStartMenu(Ref* pSender)
 {
-	Director::getInstance()->replaceScene(CCTransitionMoveInL::create(0.4f, MainScene::createScene()));
+	//Director::getInstance()->replaceScene(ScenePool::preScene);
 }
 void EndScene::EndGame()
 {

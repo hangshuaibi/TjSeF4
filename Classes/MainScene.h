@@ -10,6 +10,10 @@
 
 USING_NS_CC;
 
+namespace ScenePool {
+	static cocos2d::Scene* preScene = nullptr;
+}
+
 //¾ØÐÎÑ¡¿ò
 struct MouseRect:public DrawNode {
 	CREATE_FUNC(MouseRect);

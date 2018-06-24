@@ -20,9 +20,14 @@ bool WaitingScene::init()
 	{
 		return false;
 	}
+	ScenePool::preScene = this;
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
-	
+	auto background = Sprite::create("scene/waiting.jpg");
+	this->addChild(background);
+	background->setAnchorPoint(cocos2d::Vec2::ZERO);
+
+
 	//±êÇ©³õÊ¼»¯
 	noteLabel = Label::create();
 	noteLabel->setPosition(Vec2(visibleSize.width / 2, visibleSize.height*0.9));

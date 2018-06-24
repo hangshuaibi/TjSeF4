@@ -565,7 +565,7 @@ void UnitManager::initAllBase()
 	assert(_playerNum > 0);
 	for (int id = 0;id < _playerNum;++id)
 	{
-		createUnit_(id, Unit::Type::BASE, basePos[id]);
+		createUnit(id, Unit::Type::BASE, basePos[id]);
 	}
 
 	assert(_playerId >= 0 && _playerId < MAX_PLAYER_NUM);

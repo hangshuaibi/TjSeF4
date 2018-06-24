@@ -7,6 +7,11 @@ bool RoomScene::init()
 	{
 		return false;
 	}
+	ScenePool::preScene = this;
+
+	auto background = Sprite::create("scene/room.jpg");
+	this->addChild(background);
+	background->setAnchorPoint(cocos2d::Vec2::ZERO);
 
 	//初始化服务端
 	_server = LocalServer::create();
