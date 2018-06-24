@@ -17,6 +17,7 @@ class Unit :public Sprite {
 	friend class UnitManager;
 	//persudo friend class, for mainScene test
 	friend class MainScene;
+	friend class Bullet;
 public:
 	//CREATE_FUNC(Unit);
 
@@ -46,8 +47,7 @@ public:
 //protected:
 	virtual void addToMap(GridMap* gridMap, TMXTiledMap* _tiledMap);
 
-	int _id = 0;//每个Unit的id都是不一样的
-
+	int _id = -1;//每个Unit的id都是不一样的
 	
 	GridMap* _gridMap = nullptr;
 
@@ -70,6 +70,7 @@ public:
 	virtual GridMap::GridVector getPath(const Grid& dest);
 
 protected:
+	
 	virtual void setOccupiedArea(GridMap::GridVector area)//建筑类重载该函数
 	{/*empty*/ }
 	virtual GridMap::GridVector getOccupiedArea()

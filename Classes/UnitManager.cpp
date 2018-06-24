@@ -175,10 +175,14 @@ void UnitManager::selectUnitByPoint(const Point& point)
 
 	for (int id : _selectId)
 	{
-		auto pUnit = _getUnitById[id];
-		if (pUnit == nullptr)
+		if (_getUnitById.count(id) != 1)
 		{
-			continue;//单位可能已经被删除
+			continue;
+		}
+		auto pUnit = _getUnitById[id];
+		//if (pUnit == nullptr)
+		{
+			//continue;//单位可能已经被删除
 		}
 
 		auto path = pUnit->getPath(gridVector[--size]);//->>>>>>>>>测试完改回来
@@ -230,11 +234,15 @@ void UnitManager::createUnit(int id, int type, const Grid& createGrid)
 		//建筑播放动画
 		displayAnimate(_gridMap->getPoint(createGrid));
 	}
+	auto unit = createUnit_(id, type, createGrid);//转发
+	unit->setVisible(false);
 
 	auto sequence = Sequence::create(
 		DelayTime::create(2.0f),
 		CallFunc::create([=] {
-		createUnit_(id, type, createGrid);//转发
+		unit->setVisible(true);
+		unit->_hp->setVisible(true);
+		_getUnitById.insert(std::make_pair(id, unit));//延后insert防止隐藏时响应点击
 	}),
 		NULL
 		);
@@ -242,7 +250,7 @@ void UnitManager::createUnit(int id, int type, const Grid& createGrid)
 	runAction(sequence);
 }
 
-void UnitManager::createUnit_(int id, int type, const Grid& createGrid)
+Unit* UnitManager::createUnit_(int id, int type, const Grid& createGrid)
 {
 	Unit* unit = nullptr;
 	switch(type)
@@ -291,9 +299,11 @@ void UnitManager::createUnit_(int id, int type, const Grid& createGrid)
 	unit->setManager(this);
 	unit->setId(id);
 
-	_getUnitById.insert(std::make_pair(id, unit));
 
 	unit->setProperties();
+	unit->_hp->setVisible(false);
+
+	return unit;
 }
 
 void UnitManager::displayAnimate(Point pos)
@@ -374,6 +384,10 @@ void UnitManager::abandonSelectedId()
 	for (int id : _selectId)
 	{
 		//原始透明度是255
+		if (_getUnitById.count(id) != 1)
+		{
+			continue;
+		}
 		_getUnitById[id]->setOpacity(255);
 	}
 
@@ -387,6 +401,10 @@ bool UnitManager::isOurBro(int id)
 
 void UnitManager::setPath(int id, GridMap::GridVector path)
 {
+	if (_getUnitById.count(id) != 1)
+	{
+		return;
+	}
 	auto unit = _getUnitById[id];
 	assert(unit != nullptr);
 
@@ -428,6 +446,11 @@ void UnitManager::updateUnitState()
 
 	Decoder decoder(order);
 	int id = decoder.getId();
+	if (_getUnitById.count(id) == 0
+		&&decoder.getType() != 'c')
+	{
+		return;
+	}
 
 	switch (decoder.getType()) {
 	case 't':
@@ -452,8 +475,11 @@ void UnitManager::updateUnitState()
 	}
 	case 'a': {
 		int targetId = decoder.decodeTargetId();
-		
-		if (_getUnitById.count(id) != 1)break;
+		if (_getUnitById.count(targetId) != 1)
+		{
+			break;
+		}
+
 		auto atker = _getUnitById[id];
 		auto atkee = _getUnitById[targetId];
 		atker->shoot(atkee);
@@ -463,6 +489,7 @@ void UnitManager::updateUnitState()
 		}
 		if (unitMayDead(atkee))//为真时单位在此函数被删除
 		{
+			if (_getUnitById.count(id) != 1)break;
 			atker->setTraceId(-1);
 			atker->setState(Unit::WONDERING);
 		}

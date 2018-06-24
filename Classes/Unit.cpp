@@ -2,6 +2,7 @@
 #include "PathFinder.h"
 #include "NotGay.h"
 #include "MessageTransfer/Encoder.h"
+#include "Bullet.h"
 
 Unit::Unit():Sprite(),
 _state(WONDERING),
@@ -148,6 +149,12 @@ void Unit::moveTest()
 
 void Unit::update(float delta)
 {
+	if (_lifeValue < 0)
+	{
+		unschedule(schedule_selector(Unit::update));
+		_unitManager->deleteUnit(_id);
+		return;
+	}
 	updateHp();//更新血条进度，血量更新的逻辑应该在manager做
 
 	switch (_state) {
@@ -172,7 +179,7 @@ void Unit::update(float delta)
 //射击
 void Unit::shoot(Unit* atkee)
 {
-	Point start = getPosition();
+	/*Point start = getPosition();
 	Point end = atkee->getPosition();
 
 	auto tiledMap = dynamic_cast<TMXTiledMap*>(getParent());
@@ -197,13 +204,20 @@ void Unit::shoot(Unit* atkee)
 		CallFunc::create([=]() {
 		bullet->setVisible(false);
 		tiledMap->removeChild(bullet, true);
-		atkee->_lifeValue -= _attackEffect;//承受伤害
+		//assert(_attackEffect > 0);
+		atkee->_lifeValue -= 50;//承受伤害
 	}), 
 		NULL
 	);
 	
-	bullet->runAction(sequence);
-	
+	bullet->runAction(sequence);*/
+	int targetId = _unitManager->getIdByUnit(atkee);
+	if (targetId != -1)
+	{
+		auto bullet = Bullet::create(this, targetId);
+		bullet->setScale(0.01f);
+		bullet->runBullet();
+	}
 }
 
 void Unit::autoAttack()
@@ -254,6 +268,9 @@ void Unit::initHp()
 
 void Unit::updateHp()
 {
+	if (_lifeValue != _lifeValueMax)
+		log("id: %d, hp: %d, hpmax: %d", _id, _lifeValue, _lifeValueMax);
+	//assert(_lifeValue <=_lifeValueMax);
 	Point unitPos = getPosition();
 	_hp->setPosition(Point(unitPos.x,
 		unitPos.y + _hp->getContentSize().height * 0.4f));

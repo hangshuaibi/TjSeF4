@@ -26,6 +26,7 @@ class Unit;
 class ControlPanel;
 class UnitManager:public Node {
 	//test'
+	friend class Bullet;
 	friend class MainScene;
 	friend class Unit;
 	friend class SoldierCamp;
@@ -125,7 +126,7 @@ private:
 	//制造延时效果并调用createUnit_
 	void createUnit(int id, int type, const Grid& createGrid = Grid(6,6));
 	//敌方和我方产生unit的逻辑都在这个函数完成
-	void createUnit_(int id, int type, const Grid& createGrid = Grid(6, 6));
+	Unit* createUnit_(int id, int type, const Grid& createGrid = Grid(6, 6));
 
 	void setPath(int id, GridMap::GridVector path);
 

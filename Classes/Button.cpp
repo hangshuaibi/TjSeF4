@@ -75,6 +75,7 @@ void BButton::onRelease()
 	}
 
 	_unitManager->costForCreate(_type);//花钱
+	//map->setAreaOccupied(area);
 	_unitManager->localCreateUnit(_type, truePos);//发消息
 	
 }
