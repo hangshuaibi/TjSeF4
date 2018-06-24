@@ -1,10 +1,21 @@
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#pragma warning (disable : 4996)
+#define ASIO_STANDALONE
+
 #include "Client.h"
 #include "chat_message.h"
 #include <iostream>
 #include <string>
 #include <vector>
+#include "asio.hpp"
+#pragma warning (disable : 4996)
+#include "winsock2.h"
+#pragma comment(lib,"ws2_32.lib")
 
-int serverIndex ;
+std::string ipHead;      //用来保存本机ip地址的前三段
+
+using asio::ip::tcp;
+int serverIndex  = -1;
 int ipindex;                                //能正确连接的ip地址在ip列表里的索引
 std::string                 currentIp;       //当前连接的ip地址字符串
 std::vector<std::string>    ipList;          //所有连接到该网段的设备的ip地址表
@@ -17,7 +28,7 @@ int Mode;//客户端创建的方式，0表示连接到局域网主机，1表示连接到互联网主机
 static Client* thisClient = nullptr;
 
 
-chat_client::chat_client(boost::asio::io_service& io_service,
+chat_client::chat_client(asio::io_service& io_service,
 	tcp::resolver::iterator endpoint_iterator)
 	: io_service_(io_service),
 	socket_(io_service)//初始化
@@ -49,8 +60,8 @@ void chat_client::close()
 void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 	{
 		//发起连接
-		boost::asio::async_connect(socket_, endpoint_iterator,
-			[this](boost::system::error_code ec, tcp::resolver::iterator)
+		asio::async_connect(socket_, endpoint_iterator,
+			[this](std::error_code ec, tcp::resolver::iterator)
 		{
 			if (!ec)
 			{
@@ -65,12 +76,13 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 
 	void chat_client::do_read_header()
 	{
-		boost::asio::async_read(socket_,
-			boost::asio::buffer(read_msg_.data(), chat_message::header_length),
-			[this](boost::system::error_code ec, std::size_t /*length*/)
+		asio::async_read(socket_,
+			::asio::buffer(read_msg_.data(), chat_message::header_length),
+			[this](std::error_code ec, std::size_t /*length*/)
 		{
 			if (!ec && read_msg_.decode_header())
 			{
+				
 				do_read_body();
 			}
 			else
@@ -82,18 +94,19 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 
 	void chat_client::do_read_body()
 	{
-		boost::asio::async_read(socket_,
-			boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
-			[this](boost::system::error_code ec, std::size_t /*length*/)
+		::asio::async_read(socket_,
+			::asio::buffer(read_msg_.body(), read_msg_.body_length()),
+			[this](std::error_code ec, std::size_t /*length*/)
 		{
 			if (!ec)
 			{
-				thisClient->t_lock.lock();
+				serverIndex = ipindex;
+			//	thisClient->t_lock.lock();
 				/*-----------------------------------------------------------*/
 				//将消息压入队列，供UnitManager读取
 				_orderList.push_back(std::string(read_msg_.body(), read_msg_.body_length()));
 				/*-----------------------------------------------------------*/
-				thisClient->t_lock.unlock();
+			//	thisClient->t_lock.unlock();
 				std::cout.write(read_msg_.body(), read_msg_.body_length());
 				std::cout << "\n";//打印消息到屏幕
 				do_read_header();
@@ -107,10 +120,10 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 
 	void chat_client::do_write()
 	{
-		boost::asio::async_write(socket_,
-			boost::asio::buffer(write_msgs_.front().data(),
+		::asio::async_write(socket_,
+			::asio::buffer(write_msgs_.front().data(),
 				write_msgs_.front().length()),
-			[this](boost::system::error_code ec, std::size_t /*length*/)//handle write
+			[this](std::error_code ec, std::size_t /*length*/)//handle write
 		{
 			if (!ec)
 			{
@@ -174,7 +187,7 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 	int Client::client()
 	{
 		
-		system("ping 255.255.255.255");
+	/*	system("ping 255.255.255.255");
 
 		system("arp -a > arp.txt");
 
@@ -223,11 +236,11 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 
 				}
 			}
-		}
+		}*/
 
-		std::vector<boost::thread> t;
+	//	std::vector<std::thread> t;
 
-		for (int i = 0; i < ipList.size() - 1; i++)
+	/*	for (int i = 0; i < ipList.size() - 1; i++)
 		{
 
 
@@ -262,7 +275,8 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 			}
 
 
-			boost::asio::io_service io_service;
+			asio::io_service io_service;
+			asio::io_context io_context;
 
 			tcp::resolver resolver(io_service);//10.22.5.232
 			auto endpoint_iterator = resolver.resolve({ ipList.at(i), "1024" });
@@ -272,7 +286,7 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 			thisClient = this;
 
 			//std::thread t([&io_service]() { io_service.run(); });//启动线程执行io_service.run()
-			boost::thread t(boost::bind(&boost::asio::io_service::run, &io_service));
+			std::thread t(bind(&asio::io_service::run, &io_service));
 			ipindex = i;
 			Sleep(100);
 			c.close();
@@ -280,24 +294,82 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 
 
 
-		}
+		}*/
+		WSAData data;
+		WSAStartup(MAKEWORD(1, 1), &data);
+		char host[255];
+		gethostname(host, sizeof(host)) == SOCKET_ERROR;
+		
+		struct hostent *p = gethostbyname(host);
+	
+			for (int i = 0; p->h_addr_list[i] != 0; i++)         
+			{
+				struct in_addr in;
+				memcpy(&in, p->h_addr_list[i], sizeof(struct in_addr));
+				
+				//std::cout << inet_ntoa(in) << std::endl;
+				std::string temp(inet_ntoa(in));
+				int pos = temp.find_last_of('.');
+				
+				ipHead = temp.substr(0, pos + 1);
+				 
+			}
 
-		try {
-			boost::asio::io_service io_service;
-			std::string ip;
-			tcp::resolver resolver(io_service);//10.22.5.232
-			if (Mode == 1)
-				ip = "118.25.134.24";
-			else
-				ip = _ip;
-			//auto endpoint_iterator = resolver.resolve({_ip, "1024" });
-			auto endpoint_iterator = resolver.resolve({ip, "1024" });
-			chat_client c(io_service, endpoint_iterator);//客户端
+		WSACleanup();
+
+		
+		for (int i = 1; i < 255; i++)
+		{
+			std::string ipTemp2 = ipHead;
+
+			asio::io_service io_service;
+			asio::io_context io_context;
+
+
+			if (serverIndex != -1)
+				break;
+
+			ipTemp2 = ipTemp2.append(std::to_string(i));
+
+			tcp::resolver resolver(io_context);
+
+
+
+			auto endpoint_iterator = resolver.resolve({ ipTemp2, "1024" });
+			chat_client c(io_context, endpoint_iterator);//客户端
 
 			_client = &c;
-			thisClient = this;
-			//std::thread t([&io_service]() { io_service.run(); });//启动线程执行io_service.run()
-			boost::thread t(boost::bind(&boost::asio::io_service::run, &io_service));
+
+
+			std::thread t([&io_context]() {io_context.run(); });
+			ipindex = i;
+			Sleep(100);
+
+			c.close();
+			t.join();
+		}
+		
+		
+		try {
+
+		
+			asio::io_context io_context2;
+
+			
+			tcp::resolver resolver(io_context2);//10.22.5.232
+
+			ipHead.append(std::to_string(serverIndex));
+
+			//auto endpoint_iterator2 = resolver.resolve({ "192.168.1.105", "1024" });
+
+			auto endpoint_iterator2 = resolver.resolve({ ipHead.c_str(), "1024" });
+			chat_client c(io_context2, endpoint_iterator2);//客户端
+
+			_client = &c;
+			
+
+			std::thread t([&io_context2]() {io_context2.run(); });
+
 			while (1)
 			{
 				;
@@ -310,6 +382,8 @@ void chat_client:: do_connect(tcp::resolver::iterator endpoint_iterator)
 		{
 			std::cerr << "Exception: " << e.what() << "\n";
 		}
+
+	
 		return 0;
 	}
 		

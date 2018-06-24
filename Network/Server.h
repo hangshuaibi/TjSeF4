@@ -1,8 +1,7 @@
-#pragma once
+//#pragma once
 
-//#pragma warning(disable:4996)
-//#define ASIO_STANDALONE
-
+#pragma warning(disable:4996)
+#define ASIO_STANDALONE
 #include <cstdlib>
 #include <deque>
 #include <iostream>
@@ -10,8 +9,9 @@
 #include <memory>
 #include <set>
 #include <utility>
-#include <boost/asio.hpp>
+#include "asio.hpp"
 #include "chat_message.h"
+#pragma warning (disable : 4996)
 
 #define TEST_CODE
 
@@ -21,7 +21,7 @@
 //#include "Classes/Data.h"
 /*-----------------------------------------------------------*/
 #define MAX_PLAYER_NUM 4
-using boost::asio::ip::tcp;
+using asio::ip::tcp;
 
 typedef std::deque<chat_message> chat_message_queue;
 
@@ -187,9 +187,9 @@ private:
 	void do_read_header()
 	{
 		auto self(shared_from_this());
-		boost::asio::async_read(socket_,
-			boost::asio::buffer(read_msg_.data(), chat_message::header_length),//data,length
-			[this, self](boost::system::error_code ec, std::size_t /*length*/)//lambada
+		::asio::async_read(socket_,
+			::asio::buffer(read_msg_.data(), chat_message::header_length),//data,length
+			[this, self](std::error_code ec, std::size_t /*length*/)//lambada
 		{
 			if (!ec && read_msg_.decode_header())
 			{
@@ -208,9 +208,9 @@ private:
 	void do_read_body()
 	{
 		auto self(shared_from_this());
-		boost::asio::async_read(socket_,
-			boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
-			[this, self](boost::system::error_code ec, std::size_t /*length*/)
+		::asio::async_read(socket_,
+			::asio::buffer(read_msg_.body(), read_msg_.body_length()),
+			[this, self](std::error_code ec, std::size_t /*length*/)
 		{
 			if (!ec)
 			{
@@ -227,10 +227,10 @@ private:
 	void do_write()
 	{
 		auto self(shared_from_this());
-		boost::asio::async_write(socket_,//当前session的socket
-			boost::asio::buffer(write_msgs_.front().data(),
+		::asio::async_write(socket_,//当前session的socket
+			::asio::buffer(write_msgs_.front().data(),
 				write_msgs_.front().length()),
-			[this, self](boost::system::error_code ec, std::size_t /*length*/)
+			[this, self](std::error_code ec, std::size_t /*length*/)
 		{
 			if (!ec)
 			{
@@ -260,7 +260,7 @@ class chat_server
 {
 public:
 	//constructor
-	chat_server(boost::asio::io_service& io_service,
+	chat_server(::asio::io_service& io_service,
 		const tcp::endpoint& endpoint)
 		: acceptor_(io_service, endpoint),//listen fd
 		socket_(io_service)//conn fd
@@ -273,7 +273,7 @@ private:
 	{
 		//a new connection
 		acceptor_.async_accept(socket_,
-			[this](boost::system::error_code ec)
+			[this](std::error_code ec)
 		{
 			if (!ec)
 			{
@@ -295,10 +295,10 @@ private:
 	chat_room room_;//chat_room class//保存所有的client
 };
 
-typedef boost::shared_ptr<chat_server>  chat_server_ptr;
+typedef std::shared_ptr<chat_server>  chat_server_ptr;
 typedef std::list<chat_server_ptr>      chat_server_list;
 
-class Server:public Node {
+class Server :public Node {
 public:
 
 	static Server * create()
@@ -323,7 +323,7 @@ public:
 
 	int server()
 	{
-		boost::asio::io_service io_service;
+		::asio::io_service io_service;
 		chat_server_list servers;
 
 		using namespace std;

@@ -1,5 +1,6 @@
 #pragma once
-
+#pragma warning (disable : 4996)
+#define ASIO_STANDALONE
 #include "cocos2d.h"
 USING_NS_CC;
 
@@ -7,16 +8,16 @@ USING_NS_CC;
 #include <deque>
 #include <iostream>
 #include <thread>
-#include <boost/bind.hpp>
-#include <boost/asio.hpp>
-#include <boost/thread/thread.hpp>
+//#include <boost/bind.hpp>
+#include "asio.hpp"
+//#include <boost/thread/thread.hpp>
 #include "chat_message.h"
 #include <fstream>
+#pragma warning (disable : 4996)
 
 
 
-
-using boost::asio::ip::tcp;
+using asio::ip::tcp;
 
 
 typedef std::deque<chat_message> chat_message_queue;
@@ -27,7 +28,7 @@ class chat_client
 {
 	friend class Client;
 	//public:
-	chat_client(boost::asio::io_service& io_service,
+	chat_client(asio::io_service& io_service,
 		tcp::resolver::iterator endpoint_iterator);
 
 	void write(const chat_message& msg);
@@ -54,7 +55,7 @@ private:
 	/*-----------------------------------------------------------*/
 
 private:
-	boost::asio::io_service& io_service_;
+	asio::io_service& io_service_;
 	tcp::socket socket_;
 	chat_message read_msg_;
 	chat_message_queue write_msgs_;
