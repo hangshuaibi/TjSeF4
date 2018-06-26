@@ -140,52 +140,56 @@ bool MainScene::init()
 
 
 	auto barracksButton = Sprite::create("barracks.png");
-	barracksButton->setScale(0.4);
 	barracksButton->setTag(0);
-	barracksButton->setPosition(Vec2(_screenWidth +23, _screenHeight - 80));
-	this->addChild(barracksButton,1);
+	barracksButton->setPosition(Vec2(35,180));
+	sidebar->addChild(barracksButton,1);
+	barracksButton->setCascadeOpacityEnabled(true);
 	Vec2 barracks_position = barracksButton->getPosition();
 	auto barracksButton1 = Sprite::create("barracks.png");
 	barracksButton1->setPosition(barracks_position);
-	barracksButton1->setScale(0.4);
 	button.pushBack(barracksButton1);
-	this->addChild(barracksButton1);
+	sidebar->addChild(barracksButton1);
+	barracksButton1->setCascadeOpacityEnabled(true);
 
 	auto warfactoryButton = Sprite::create("warfactory.png");
 	warfactoryButton->setTag(1);
 	warfactoryButton->setScale(0.4);
-	warfactoryButton->setPosition(Vec2(_screenWidth + 23, _screenHeight - 130));
-	this->addChild(warfactoryButton);
+	warfactoryButton->setPosition(Vec2(35, 130));
+	sidebar->addChild(warfactoryButton);
+	warfactoryButton->setCascadeOpacityEnabled(true);
 	Vec2 warfactory_position = warfactoryButton->getPosition();
 	auto warfactoryButton1 = Sprite::create("warfactory.png");
 	warfactoryButton1->setPosition(warfactory_position);
 	warfactoryButton1->setScale(0.4);
 	button.pushBack(warfactoryButton1);
-	this->addChild(warfactoryButton1);
+	sidebar->addChild(warfactoryButton1);
+	warfactoryButton1->setCascadeOpacityEnabled(true);
 
 	auto storageButton = Sprite::create("storage.png");
 	storageButton->setTag(2);
-	storageButton->setScale(0.4);
-	storageButton->setPosition(Vec2(_screenWidth + 23, _screenHeight - 160));
-	this->addChild(storageButton);
+	storageButton->setPosition(Vec2(35,80));
+	sidebar->addChild(storageButton);
+	storageButton->setCascadeOpacityEnabled(true);
 	Vec2 storage_position = storageButton->getPosition();
 	auto storageButton1 = Sprite::create("storage.png");
 	storageButton1->setPosition(storage_position);
-	storageButton1->setScale(0.4);
 	button.pushBack(storageButton1);
-	this->addChild(storageButton1);
+	sidebar->addChild(storageButton1);
+	storageButton1->setCascadeOpacityEnabled(true);
 
 	auto producerButton = Sprite::create("producer.png");
 	producerButton->setTag(3);
 	producerButton->setScale(0.4);
-	producerButton->setPosition(Vec2(_screenWidth + 23, _screenHeight - 200));
-	this->addChild(producerButton);
+	producerButton->setPosition(Vec2(35,30));
+	sidebar->addChild(producerButton);
+	producerButton->setCascadeOpacityEnabled(true);
 	Vec2 producer_position = producerButton->getPosition();
 	auto producerButton1 = Sprite::create("producer.png");
 	producerButton1->setPosition(producer_position);
 	producerButton1->setScale(0.4);
 	button.pushBack(producerButton1);
-	this->addChild(producerButton1);
+	sidebar->addChild(producerButton1);
+	producerButton1->setCascadeOpacityEnabled(true);
 
 	//创建单点触摸监听器
 	auto buildingButtonListener = EventListenerTouchOneByOne::create();
@@ -435,14 +439,6 @@ bool MainScene::init()
 				sidebar->runAction(moveBy);
 				sidebar1->runAction(moveBy->clone());
 				sidebar2->runAction(moveBy->clone());
-				barracksButton->runAction(moveBy->clone());
-				warfactoryButton->runAction(moveBy->clone());
-				storageButton->runAction(moveBy->clone());
-				producerButton->runAction(moveBy->clone());
-				barracksButton1->runAction(moveBy->clone());
-				warfactoryButton1->runAction(moveBy->clone());
-				storageButton1->runAction(moveBy->clone());
-				producerButton1->runAction(moveBy->clone());
 			}
 			else
 			{
@@ -450,14 +446,6 @@ bool MainScene::init()
 				sidebar->runAction(moveBy);
 				sidebar1->runAction(moveBy->clone());
 				sidebar2->runAction(moveBy->clone());
-				barracksButton->runAction(moveBy->clone());
-				warfactoryButton->runAction(moveBy->clone());
-				storageButton->runAction(moveBy->clone());
-				producerButton->runAction(moveBy->clone());
-				barracksButton1->runAction(moveBy->clone());
-				warfactoryButton1->runAction(moveBy->clone());
-				storageButton1->runAction(moveBy->clone());
-				producerButton1->runAction(moveBy->clone());
 			}
 			break;
 
