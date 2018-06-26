@@ -165,7 +165,7 @@ void Unit::update(float delta)
 		move();
 		break;
 	case WONDERING:
-		//autoAttack();
+		autoAttack();
 		break;
 	case TRACING:
 		trace();

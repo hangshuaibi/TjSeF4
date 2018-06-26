@@ -20,6 +20,7 @@
 /*-----------------------------------------------------------*/
 #include <cstdio>
 #include <string>
+#include <Scenes/NameScene.h>
 //#include "Classes/Data.h"
 /*-----------------------------------------------------------*/
 #define MAX_PLAYER_NUM 4
@@ -95,7 +96,9 @@ public:
 
 		char s[20];
 		sprintf(s, "Id(%d", validId + 1);
-		chat_message msg = stringToMsg(s);
+		std::string temp(s);
+		temp.append(NameScene::getName());
+		chat_message msg = stringToMsg(temp.c_str());
 
 		participant->deliver(msg);
 		/*-----------------------------------------------------------*/
@@ -108,7 +111,10 @@ public:
 		_isIdUsed[participant->_id] = 0;//Çå¿Õflag
 		std::cout << "id  " << participant->_id + 1 << "  is valid" << std::endl;
 		--_clientNum;
-		--_preparedClientNum;
+		if (_clientNum == _preparedClientNum - 1)
+		{
+			--_preparedClientNum;
+		}
 
 		assert(_clientNum >= 0);
 	}

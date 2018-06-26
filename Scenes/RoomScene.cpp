@@ -43,7 +43,7 @@ bool RoomScene::init()
 
 	
 	
-	auto button = Button::create("picture/MenuItems/ButtonStartGame.png", "picture/MenuItems/ButtonStartGameSelected.png");
+	auto button = Button::create("scene/start.png");
 	button->addTouchEventListener([=](Ref*,
 		Widget::TouchEventType type) {
 		if (type == Widget::TouchEventType::ENDED)
@@ -53,7 +53,8 @@ bool RoomScene::init()
 	});
 	this->addChild(button);
 	button->setPosition(Vec2(width / 2, height / 2 - 40));
-	
+	button->setTouchEnabled(true);
+
 	scheduleUpdate();//更新人数
 
 	return true;

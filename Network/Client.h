@@ -19,7 +19,7 @@ class Client;
 class chat_client
 {
 	friend class Client;
-//public:
+public:
 	chat_client(boost::asio::io_service& io_service,
 		tcp::resolver::iterator endpoint_iterator)
 		: io_service_(io_service),
@@ -86,11 +86,12 @@ private:
 		{
 			if (!ec)
 			{
+				_lock.lock();
 				/*-----------------------------------------------------------*/
 				//将消息压入队列，供UnitManager读取
 				_orderList.push_back(std::string(read_msg_.body(),read_msg_.body_length()));
 				/*-----------------------------------------------------------*/
-
+				_lock.unlock();
 				std::cout.write(read_msg_.body(), read_msg_.body_length());
 				std::cout << "\n";//打印消息到屏幕
 				do_read_header();
@@ -127,15 +128,20 @@ private:
 private:
 	//从服务端收到的消息列表
 	std::deque<std::string> _orderList;
+	std::mutex _lock;
 
 	//读取消息的接口，一次读取一条，从头部开始读取
 	std::string getOrder()
 	{
+		//_lock.lock();//上锁
+
 		if (_orderList.empty())
 			return std::string("null");
 
 		std::string msg = _orderList.front();
 		_orderList.pop_front();
+
+		//_lock.unlock();//解锁
 
 		return msg;
 	}
@@ -162,9 +168,11 @@ private:
 class Client :public Node {
 	chat_client* _client;
 	std::string _serverIp;
+	//std::mutex _lock;
 private:
 	void runClient()
 	{
+		//lanSearch();//在死亡的边缘试探
 		std::thread t(&Client::client, this);
 		t.detach();
 	}
@@ -198,7 +206,11 @@ public:
 
 	std::string getMessage()
 	{
-		return _client->getOrder();
+		_client->_lock.lock();
+		auto msg = _client->getOrder();
+		_client->_lock.unlock();
+
+		return msg;
 	}
 	/*-----------------------------------------------------------*/
 
@@ -238,4 +250,10 @@ public:
 
 private:
 	std::string getServerIp();
+
+public:
+	//局域网搜索
+	static void lanSearch();
+
+	static const std::map<std::string, std::string>& getRoomlist();
 };
