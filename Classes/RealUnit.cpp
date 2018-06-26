@@ -14,10 +14,11 @@ Tank* Tank::create(int id)
 {
 		Tank* ret = new Tank();
 
-		std::string filename = "picture/units/tank";
+		std::string filename = "tank";
 		filename.append(suffix[id%MAX_PLAYER_NUM]);
+		auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename);
 
-		if (ret&&ret->initWithFile(filename))
+		if (ret&&ret->initWithSpriteFrame(spriteFrame))
 		{
 			ret->autorelease();
 
@@ -41,7 +42,7 @@ void Tank::setProperties()
 
 	initHp();
 
-	_attackObject = "picture/ui/gold.png";
+	_attackObject = "bullet_t.png";
 	_state = Unit::WONDERING;
 	schedule(schedule_selector(Unit::update));
 }
@@ -50,10 +51,11 @@ Soldier* Soldier::create(int id)
 {
 	Soldier* ret = new Soldier();
 
-	std::string filename = "picture/units/soldier";
+	std::string filename = "soldier";
 	filename.append(suffix[id%MAX_PLAYER_NUM]);
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename);
 
-	if (ret&&ret->initWithFile(filename))
+	if (ret&&ret->initWithSpriteFrame(spriteFrame))
 	{
 		ret->autorelease();
 
@@ -77,7 +79,7 @@ void Soldier::setProperties()
 
 	initHp();
 
-	_attackObject = "picture/ui/gold.png";
+	_attackObject = "bullet_s.png";
 	_state = Unit::WONDERING;
 	schedule(schedule_selector(Unit::update));
 }
@@ -86,10 +88,11 @@ SoldierCamp* SoldierCamp::create(int id)
 {
 	SoldierCamp* ret = new SoldierCamp();
 
-	std::string filename = "picture/units/soldiercamp";
+	std::string filename = "soldiercamp";
 	filename.append(suffix[id%MAX_PLAYER_NUM]);
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename);
 
-	if (ret&&ret->initWithFile(filename))
+	if (ret&&ret->initWithSpriteFrame(spriteFrame))
 	{
 		ret->autorelease();
 
@@ -104,10 +107,10 @@ Base* Base::create(int id)
 {
 	Base* ret = new Base();
 
-	std::string filename = "picture/units/basement.png";
-	//filename.append(suffix[id%MAX_PLAYER_NUM]);
+	std::string filename = "basement.png";
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename);
 
-	if (ret&&ret->initWithFile(filename))
+	if (ret&&ret->initWithSpriteFrame(spriteFrame))
 	{
 		ret->autorelease();
 
@@ -122,10 +125,11 @@ Fighter* Fighter::create(int id)
 {
 	Fighter* ret = new Fighter();
 
-	std::string filename = "picture/units/fighter";
+	std::string filename = "fighter";
 	filename.append(suffix[id%MAX_PLAYER_NUM]);
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename);
 
-	if (ret&&ret->initWithFile(filename))
+	if (ret&&ret->initWithSpriteFrame(spriteFrame))
 	{
 		ret->autorelease();
 
@@ -149,7 +153,7 @@ void Fighter::setProperties()
 
 		initHp();
 
-		_attackObject = "picture/ui/gold.png";
+		_attackObject = "bullet_f.png";
 		_state = Unit::WONDERING;
 		schedule(schedule_selector(Unit::update));
 }
@@ -158,10 +162,11 @@ Factory* Factory::create(int id)
 {
 	Factory* ret = new Factory();
 
-	std::string filename = "picture/units/factory";
+	std::string filename = "factory";
 	filename.append(suffix[id%MAX_PLAYER_NUM]);
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename);
 
-	if (ret&&ret->initWithFile(filename))
+	if (ret&&ret->initWithSpriteFrame(spriteFrame))
 	{
 		ret->autorelease();
 
@@ -176,10 +181,10 @@ Mine* Mine::create(int id)
 {
 	Mine* ret = new Mine();
 
-	std::string filename = "picture/units/barracks.png";
-	//filename.append(suffix[id%MAX_PLAYER_NUM]);
+	std::string filename = "barracks.png";
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename);
 
-	if (ret&&ret->initWithFile(filename))
+	if (ret&&ret->initWithSpriteFrame(spriteFrame))
 	{
 		ret->autorelease();
 
@@ -194,10 +199,10 @@ ElectricityFactory* ElectricityFactory::create(int id)
 {
 	ElectricityFactory* ret = new ElectricityFactory();
 
-	std::string filename = "picture/units/storage.png";
-	//filename.append(suffix[id%MAX_PLAYER_NUM]);
+	std::string filename = "storage.png";
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(filename);
 
-	if (ret&&ret->initWithFile(filename))
+	if (ret&&ret->initWithSpriteFrame(spriteFrame))
 	{
 		ret->autorelease();
 

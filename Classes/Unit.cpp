@@ -215,7 +215,7 @@ void Unit::shoot(Unit* atkee)
 	if (targetId != -1)
 	{
 		auto bullet = Bullet::create(this, targetId);
-		bullet->setScale(0.01f);
+		bullet->setScale(0.4f);
 		bullet->runBullet();
 	}
 }

@@ -253,6 +253,7 @@ bool MainScene::init()
 	};
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(mouse_event, this);
 	
+	//加载plist
 	animationInit();
 
 	//-------------------//
@@ -270,12 +271,12 @@ bool MainScene::init()
 
 	//int playerId = _unitManager->_playerId;
 
-	_sendMessageButton = Button::create("button.png");
+	_sendMessageButton = Button::create("scene/sendmessage.png");
 	this->addChild(_sendMessageButton);
 	_sendMessageButton->setPosition(Vec2(
 		visibleSize.width / 2 * 1.7,
 		(visibleSize.height - 90) / 6 * 1));
-	_sendMessageButton->setTitleText("send message");
+	//_sendMessageButton->setTitleText("send message");
 	_sendMessageButton->setTitleFontSize(7);
 	_sendMessageButton->addTouchEventListener([&](Ref* pSender, Widget::TouchEventType type) {
 
@@ -295,7 +296,7 @@ bool MainScene::init()
 
 	});
 
-	_inputBar = Sprite::create("InputBar.png");
+	_inputBar = Sprite::create("scene/input.png");
 	_inputBar->setPosition(Point(visibleSize.width / 3 * 1.2,
 		(visibleSize.height - 90) / 6 * 1));
 	_inputBar->setVisible(false);
@@ -325,10 +326,10 @@ void MainScene::update(float delta)
 void MainScene::initButton(EventListenerTouchOneByOne* buildingListener)
 {//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	std::vector<BButton*> buttons = {
-		BButton::create(this, Type::FACTORY, "picture/units/factory_0.png"),
-		BButton::create(this, Type::SOLDIERCAMP, "picture/units/soldiercamp_0.png"),
-		BButton::create(this, Type::MINE, "picture/units/barracks.png"),
-		BButton::create(this, Type::ELECTRICITYFACTORY, "picture/units/storage.png"),
+		BButton::create(this, Type::FACTORY, "buildings/factory_0.png"),
+		BButton::create(this, Type::SOLDIERCAMP, "buildings/soldiercamp_0.png"),
+		BButton::create(this, Type::MINE, "buildings/barracks.png"),
+		BButton::create(this, Type::ELECTRICITYFACTORY, "buildings/storage.png"),
 	};
 	std::vector<Point> points = { Point(_screenWidth - 40, _screenHeight - 80),
 		Point(_screenWidth - 40, _screenHeight - 130),Point(_screenWidth - 40, _screenHeight - 180),
@@ -397,10 +398,10 @@ bool ControlPanel::init()
 		return false;
 	}
 
-	_fighter = MenuItemImage::create("fighter.png",
+	_fighter = MenuItemImage::create("picture/units/fighter.png",
 		"fighter.png", CC_CALLBACK_1(ControlPanel::createFighterCallBack, this));
 	assert(_fighter != nullptr);
-	_tank = MenuItemImage::create("tank.png",
+	_tank = MenuItemImage::create("picture/units/tank.png",
 		"tank.png", CC_CALLBACK_1(ControlPanel::createTankCallBack, this));
 	assert(_tank != nullptr);
 
@@ -437,7 +438,8 @@ void ControlPanel::createTankCallBack(Ref* pSender)
 void MainScene::animationInit()
 {
 	//创建精灵帧缓存单例对象并添加纹理到缓存中
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("animation.plist");
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("plists/animation.plist");
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("plists/pictureRes.plist");
 
 	auto animation = Animation::create();
 	for (int i = 1; i < 15; i++)

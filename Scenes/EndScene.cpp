@@ -33,14 +33,14 @@ bool EndScene::init(bool flag)
 	//Ìí¼ÓÊ¤ÀûorÊ§°ÜÍ¼Æ¬
 	if (flag)
 	{
-		auto winimage = Sprite::create("winimage.png");
+		auto winimage = Sprite::create("scene/winimage.png");
 		winimage->setScale(1);
 		winimage->setPosition(visibleSize.width *0.5, visibleSize.height*0.6);
 		addChild(winimage, 2);
 	}
 	else
 	{
-		auto loseimage = Sprite::create("loseimage.png");
+		auto loseimage = Sprite::create("scene/loseimage.png");
 		loseimage->setScale(0.5);
 		loseimage->setPosition(visibleSize.width *0.5, visibleSize.height*0.6);
 		addChild(loseimage, 2);

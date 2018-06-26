@@ -31,4 +31,5 @@ private:
 	float _speed = 96.f;
 	Node* _map = nullptr;
 	UnitManager* _unitManager = nullptr;
+	std::string _picture;
 };

@@ -17,6 +17,7 @@ bool Bullet::init(Unit* atker, int targetId)
 {
 	assert(atker != nullptr);
 	_unitManager = atker->_unitManager;
+	_picture = atker->_attackObject;
 	_map = atker->getParent();
 	assert(_map != nullptr);
 
@@ -31,7 +32,8 @@ bool Bullet::init(Unit* atker, int targetId)
 	_atkeeId = targetId;
 	//speed
 
-	return initWithFile(atker->_attackObject);
+	auto spriteFrame = SpriteFrameCache::getInstance()->getSpriteFrameByName(_picture);
+	return initWithSpriteFrame(spriteFrame);
 }
 
 void Bullet::runBullet()
