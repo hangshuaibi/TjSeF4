@@ -1,5 +1,7 @@
 #include "cocos2d.h"
 
+/*这是结束场景*/
+
 USING_NS_CC;
 
 class EndScene : public cocos2d::Layer

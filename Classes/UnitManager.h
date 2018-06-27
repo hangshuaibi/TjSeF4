@@ -1,5 +1,7 @@
 #pragma once
 
+/*单位的控制，消息的收发逻辑基本都在这个类中实现*/
+
 #include "cocos2d.h"
 #include <map>
 #include "Unit.h"

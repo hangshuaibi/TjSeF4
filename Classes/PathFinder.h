@@ -1,5 +1,7 @@
 #pragma once
 
+/*寻路算法，采用的是A*算法*/
+
 #include "cocos2d.h"
 #include <vector>
 #include <algorithm>//for heap

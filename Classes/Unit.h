@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+/*单位的基类，提供接口，与UnitManager直接交互*/
+
 #include "cocos2d.h"
 #include "GridMap.h"
 #include "UnitManager.h"

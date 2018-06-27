@@ -1,5 +1,7 @@
 #pragma once
 
+/*这是客户端......*/
+
 #include "cocos2d.h"
 USING_NS_CC;
 

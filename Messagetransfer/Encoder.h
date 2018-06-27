@@ -1,5 +1,8 @@
 #pragma once
 
+/*这是编码类，通过制定一定的规则实现将玩家操作编码成可发送的信息
+并由UnitManager经过客户端发向服务端*/
+
 #include "cocos2d.h"
 #include "iostream"
 #include "GridMap.h"

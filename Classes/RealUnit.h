@@ -1,4 +1,7 @@
 #pragma once
+
+/*这里描述了从Unit基类继承而来的多个具体类，作为游戏单位使用*/
+
 #include "Unit.h"
 #include "Building.h"
 #include "MainScene.h"

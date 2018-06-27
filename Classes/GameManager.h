@@ -1,5 +1,8 @@
 #pragma once
 
+/*这是游戏本地画面的管理者，主要功能是根据鼠标位置和AWSD键盘操作
+进行屏幕的移动*/
+
 #include <iostream>
 #include <algorithm>
 #include "cocos2d.h"

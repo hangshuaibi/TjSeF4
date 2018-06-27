@@ -49,17 +49,13 @@ bool EndScene::init(bool flag)
 
 
 	//创建菜单选项
-	auto label1 = Label::createWithSystemFont("Back To The Menu", "Marker Felt", 15);
-	auto LabelItem1 = MenuItemLabel::create(label1,
-		CC_CALLBACK_1(EndScene::menuGoToStartMenu, this));
-	LabelItem1->setPosition(visibleSize.width / 2, visibleSize.height *0.3);
 
-	auto label2 = Label::createWithSystemFont("Quit", "Marker Felt", 15);
-	auto LabelItem2 = MenuItemLabel::create(label2,
+	auto label = Label::createWithSystemFont("Quit", "Marker Felt", 15);
+	auto LabelItem2 = MenuItemLabel::create(label,
 		CC_CALLBACK_0(EndScene::EndGame, this));
 	LabelItem2->setPosition(visibleSize.width / 2, visibleSize.height *0.2);
 
-	auto endmenu = Menu::create(LabelItem1, LabelItem2, NULL);
+	auto endmenu = Menu::create(LabelItem2, NULL);
 	endmenu->setPosition(Vec2::ZERO);
 	addChild(endmenu);
 

@@ -1,5 +1,7 @@
 #pragma once
 
+/*这是游戏的主场景，赶快抓上小伙伴一起愉快玩耍吧！*/
+
 #include "GridMap.h"
 #include "cocos2d.h"
 #include "UnitManager.h"

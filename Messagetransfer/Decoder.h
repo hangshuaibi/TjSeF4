@@ -1,5 +1,7 @@
 #pragma once
 
+/*与编码类对应的解码类，将消息解读成玩家操作*/
+
 #include "cocos2d.h"
 #include "iostream"
 #include "GridMap.h"

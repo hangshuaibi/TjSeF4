@@ -1,14 +1,12 @@
 #include "MainScene.h"
 #include "cocos2d.h"
 #include "GameManager.h"
-#include"SimpleAudioEngine.h"
 #include"ui/CocosGUI.h"
 #include "RealUnit.h"
 #include "Button.h"
 
 
 using namespace ui;
-using namespace CocosDenshion;
 
 #include <string>
 
@@ -49,6 +47,7 @@ bool MainScene::init()
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	_screenWidth = visibleSize.width;
 	_screenHeight = visibleSize.height;
+
 
 	//启用定时器回调更新函数
 	scheduleUpdate();
@@ -344,25 +343,7 @@ void MainScene::initButton(EventListenerTouchOneByOne* buildingListener)
 		_eventDispatcher->addEventListenerWithSceneGraphPriority(listener, buttons[i]);
 	}
 
-	/*auto factoryButton = BButton::create(this, Type::FACTORY, "picture/units/factory_0.png");
-	auto campButton = BButton::create(this, Type::SOLDIERCAMP, "picture/units/soldiercamp_0.png");
-	auto mineButton = BButton::create(this, Type::MINE, "picture/units/barracks.png");
-	auto eleFactoryButton = BButton::create(this, Type::ELECTRICITYFACTORY, "picture/units/storage.png");
-
-	factoryButton->setPosition(_screenWidth - 40, _screenHeight - 80);
-	campButton->setPosition(_screenWidth - 40, _screenHeight - 130);
-	mineButton->setPosition(_screenWidth - 40, _screenHeight - 180);
-	eleFactoryButton->setPosition(_screenWidth - 40, _screenHeight - 230);
-
-	this->addChild(factoryButton, 10);
-	this->addChild(campButton, 10);
-	this->addChild(mineButton, 10);
-	this->addChild(eleFactoryButton, 10);
-
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener, factoryButton);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), campButton);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), mineButton);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(buildingListener->clone(), eleFactoryButton);*/
+	
 }
 
 void MainScene::initLabel()

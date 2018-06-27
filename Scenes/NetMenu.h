@@ -7,9 +7,13 @@
 #include "ui/CocosGUI.h"
 #include "ServerOrNot.h"
 #include "NetScene.h"
+#include"SimpleAudioEngine.h"
+
+#define MUSIC_FILE "music/bgm.wav"
 
 //USING_NS_CC;
 //using namespace cocos2d::ui;
+using namespace CocosDenshion;
 
 class NetMenu :public cocos2d::Scene {
 public:
@@ -24,6 +28,15 @@ private:
 		{
 			return false;
 		}
+
+		//Ô¤¼ÓÔØ±³¾°ÒôÀÖ
+		SimpleAudioEngine::getInstance()->preloadBackgroundMusic(MUSIC_FILE);
+
+		//²¥·Å±³¾°ÒôÀÖ
+		SimpleAudioEngine::getInstance()->playBackgroundMusic(MUSIC_FILE, true);
+		SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(1);
+
+
 		auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
 		//±³¾°
 		auto background = cocos2d::Sprite::create("scene/bg.jpg");

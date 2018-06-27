@@ -27,6 +27,10 @@ private:
 
 		auto visibleSize = cocos2d::Director::getInstance()->getVisibleSize();
 
+		auto background = Sprite::create("scene/netscene.jpg");
+		this->addChild(background);
+		background->setAnchorPoint(cocos2d::Vec2::ZERO);
+
 		auto enterButton = cocos2d::ui::Button::create("scene/enter.png");
 		enterButton->setScale(0.6f);
 		this->addChild(enterButton);

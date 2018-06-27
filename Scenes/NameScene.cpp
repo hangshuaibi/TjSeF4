@@ -17,6 +17,10 @@ bool NameScene::init()
 	}
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
+	auto background = Sprite::create("scene/inputname.jpg");
+	this->addChild(background);
+	background->setAnchorPoint(cocos2d::Vec2::ZERO);
+
 	//一个输入名字的窗口
 	auto inputNameWindow = cocos2d::ui::TextField::create("  ", "Arial", 7);
 	inputNameWindow->setMaxLengthEnabled(true);

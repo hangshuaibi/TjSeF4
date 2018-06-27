@@ -25,6 +25,10 @@ private:
 		}
 		auto visibleSize = Director::getInstance()->getVisibleSize();
 
+		auto background = Sprite::create("scene/serverornot.jpg");
+		this->addChild(background);
+		background->setAnchorPoint(cocos2d::Vec2::ZERO);
+
 		// 作为服务端启动
 		auto clientButton = cocos2d::ui::Button::create("scene/asserver.png");
 		clientButton->setPosition(cocos2d::Vec2(visibleSize.width / 2, visibleSize.height*0.3));

@@ -1,5 +1,7 @@
 #pragma once
 
+/*这是Server类，在游戏中作为服务端使用*/
+
 //#pragma warning(disable:4996)
 //#define ASIO_STANDALONE
 
@@ -15,7 +17,7 @@
 
 #include "cocos2d.h"
 
-#define TEST_CODE
+//#define TEST_CODE
 
 /*-----------------------------------------------------------*/
 #include <cstdio>
@@ -122,17 +124,7 @@ public:
 	void deliver(const chat_message& msg)
 	{
 
-#ifdef TEST_CODE
-		{
-			if (msg.body()[msg.body_length() - 1] == 'T')//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<测试
-			{
-				std::string msg(msg.body(), msg.body_length());
-				std::cout << msg << std::endl;
 
-				return;
-			}
-		}
-#endif
 		if (msg.body()[0] == 'C')//Client ready!>>>>>>>>>>>>>>>>>>>>>>>>
 		{
 			++_preparedClientNum;

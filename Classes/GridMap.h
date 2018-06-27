@@ -1,4 +1,7 @@
 #pragma once
+
+/*格点地图类，地图的实际逻辑，在此还有Grid类代表格点，作用类似整数类型的Point*/
+
 #include "cocos2d.h"
 #include <vector>
 #include <cassert>
