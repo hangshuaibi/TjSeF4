@@ -74,26 +74,11 @@ private:
 			}
 		});
 
-
-		// ¡°ÓÎÏ·ÉèÖÃ¡±°´Å¥
-		auto setButton = cocos2d::ui::Button::create("scene/settings.png");
-		setButton->setTitleFontName("Î¢ÈíÑÅºÚ");
-		setButton->setTitleFontSize(12);
-		setButton->setPosition(cocos2d::Vec2(visibleSize.width / 2, visibleSize.height*0.5));
-		setButton->addTouchEventListener([](Ref* pSender, cocos2d::ui::Widget::TouchEventType type) {
-			if (type == cocos2d::ui::Widget::TouchEventType::ENDED) {
-				// ÇÐ»»µ½AudioControl³¡¾°
-			}
-		});
-
-		this->addChild(setButton);
-
-
 		// ¡°ÍË³öÓÎÏ·¡±°´Å¥
 		auto closeButton = cocos2d::ui::Button::create("scene/quit.png");
 		closeButton->setTitleFontName("Î¢ÈíÑÅºÚ");
 		closeButton->setTitleFontSize(12);
-		closeButton->setPosition(cocos2d::Vec2(visibleSize.width / 2, visibleSize.height*0.3));
+		closeButton->setPosition(cocos2d::Vec2(visibleSize.width / 2, visibleSize.height*0.5));
 
 		closeButton->addTouchEventListener([](Ref* pSender, cocos2d::ui::Widget::TouchEventType type) {
 			if (type == cocos2d::ui::Widget::TouchEventType::ENDED) {

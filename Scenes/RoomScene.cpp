@@ -34,12 +34,12 @@ bool RoomScene::init()
 	_clientNum = Label::create();
 	this->addChild(_clientNum, 5);
 	_clientNum->setPosition(width / 2, height / 2 + 20);
-	_clientNum->setString("fuck!");
+	//_clientNum->setString("f**k!");
 
 	_readyClientNum = Label::create();
 	this->addChild(_readyClientNum, 5);
 	_readyClientNum->setPosition(width / 2, height / 2);
-	_readyClientNum->setString("fuck!");
+	//_readyClientNum->setString("f**k!");
 
 	
 	

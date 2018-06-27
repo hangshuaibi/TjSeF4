@@ -67,8 +67,8 @@ public:
 	Grid _basePos;//»ùµØ×ø±ê
 	void initAllBase();
 private:
-	int _gold = 10000;
-	int _electricity = 10000;
+	int _gold = 4000;
+	int _electricity = 4000;
 	Label* _goldLabel = nullptr;
 	Label* _powerLabel = nullptr;
 
