@@ -48,7 +48,9 @@ void Client::lanSearch()
 		return;
 	}
 	auto ipHead = ipHeads.front();
-	for (int i = 0;i < 255; i+=4)
+
+	
+	for (int i = 0;i <= 255; i += 4)
 	{
 		auto ips(vector<string>(4, ipHead));
 		for (int j = 0;j < 4;++j)ips[j].append(to_string(i + j));
@@ -96,24 +98,5 @@ void Client::lanSearch()
 		t2.join();
 		t3.join();
 
-		if (0)
-		{
-			auto ip(ipHead);
-			ip.append(to_string(i));
-
-			io_context ioc;
-			tcp::resolver res(ioc);
-
-			auto endpoint_it = res.resolve({ ip,"1024" });
-			chat_client c(ioc, endpoint_it);
-
-			std::thread t([&ioc]() {ioc.run();});
-			Sleep(1000);
-
-			c.close();
-			if (c._orderList.size() == 1)
-				log(ip.c_str());
-			t.join();
-		}
 	}
 }

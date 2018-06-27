@@ -17,7 +17,7 @@ bool NameScene::init()
 	}
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
-	//一个输入ip的窗口 + 一个确认连接的按钮
+	//一个输入名字的窗口
 	auto inputNameWindow = cocos2d::ui::TextField::create("  ", "Arial", 7);
 	inputNameWindow->setMaxLengthEnabled(true);
 	inputNameWindow->setMaxLength(20);

@@ -86,12 +86,12 @@ private:
 		{
 			if (!ec)
 			{
-				_lock.lock();
+				//_lock.lock();
 				/*-----------------------------------------------------------*/
 				//将消息压入队列，供UnitManager读取
 				_orderList.push_back(std::string(read_msg_.body(),read_msg_.body_length()));
 				/*-----------------------------------------------------------*/
-				_lock.unlock();
+				//_lock.unlock();
 				std::cout.write(read_msg_.body(), read_msg_.body_length());
 				std::cout << "\n";//打印消息到屏幕
 				do_read_header();
@@ -128,7 +128,7 @@ private:
 private:
 	//从服务端收到的消息列表
 	std::deque<std::string> _orderList;
-	std::mutex _lock;
+	//std::mutex _lock;
 
 	//读取消息的接口，一次读取一条，从头部开始读取
 	std::string getOrder()
@@ -206,9 +206,9 @@ public:
 
 	std::string getMessage()
 	{
-		_client->_lock.lock();
+		//_client->_lock.lock();
 		auto msg = _client->getOrder();
-		_client->_lock.unlock();
+		//_client->_lock.unlock();
 
 		return msg;
 	}
@@ -256,4 +256,7 @@ public:
 	static void lanSearch();
 
 	static const std::map<std::string, std::string>& getRoomlist();
+
+private:
+	static void loop(std::string ipHead, int start, int end);
 };

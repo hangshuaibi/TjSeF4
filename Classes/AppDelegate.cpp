@@ -1,5 +1,4 @@
 #include "AppDelegate.h"
-#include "HelloWorldScene.h"
 #include "MainScene.h"
 #include "Scenes/RoomScene.h"
 #include "Scenes/NetMenu.h"

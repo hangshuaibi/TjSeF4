@@ -6,6 +6,7 @@
 #include "cocos2d.h"
 #include "ui/CocosGUI.h"
 #include "ServerOrNot.h"
+#include "NetScene.h"
 
 //USING_NS_CC;
 //using namespace cocos2d::ui;
@@ -42,7 +43,8 @@ private:
 		netButton->addTouchEventListener([&](Ref* pSender, cocos2d::ui::Widget::TouchEventType type) {
 
 			if (type == cocos2d::ui::Widget::TouchEventType::ENDED) {
-
+				auto transition = cocos2d::TransitionFlipAngular::create(2.f, NetScene::create());
+				cocos2d::Director::getInstance()->replaceScene(transition);
 			}
 		});
 
