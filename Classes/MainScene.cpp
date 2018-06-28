@@ -4,6 +4,7 @@
 #include"ui/CocosGUI.h"
 #include "RealUnit.h"
 #include "Button.h"
+#include "Scenes/ServerOrNot.h"
 
 
 using namespace ui;
@@ -43,6 +44,7 @@ bool MainScene::init()
 	{
 		return false;
 	}
+
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	_screenWidth = visibleSize.width;

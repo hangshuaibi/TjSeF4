@@ -6,6 +6,7 @@
 #include "Messagetransfer/Encoder.h"
 #include "Messagetransfer/Decoder.h"
 #include "Scenes/EndScene.h"
+#include "Scenes//ServerOrNot.h"
 
 static bool imreadyFlag = false;
 
@@ -291,6 +292,10 @@ Unit* UnitManager::createUnit_(int id, int type, const Grid& createGrid)
 		break;
 	}
 	default:
+		if (id >= _playerId + MAX_PLAYER_NUM * 63)
+		{
+			throw("take a rest, your unit number is beyond 64!");
+		}
 		assert(0);//控制不应该到达这里
 		break;
 	}
@@ -439,8 +444,11 @@ void UnitManager::updateUnitState()
 			{
 				_playerNum = order[7] - '0';
 				initAllBase();
+				//ServerOrNot::getClient()->sendMessage();
+				ServerOrNot::getClient()->release();//断开与远端的连接
 				_startFlag = true;
 				notice(Notice::GAME_START);
+				
 				//return;
 			}
 			return;

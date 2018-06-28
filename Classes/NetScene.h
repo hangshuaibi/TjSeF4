@@ -21,7 +21,8 @@ private:
 		{
 			return false;
 		}
-		const std::string remoteIp = "118.25.134.24";//远程服务器>>>>>>>>>>>>>>>>>>>>>>
+		const std::string remoteIp = "192.168.1.110";
+			//"118.25.134.24";//远程服务器>>>>>>>>>>>>>>>>>>>>>>
 		_client = Client::create(remoteIp);
 		this->addChild(_client);
 		Sleep(1000);
@@ -38,10 +39,13 @@ private:
 		enterButton->setPosition(cocos2d::Vec2(visibleSize.width * 0.5f, visibleSize.height / 2));
 		//enterButton->setTitleText("enter");
 		enterButton->setTitleFontSize(7);
-		enterButton->addTouchEventListener([=](Ref* pSender, cocos2d::ui::Widget::TouchEventType type) {
-			if (cocos2d::ui::Widget::TouchEventType::ENDED == type)
+		
+		bool notReady = true;
+		enterButton->addTouchEventListener([&](Ref* pSender, cocos2d::ui::Widget::TouchEventType type) {
+			if (cocos2d::ui::Widget::TouchEventType::ENDED == type&&notReady)
 			{
 				_client->sendMessage("Client is ready");
+				notReady = false;
 			}
 		});
 

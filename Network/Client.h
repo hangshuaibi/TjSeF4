@@ -255,9 +255,14 @@ public:
 		while(!orders.empty()&& orders.front()[0]!='I')
 			orders.pop_front();
 
-		return _client->_orderList.size() >= 2
-			&& _client->_orderList.front()[0] == 'I'
-			&& (*++(_client->_orderList.begin()))[0] == 'S';
+		if (orders.size() >= 2)
+		{
+			Sleep(20);
+		}
+
+		return orders.size() >= 2
+			&& orders.front()[0] == 'I'
+			&& (*++(orders.begin()))[0] == 'S';
 	}
 
 private:
