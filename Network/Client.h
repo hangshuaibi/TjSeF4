@@ -159,7 +159,11 @@ private:
 		this->write(msg);
 	}
 	/*-----------------------------------------------------------*/
-
+public:
+	int getOrderListSize()
+	{
+		return _orderList.size();
+	}
 private:
 	boost::asio::io_service& io_service_;
 	tcp::socket socket_;
@@ -245,6 +249,12 @@ public:
 
 	bool isStart()
 	{
+		auto& orders = _client->_orderList;
+		if (orders.size() <= 0)
+			return false;
+		while(!orders.empty()&& orders.front()[0]!='I')
+			orders.pop_front();
+
 		return _client->_orderList.size() >= 2
 			&& _client->_orderList.front()[0] == 'I'
 			&& (*++(_client->_orderList.begin()))[0] == 'S';
@@ -259,6 +269,7 @@ public:
 
 	static const std::map<std::string, std::string>& getRoomlist();
 
-private:
-	static void loop(std::string ipHead, int start, int end);
+public:
+	//static void loop(std::string ipHead, int start, int end);
+	static std::string getLocalhost();
 };

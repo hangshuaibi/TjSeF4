@@ -7,6 +7,9 @@
 #include "Messagetransfer/Decoder.h"
 #include "Scenes/EndScene.h"
 
+static bool imreadyFlag = false;
+
+std::mutex lock;
 class MainScene;
 
 UnitManager* UnitManager::createWithScene(MainScene* mainScene)
@@ -414,21 +417,37 @@ void UnitManager::setPath(int id, GridMap::GridVector path)
 void UnitManager::updateUnitState()
 {
 	//static bool startFlag = false;
-	static bool imreadyFlag = false;
-
+	//static bool imreadyFlag = false;
+	
+	//if (imreadyFlag)
+	{
+		//Sleep(100);
+	}
+	//lock.lock();
 	string order = _client->getMessage();
+	//assert(order[0] != 'S');
 	if (!_startFlag)//未开始
 	{
 		if (!imreadyFlag&&order[0] == 'I') {//Id(%d
 			_playerId = order[3] - '1';
 			_nextId = _playerId + MAX_PLAYER_NUM;
 			imreadyFlag = true;
-			//_client->sendMessage("Client ready!");
+			//lock.unlock();
 
+			order = _client->getMessage();
+			if (order[0] == 'S')//Start!
+			{
+				_playerNum = order[7] - '0';
+				initAllBase();
+				_startFlag = true;
+				notice(Notice::GAME_START);
+				//return;
+			}
 			return;
 		}
 		else if (order[0] == 'S')//Start!
 		{
+			assert(0);
 			_playerNum = order[7] - '0';
 			initAllBase();
 			_startFlag = true;
@@ -437,7 +456,7 @@ void UnitManager::updateUnitState()
 		}
 		return;
 	}
-
+	//assert(0);
 	if (order[0] == 'n')//没有消息
 	{
 		return;

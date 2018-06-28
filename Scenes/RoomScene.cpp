@@ -1,5 +1,6 @@
 #include "RoomScene.h"
 #include "Classes/MainScene.h"
+#include "ServerOrNot.h"
 
 bool RoomScene::init()
 {

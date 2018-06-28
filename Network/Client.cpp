@@ -1,4 +1,5 @@
 #include "Client.h"
+#include "Scenes/ServerOrNot.h"
 #include <boost/asio.hpp>
 
 #include <string>
@@ -12,36 +13,22 @@ using namespace std;
 using namespace boost::asio;
 
 /*全局map,每次lanSearch清空一次*/
-map<string, string> roomlist;
+static map<string, string> roomlist;
+static bool firsttime = true;
+static vector<string> ips;
+static vector<string> ipHeads;
 
 const map<string, string>& Client::getRoomlist()
 {
 	return roomlist;
+	//return ServerOrNot::getServers();
 }
 
 void Client::lanSearch()
 {
 	roomlist.clear();
 
-	WSAData data;
-	assert(WSAStartup(MAKEWORD(1, 1), &data) == 0);
-	char host[255];
-	assert(gethostname(host, sizeof(host)) != SOCKET_ERROR);
-
-	vector<string> ipHeads;
-
-	struct hostent *p = gethostbyname(host);
-	for (int i = 0; p->h_addr_list[i] != 0; i++)
-	{
-		struct in_addr in;
-		memcpy(&in, p->h_addr_list[i], sizeof(struct in_addr));
-		std::string temp(inet_ntoa(in));
-
-		int pos = temp.find_last_of('.');
-		ipHeads.push_back(temp.substr(0, pos + 1));
-	}
-
-	WSACleanup();
+	getLocalhost();
 
 	if (ipHeads.empty())
 	{
@@ -87,7 +74,7 @@ void Client::lanSearch()
 				auto order = clients[j]->getOrder();
 				auto roomname = order.substr(order.find_first_of("0123456789") + 1);
 				log(roomname.c_str());
-				roomlist.insert(make_pair(roomname, ips[j]));
+				roomlist.insert(make_pair(ips[j], roomname));
 
 				//clients[j]->sendMessage("Bye~xixi");
 			}
@@ -99,4 +86,41 @@ void Client::lanSearch()
 		t3.join();
 
 	}
+}
+
+std::string Client::getLocalhost()
+{
+	if (firsttime)
+	{
+		firsttime = false;
+
+		WSAData data;
+		assert(WSAStartup(MAKEWORD(1, 1), &data) == 0);
+		char host[255];
+		assert(gethostname(host, sizeof(host)) != SOCKET_ERROR);
+
+		//vector<string> ipHeads;
+
+		struct hostent *p = gethostbyname(host);
+		for (int i = 0; p->h_addr_list[i] != 0; i++)
+		{
+			struct in_addr in;
+			memcpy(&in, p->h_addr_list[i], sizeof(struct in_addr));
+			std::string temp(inet_ntoa(in));
+
+			ips.push_back(temp);
+
+			int pos = temp.find_last_of('.');
+			ipHeads.push_back(temp.substr(0, pos + 1));
+		}
+
+		WSACleanup();
+	}
+
+	if (ips.empty())
+	{
+		assert(0);
+		return "";//记得做判断
+	}
+	return ips.front();
 }

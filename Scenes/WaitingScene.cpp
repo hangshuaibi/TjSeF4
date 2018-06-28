@@ -3,6 +3,7 @@
 #include "Network/Client.h"
 #include "Classes/MainScene.h"
 #include <vector>
+#include "Scenes/ServerOrNot.h"
 
 using std::string;
 using std::vector;
@@ -17,6 +18,10 @@ namespace {//匿名空间
 
 	vector<Button*> buttons;
 	Size visibleSize;
+	enum Mode {//局域网房间列表刷新模式
+		SEARCH = 0,//全网搜索
+		NET,//利用远程服务器
+	};
 }
 
 bool WaitingScene::init()
@@ -46,19 +51,32 @@ bool WaitingScene::init()
 	roomlistbg->setScale(2.0f);
 	roomlistbg->setPosition(visibleSize.width * 0.8f, visibleSize.height*0.5f);
 
+	//快搜
 	auto refreshButton = Button::create("scene/input.png");
 	this->addChild(refreshButton);
-	refreshButton->setPosition(Vec2(visibleSize.width*0.8f, visibleSize.height*0.1));
+	refreshButton->setPosition(Vec2(visibleSize.width*0.8f - 70, visibleSize.height*0.1));
 	refreshButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
 		if (Widget::TouchEventType::ENDED == type)
 		{
-			refresh();
+			refresh(Mode::NET);
 		}
 	});
 	refreshButton->setTitleText("refresh!");
 
+	//全网段搜索
+	auto LowRefreshButton = Button::create("scene/input.png");
+	this->addChild(LowRefreshButton);
+	LowRefreshButton->setPosition(Vec2(visibleSize.width*0.8f + 60, visibleSize.height*0.1));
+	LowRefreshButton->addTouchEventListener([=](Ref* pSender, Widget::TouchEventType type) {
+		if (Widget::TouchEventType::ENDED == type)
+		{
+			refresh(Mode::SEARCH);
+		}
+	});
+	LowRefreshButton->setTitleText("Low refresh~");
+
 	//首次刷新房间列表
-	refresh();
+	refresh(Mode::NET);
 //----------
 
 	//一个输入ip的窗口 + 一个确认连接的按钮
@@ -90,7 +108,7 @@ bool WaitingScene::init()
 	return true;
 }//init
 
-void WaitingScene::refresh()
+void WaitingScene::refresh(int mode)
 {
 	for (auto& button : buttons)
 	{
@@ -99,22 +117,32 @@ void WaitingScene::refresh()
 	}
 	buttons.clear();
 
-	Client::lanSearch();
-	auto roomlist = Client::getRoomlist();
+	
+	std::map<string, string> roomlist;
+	if (mode == 1)
+	{
+		roomlist = ServerOrNot::getServers();//快速获得房间列表
+	}
+	else {
+		Client::lanSearch();//局域网搜索
+		roomlist = Client::getRoomlist();//获得列表
+	}
+
+		
 	float width = 4 * visibleSize.width / 5, height = visibleSize.height*0.7f;
 	for (const auto& item : roomlist)
 	{
 		auto button = Button::create("scene/input.png");
 		button->setPosition(Vec2(width, height));
 		buttons.push_back(button);
-		height += 90;
+		height -= 60;
 		this->addChild(button);
-		button->setTitleText(item.first);
+		button->setTitleText(item.second);
 		button->addTouchEventListener([=](Ref* pSender,
 			cocos2d::ui::Widget::TouchEventType type) {
 			if (cocos2d::ui::Widget::TouchEventType::ENDED == type && canInput)
 			{
-				client = Client::create(item.second);
+				client = Client::create(item.first);
 				this->addChild(client);
 
 				canInput = false;

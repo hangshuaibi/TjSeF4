@@ -23,6 +23,8 @@ private:
 		{
 			return false;
 		}
+		getClient();//初始化全局客户端，连接互联网>>>>>>>>>>>>>>>>>>>>>>>
+
 		auto visibleSize = Director::getInstance()->getVisibleSize();
 
 		auto background = Sprite::create("scene/serverornot.jpg");
@@ -56,4 +58,8 @@ private:
 		return true;
 	}//init
 
+public:
+	static Client* getClient();
+
+	static const std::map<std::string, std::string>& getServers();
 };

@@ -21,7 +21,8 @@ private:
 		{
 			return false;
 		}
-		_client = Client::create("118.25.134.24");
+		const std::string remoteIp = "118.25.134.24";//Ô¶³Ì·þÎñÆ÷>>>>>>>>>>>>>>>>>>>>>>
+		_client = Client::create(remoteIp);
 		this->addChild(_client);
 		Sleep(1000);
 

@@ -1,5 +1,8 @@
 #include "NameScene.h"
 #include "RoomScene.h"
+#include "ServerOrNot.h"
+#include "Network/Client.h"
+
 #include <string>
 #include <ui/CocosGUI.h>
 
@@ -15,6 +18,7 @@ bool NameScene::init()
 	{
 		return false;
 	}
+
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 
 	auto background = Sprite::create("scene/inputname.jpg");
@@ -47,6 +51,10 @@ bool NameScene::init()
 		if (Widget::TouchEventType::ENDED == type)
 		{
 			globalName = inputNameWindow->getString();
+			auto msg = string("s").append(Client::getLocalhost()).append("*").append(globalName);
+			log(msg.c_str());
+
+			ServerOrNot::getClient()->sendMessage(msg);
 			auto transiton = TransitionSlideInL::create(2.f, RoomScene::create());
 			Director::getInstance()->replaceScene(transiton);
 		}

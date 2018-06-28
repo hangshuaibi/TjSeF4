@@ -23,6 +23,7 @@
 #include <cstdio>
 #include <string>
 #include <Scenes/NameScene.h>
+#include "Scenes/ServerOrNot.h"
 //#include "Classes/Data.h"
 /*-----------------------------------------------------------*/
 #define MAX_PLAYER_NUM 4
@@ -371,6 +372,7 @@ private:
 		}
 		catch (std::exception& e)
 		{
+
 			std::cerr << "Exception: " << e.what() << "\n";
 		}
 	}

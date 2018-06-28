@@ -36,5 +36,5 @@ private:
 
 	bool isPartOfIp(const std::string& str);//检验str是否为合法ip地址的一部分
 
-	void refresh();
+	void refresh(int mode);
 };
