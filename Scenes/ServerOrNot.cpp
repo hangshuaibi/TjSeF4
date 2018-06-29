@@ -4,8 +4,8 @@
 #include "Network/Client.h"
 #include <boost/asio.hpp>
 
-const std::string remoteIp = "192.168.1.110";
-//"118.25.134.24";//远程服务器
+const std::string remoteIp = //"192.168.1.110";
+"118.25.134.24";//远程服务器
 
 using namespace std;
 using namespace boost::asio;

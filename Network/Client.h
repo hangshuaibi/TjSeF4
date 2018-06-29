@@ -255,9 +255,9 @@ public:
 		while(!orders.empty()&& orders.front()[0]!='I')
 			orders.pop_front();
 
-		if (orders.size() >= 2)
+		//if (orders.size() >= 2)
 		{
-			Sleep(20);
+			//Sleep(20);
 		}
 
 		return orders.size() >= 2

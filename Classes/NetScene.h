@@ -21,8 +21,8 @@ private:
 		{
 			return false;
 		}
-		const std::string remoteIp = "192.168.1.110";
-			//"118.25.134.24";//远程服务器>>>>>>>>>>>>>>>>>>>>>>
+		const std::string remoteIp = //"192.168.1.110";
+			"118.25.134.24";//远程服务器>>>>>>>>>>>>>>>>>>>>>>
 		_client = Client::create(remoteIp);
 		this->addChild(_client);
 		Sleep(1000);
