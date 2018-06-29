@@ -95,9 +95,13 @@ std::string Client::getLocalhost()
 		firsttime = false;
 
 		WSAData data;
-		assert(WSAStartup(MAKEWORD(1, 1), &data) == 0);
+		//assert(
+		WSAStartup(MAKEWORD(1, 1), &data);
+			//== 0);
 		char host[255];
-		assert(gethostname(host, sizeof(host)) != SOCKET_ERROR);
+		//assert(
+			gethostname(host, sizeof(host));
+			//!= SOCKET_ERROR);
 
 		//vector<string> ipHeads;
 
