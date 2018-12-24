@@ -1,18 +1,12 @@
-#TjSeF4
+# Red Alert
 
-- 同济软院C++大项目
+a simple rts game by cocos2d. c++ course project in Tongji Se, 2018.
 
-#组员
+- ## member
+  - JH
+  - PJR
+  - XHY
+  - SCH
 
-- JH
-- PJR
-- XHY
-- SCH
-
-#项目选题
-
-类红警RTS
-
-#项目进度
-
-- 详情见项目文档
+- ## more information
+  - [doc](https://github.com/hangshuaibi/TjSeF4/blob/master/PUBG%E6%B8%B8%E6%88%8F%E8%AF%B4%E6%98%8E.pdf)
